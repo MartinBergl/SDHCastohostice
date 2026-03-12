@@ -213,7 +213,9 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ── FIREBASE KONFIGURACE ──────────────────────────────
 const firebaseConfig = {
@@ -227,11 +229,12 @@ const firebaseConfig = {
   measurementId: "G-SX6G94FBVE"
 };
 
-const app = initializeApp(firebaseConfig);
-const db  = getDatabase(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getDatabase(app);
+const auth = getAuth(app);
 
 // ── KONFIGURACE APLIKACE ──────────────────────────────
-const ADMIN_PASSWORD = "hasici2025"; // ← ZDE ZMĚŇ HESLO
+// Heslo se spravuje v Firebase Console → Authentication → Users
 // ─────────────────────────────────────────────────────
 
 const DEFAULT_DATA = [
@@ -281,6 +284,14 @@ onValue(ref(db, 'data'), snap => {
 
 onValue(ref(db, 'done'), snap => {
   doneSet = snap.exists() ? new Set(snap.val()) : new Set();
+  renderStartlist();
+});
+
+// Sledovat stav přihlášení Firebase Auth
+onAuthStateChanged(auth, user => {
+  isAdmin = !!user;
+  if (!isAdmin) document.body.classList.remove('edit-mode');
+  renderAdminBar();
   renderStartlist();
 });
 
@@ -497,8 +508,9 @@ function renderAdminBar() {
   const bar = document.getElementById('adminBar');
   if (isAdmin) {
     const editMode = document.body.classList.contains('edit-mode');
+    const email = auth.currentUser?.email ?? '';
     bar.innerHTML = `
-      <span class="admin-on">🔓 Admin</span>
+      <span class="admin-on">🔓 ${email}</span>
       <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">
         ${editMode ? '✏️ Editace ZAP' : '✏️ Editovat data'}
       </button>
@@ -508,7 +520,9 @@ function renderAdminBar() {
     `;
   } else {
     bar.innerHTML = `
-      <input type="password" id="adminPwd" class="admin-input" placeholder="Heslo admina…"
+      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email admina…"
+        onkeydown="if(event.key==='Enter') document.getElementById('adminPwd').focus()" />
+      <input type="password" id="adminPwd"   class="admin-input" placeholder="Heslo…"
         onkeydown="if(event.key==='Enter') login()" />
       <button class="admin-btn" onclick="login()">Přihlásit</button>
       <span class="admin-hint" id="adminHint"></span>
@@ -603,24 +617,26 @@ function toggleEditMode() {
 }
 
 function login() {
-  const val = document.getElementById('adminPwd')?.value;
-  if (val === ADMIN_PASSWORD) {
-    isAdmin = true;
-    renderAdminBar();
-    renderStartlist();
-  } else {
-    const h = document.getElementById('adminHint');
-    if (h) h.textContent = '✗ Špatné heslo';
-    document.getElementById('adminPwd').value = '';
-    setTimeout(() => { const h2=document.getElementById('adminHint'); if(h2) h2.textContent=''; }, 2000);
+  const email = document.getElementById('adminEmail')?.value?.trim();
+  const pwd   = document.getElementById('adminPwd')?.value;
+  const hint  = document.getElementById('adminHint');
+  if (!email || !pwd) {
+    if (hint) hint.textContent = '✗ Vyplňte email a heslo';
+    return;
   }
+  signInWithEmailAndPassword(auth, email, pwd)
+    .catch(err => {
+      const h = document.getElementById('adminHint');
+      if (h) {
+        h.textContent = '✗ Špatný email nebo heslo';
+        setTimeout(() => { const h2 = document.getElementById('adminHint'); if (h2) h2.textContent = ''; }, 3000);
+      }
+      if (document.getElementById('adminPwd')) document.getElementById('adminPwd').value = '';
+    });
 }
 
 function logout() {
-  isAdmin = false;
-  document.body.classList.remove('edit-mode');
-  renderAdminBar();
-  renderStartlist();
+  signOut(auth);
 }
 
 // ── INIT ─────────────────────────────────────────────
