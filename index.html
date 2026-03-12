@@ -41,9 +41,9 @@
     .category-block:nth-child(2){animation-delay:.12s}
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
-    .cat-label { display:flex; align-items:center; gap:10px; padding:14px 0 10px; border-bottom:1px solid var(--border); }
-    .cat-name { font-size:13px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--sub); }
-    .cat-pill { font-size:11px; font-weight:500; color:var(--sub); background:var(--bg); border:1px solid var(--border); padding:2px 8px; border-radius:99px; }
+    .cat-label { display:flex; align-items:center; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
+    .cat-name { font-size:22px; font-weight:700; letter-spacing:-0.3px; text-transform:none; color:var(--text); }
+    .cat-pill { font-size:11px; font-weight:600; color:#1d6fba; background:#fff; border:1px solid #93c5fd; padding:3px 10px; border-radius:99px; }
 
     /* TABLES */
     table { width:100%; border-collapse:collapse; }
@@ -86,8 +86,8 @@
     /* ── STARTOVNÍ LISTINA ── */
     .startlist-section { margin:0 48px 60px; padding-top:32px; border-top:1px solid var(--border); }
 
-    .startlist-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-    .startlist-title { font-size:13px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--sub); }
+    .startlist-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; padding:18px 0 14px; border-bottom:2px solid var(--border); }
+    .startlist-title { font-size:22px; font-weight:700; letter-spacing:-0.3px; text-transform:none; color:var(--text); }
 
     /* Admin bar */
     .admin-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
@@ -174,9 +174,11 @@
 </div>
 
 <header class="header">
-    <h1><span>SDH Častohostice</h1>
-    <h1>Dětské závody o pohár strarostky obce</h1>
-    <h1>9.5.2026</h1>
+  <img
+    src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/ac6b2dbc8736544c56f3a10342e31ab50a65f9be/logo_soutez_castohostice_v2_1.jpg"
+    alt="Dětské závody SDH Častohostice"
+    style="max-height:180px; max-width:90%; width:auto; display:block; margin:0 auto;"
+  />
 </header>
 
 <div class="content" id="content"></div>
