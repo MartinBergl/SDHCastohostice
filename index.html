@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Startovní listina — Dětské závody Častohostice</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
       --red:      #d63b2a;
@@ -47,7 +48,7 @@
 
     /* TABLES */
     table { width:100%; border-collapse:collapse; }
-    thead th { font-size:11px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); padding:10px 14px; text-align:left; background:var(--surface); border-bottom:1px solid var(--border); }
+    thead th { font-size:11px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--text); padding:10px 14px; text-align:left; background:var(--surface); border-bottom:1px solid var(--border); }
     thead th.r { text-align:right; }
     thead th.c { text-align:center; }
 
@@ -215,7 +216,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -271,31 +272,57 @@ function saveDone() {
   set(ref(db, 'done'), [...doneSet]).catch(e => console.error('Firebase saveDone:', e));
 }
 
-// Realtime listener — aktualizuje UI při každé změně (i z jiného zařízení)
-onValue(ref(db, 'data'), snap => {
-  if (snap.exists()) {
-    data = snap.val();
-  } else {
-    // První spuštění — nahraj výchozí data
-    set(ref(db, 'data'), DEFAULT_DATA);
-    data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+// Jednorázové načtení dat při startu (bez trvalého připojení)
+async function loadFromFirebase() {
+  try {
+    const [dataSnap, doneSnap] = await Promise.all([
+      get(ref(db, 'data')),
+      get(ref(db, 'done'))
+    ]);
+    if (dataSnap.exists()) {
+      data = dataSnap.val();
+    } else {
+      // První spuštění — nahraj výchozí data
+      await set(ref(db, 'data'), DEFAULT_DATA);
+      data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+    doneSet = doneSnap.exists() ? new Set(doneSnap.val()) : new Set();
+  } catch (e) {
+    console.error('Firebase load error:', e);
   }
   renderResults();
   renderStartlist();
-});
-
-onValue(ref(db, 'done'), snap => {
-  doneSet = snap.exists() ? new Set(snap.val()) : new Set();
-  renderStartlist();
-});
+}
 
 // Sledovat stav přihlášení Firebase Auth
+// Admin dostane realtime listener aby viděl vlastní změny okamžitě
+let adminDataUnsub = null;
+let adminDoneUnsub = null;
+
 onAuthStateChanged(auth, user => {
   isAdmin = !!user;
-  if (!isAdmin) document.body.classList.remove('edit-mode');
+  if (!isAdmin) {
+    document.body.classList.remove('edit-mode');
+    // Odpojit realtime listenery při odhlášení
+    if (adminDataUnsub) { adminDataUnsub(); adminDataUnsub = null; }
+    if (adminDoneUnsub) { adminDoneUnsub(); adminDoneUnsub = null; }
+  } else {
+    // Admin dostane živé aktualizace
+    adminDataUnsub = onValue(ref(db, 'data'), snap => {
+      if (snap.exists()) data = snap.val();
+      renderResults();
+      renderStartlist();
+    });
+    adminDoneUnsub = onValue(ref(db, 'done'), snap => {
+      doneSet = snap.exists() ? new Set(snap.val()) : new Set();
+      renderStartlist();
+    });
+  }
   renderAdminBar();
   renderStartlist();
 });
+
+loadFromFirebase();
 
 // ── HELPER: parse time value ──────────────────────────
 function parseTimeVal(str) {
@@ -517,7 +544,7 @@ function renderAdminBar() {
         ${editMode ? '✏️ Editace ZAP' : '✏️ Editovat data'}
       </button>
       ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>` : ''}
-      <button class="admin-btn export" onclick="exportCSV()" title="Stáhnout výsledky jako CSV pro Excel">⬇ Export CSV</button>
+      <button class="admin-btn export" onclick="exportCSV()" title="Stáhnout výsledky jako Excel (.xlsx)">⬇ Export Excel</button>
       <button class="admin-btn logout" onclick="logout()">Odhlásit</button>
     `;
   } else {
@@ -532,84 +559,166 @@ function renderAdminBar() {
   }
 }
 
-// ── EXPORT CSV ────────────────────────────────────────
-function exportCSV() {
-  // Výsledková tabulka — obě kategorie seřazené podle času
-  const rows = [];
-  rows.push(['DĚTSKÉ ZÁVODY ČASTOHOSTICE — VÝSLEDKY']);
-  rows.push([]);
+// ── EXPORT XLSX ────────────────────────────────────────
+async function exportCSV() {
+  const XLSX = window.XLSX;
+  if (!XLSX) {
+    alert('Chyba: Knihovna pro export se nenačetla. Zkuste obnovit stránku.');
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+
+  // ── STYLY ────────────────────────────────────────────
+  const sBold   = { font:{ bold:true, sz:11, name:'Arial' } };
+  const sTitle  = { font:{ bold:true, sz:14, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'1D6FBA' } }, alignment:{ horizontal:'center' } };
+  const sCatHdr = { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'2D7DD2' } }, alignment:{ horizontal:'left' } };
+  const sColHdr = { font:{ bold:true, sz:10, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'4A90C4' } }, alignment:{ horizontal:'center' }, border:{ bottom:{ style:'thin', color:{ rgb:'FFFFFF' } } } };
+  const sRank1  = { font:{ bold:true, sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'FFF8DC' } } };
+  const sRank2  = { font:{ sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'F0F4F8' } } };
+  const sRank3  = { font:{ sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'FDF3EC' } } };
+  const sNormal = { font:{ sz:11, name:'Arial' } };
+  const sTime   = { font:{ sz:11, name:'Arial' }, alignment:{ horizontal:'right' } };
+  const sTimeB  = { font:{ bold:true, sz:11, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } };
+  const sCenter = { font:{ sz:11, name:'Arial' }, alignment:{ horizontal:'center' } };
+  const sDone   = { font:{ sz:11, name:'Arial', color:{ rgb:'16A34A' } }, fill:{ fgColor:{ rgb:'F0FDF4' } } };
+  const sEmpty  = { font:{ sz:11, name:'Arial', color:{ rgb:'AAAAAA' } }, alignment:{ horizontal:'right' } };
+
+  function cell(v, s) { return { v, s, t: typeof v === 'number' ? 'n' : 's' }; }
+  function timeCell(val, isBest) {
+    if (val === null || val === undefined) return cell('—', sEmpty);
+    if (val === 'DSQ') return cell('DSQ', { font:{ sz:11, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } });
+    if (val === 'NP')  return cell('NP',  { font:{ sz:11, name:'Arial', color:{ rgb:'B45309' } }, alignment:{ horizontal:'right' } });
+    return cell(parseFloat(val.toFixed(2)), isBest ? sTimeB : sTime);
+  }
+
+  // ══════════════════════════════════════════════════════
+  // LIST 1: VÝSLEDKY
+  // ══════════════════════════════════════════════════════
+  const wsData = [];
+  const merges1 = [];
+  let r1 = 0;
+
+  // Hlavní nadpis
+  wsData.push([cell('DĚTSKÉ ZÁVODY SDH ČASTOHOSTICE — VÝSLEDKY', sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle)]);
+  merges1.push({ s:{ r:r1, c:0 }, e:{ r:r1, c:5 } });
+  r1++;
+  wsData.push([cell('',sNormal)]);
+  r1++;
 
   CATEGORIES.forEach(cat => {
     let catRows = data.filter(d => d.kategorie === cat);
     if (!catRows.length) return;
-
     catRows = [...catRows].sort((a, b) => {
       const ta = bestTime(a), tb = bestTime(b);
       if (ta===null && tb===null) return 0;
-      if (ta===null) return 1;
-      if (tb===null) return -1;
+      if (ta===null) return 1; if (tb===null) return -1;
       return ta - tb;
     });
 
-    rows.push([`Kategorie: ${cat}`]);
-    rows.push(['Pořadí', 'St. č.', 'Tým', 'Kategorie', 'Levý terč (s)', 'Pravý terč (s)', 'Čas do pořadí (s)']);
+    // Název kategorie
+    wsData.push([cell(cat, sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr)]);
+    merges1.push({ s:{ r:r1, c:0 }, e:{ r:r1, c:5 } });
+    r1++;
+
+    // Záhlaví sloupců
+    wsData.push([
+      cell('Pořadí', sColHdr), cell('St. č.', sColHdr), cell('Tým', sColHdr),
+      cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Výsledný čas (s)', sColHdr)
+    ]);
+    r1++;
 
     catRows.forEach((d, i) => {
       const bt = bestTime(d);
-      rows.push([
-        i + 1,
-        d.start,
-        d.team,
-        d.kategorie,
-        formatCSVTime(d.cas1),
-        formatCSVTime(d.cas2),
-        bt !== null ? bt.toFixed(2) : '—'
+      const rowStyle = i===0 ? sRank1 : i===1 ? sRank2 : i===2 ? sRank3 : sNormal;
+      const rankTxt  = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
+      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
+      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
+      const bestCell = bt !== null
+        ? cell(parseFloat(bt.toFixed(2)), { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } })
+        : cell('—', sEmpty);
+      wsData.push([
+        cell(rankTxt, { ...rowStyle, alignment:{ horizontal:'center' } }),
+        cell(d.start, { ...rowStyle, alignment:{ horizontal:'center' } }),
+        cell(d.team,  rowStyle),
+        timeCell(d.cas1, c1worst),
+        timeCell(d.cas2, c2worst),
+        bestCell
       ]);
+      r1++;
     });
-
-    rows.push([]);
+    wsData.push([cell('',sNormal)]);
+    r1++;
   });
 
-  // Startovní listina
-  rows.push(['STARTOVNÍ LISTINA']);
-  rows.push(['St. č.', 'Tým', 'Kategorie', 'Levý terč (s)', 'Pravý terč (s)', 'Stav']);
+  const ws1 = XLSX.utils.aoa_to_sheet(wsData.map(row => row.map(c => c.v)));
+  // Přidat styly ručně
+  const range1 = XLSX.utils.decode_range(ws1['!ref']);
+  for (let R = range1.s.r; R <= range1.e.r; R++) {
+    for (let C = range1.s.c; C <= range1.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!ws1[addr]) ws1[addr] = { v: '', t: 's' };
+      if (wsData[R] && wsData[R][C]) ws1[addr].s = wsData[R][C].s;
+      if (wsData[R] && wsData[R][C] && typeof wsData[R][C].v === 'number') ws1[addr].t = 'n';
+    }
+  }
+  ws1['!merges'] = merges1;
+  ws1['!cols'] = [{ wch:8 }, { wch:7 }, { wch:28 }, { wch:14 }, { wch:14 }, { wch:16 }];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Výsledky');
+
+  // ══════════════════════════════════════════════════════
+  // LIST 2: STARTOVNÍ LISTINA
+  // ══════════════════════════════════════════════════════
+  const wsData2 = [];
+  const merges2 = [];
+  let r2 = 0;
+
+  // Hlavní nadpis
+  wsData2.push([cell('STARTOVNÍ LISTINA — SDH ČASTOHOSTICE', sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle)]);
+  merges2.push({ s:{ r:r2, c:0 }, e:{ r:r2, c:5 } });
+  r2++;
+  wsData2.push([cell('',sNormal)]);
+  r2++;
+
+  // Záhlaví
+  wsData2.push([
+    cell('St. č.', sColHdr), cell('Tým', sColHdr), cell('Kategorie', sColHdr),
+    cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Stav', sColHdr)
+  ]);
+  r2++;
+
   const sorted = [...data].sort((a,b) => a.start - b.start);
   sorted.forEach(d => {
-    rows.push([
-      d.start,
-      d.team,
-      d.kategorie,
-      formatCSVTime(d.cas1),
-      formatCSVTime(d.cas2),
-      doneSet.has(d.start) ? 'Odběhnuto' : ''
+    const isDone = doneSet.has(d.start);
+    const stavCell = isDone ? cell('✓ Odběhnuto', sDone) : cell('', sNormal);
+    wsData2.push([
+      cell(d.start,     { ...sCenter }),
+      cell(d.team,      isDone ? { font:{ sz:11, name:'Arial', color:{ rgb:'888888' } } } : sNormal),
+      cell(d.kategorie, sNormal),
+      timeCell(d.cas1, false),
+      timeCell(d.cas2, false),
+      stavCell
     ]);
+    r2++;
   });
 
-  // Sestavit CSV string s BOM pro správné kódování v Excelu
-  const BOM = '\uFEFF';
-  const csv = BOM + rows.map(r =>
-    r.map(cell => {
-      const s = String(cell ?? '');
-      return s.includes(',') || s.includes('"') || s.includes('\n')
-        ? `"${s.replace(/"/g, '""')}"` : s;
-    }).join(',')
-  ).join('\r\n');
+  const ws2 = XLSX.utils.aoa_to_sheet(wsData2.map(row => row.map(c => c.v)));
+  const range2 = XLSX.utils.decode_range(ws2['!ref']);
+  for (let R = range2.s.r; R <= range2.e.r; R++) {
+    for (let C = range2.s.c; C <= range2.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!ws2[addr]) ws2[addr] = { v: '', t: 's' };
+      if (wsData2[R] && wsData2[R][C]) ws2[addr].s = wsData2[R][C].s;
+      if (wsData2[R] && wsData2[R][C] && typeof wsData2[R][C].v === 'number') ws2[addr].t = 'n';
+    }
+  }
+  ws2['!merges'] = merges2;
+  ws2['!cols'] = [{ wch:7 }, { wch:28 }, { wch:16 }, { wch:14 }, { wch:14 }, { wch:14 }];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Startovní listina');
 
-  // Stáhnout soubor
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `vysledky-castohostice.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function formatCSVTime(val) {
-  if (val === null || val === undefined) return '—';
-  if (val === 'DSQ') return 'DSQ';
-  if (val === 'NP')  return 'NP';
-  return val.toFixed(2);
+  // ── Stáhnout soubor ───────────────────────────────────
+  XLSX.writeFile(wb, 'vysledky-castohostice.xlsx');
 }
 
 function toggleEditMode() {
