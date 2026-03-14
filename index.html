@@ -176,9 +176,9 @@
 
 <header class="header">
   <img
-    src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/ac6b2dbc8736544c56f3a10342e31ab50a65f9be/logo_soutez_castohostice_v2_1.jpg"
+    src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/57e158c77075191235ef49c414feb3db59b6bd1b/nadpis_logo.jpg"
     alt="Dětské závody SDH Častohostice"
-    style="max-height:180px; max-width:90%; width:auto; display:block; margin:0 auto;"
+    style="max-width:90%; width:auto; height:auto; display:block; margin:0 auto;"
   />
 </header>
 
@@ -196,6 +196,7 @@
         <th>Kategorie</th>
         <th class="r">Levý terč</th>
         <th class="r">Pravý terč</th>
+        <th class="c">Čas zápisu</th>
         <th class="c">Stav</th>
         <th id="actionColHead"></th>
       </tr>
@@ -208,6 +209,14 @@
   <span>Dětské závody SDH Častohostice — Výsledková listina</span>
   <span>Pořadatel: <strong>SDH Častohostice</strong></span>
 </footer>
+
+<div style="background:var(--surface); border-top:1px solid var(--border); padding:24px 48px; text-align:center;">
+  <img
+    src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/548ea93f7b395b8492924007413149a5987b5fc2/sponzori_logo.jpg"
+    alt="Sponzoři"
+    style="max-width:90%; width:auto; height:auto;"
+  />
+</div>
 
 <div class="admin-footer">
   <div id="adminBar" class="admin-bar"></div>
@@ -460,9 +469,14 @@ function renderStartlist() {
         ${editMode ? `<button class="del-btn" title="Odstranit tým" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       </td>` : '';
 
+    const tsVal = d.zapisCas
+      ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--sub)">${d.zapisCas}</span>`
+      : `<span style="font-size:12px;color:var(--muted)">—</span>`;
+
     return `<tr class="${rowClass}" data-start="${d.start}">
       <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
       ${teamCell}${catCell}${cas1Cell}${cas2Cell}
+      <td style="width:100px;text-align:center">${tsVal}</td>
       <td style="width:120px;text-align:center">${statusTag}</td>
       ${actionCell}
     </tr>`;
@@ -491,7 +505,19 @@ function saveTimeField(el) {
   const field = el.dataset.field;
   const val = parseTimeVal(el.value);
   const row = data.find(d => d.start === startNum);
-  if (row) { row[field] = val; saveData(); renderResults(); }
+  if (row) {
+    row[field] = val;
+    const bothEmpty = row.cas1 === null && row.cas2 === null;
+    if (bothEmpty) {
+      row.zapisCas = null;
+    } else if (val !== null) {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      row.zapisCas = `${hh}:${mm}`;
+    }
+    saveData(); renderResults(); renderStartlist();
+  }
 }
 
 function deleteTeam(startNum) {
