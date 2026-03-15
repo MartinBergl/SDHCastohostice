@@ -162,12 +162,45 @@
 
     .admin-footer { padding:16px 48px 24px; display:flex; justify-content:flex-end; background:var(--bg); }
 
+    /* Responzivní header */
+    @media (max-width:700px) {
+      .header { padding:20px 12px; }
+      .header img { max-width:100%; height:auto; }
+    }
+
+    /* Menší paddingy na mobilu */
     @media (max-width:800px) {
-      .header, .content, .startlist-section, footer, .edit-banner, .admin-footer { padding-left:16px; padding-right:16px; }
-      .startlist-section { margin-left:0; margin-right:0; }
-      .category-block, .startlist-section { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-      .category-block table, .startlist-table { min-width:540px; }
+      .header,
+      .content,
+      .startlist-section,
+      footer,
+      .edit-banner,
+      .admin-footer {
+        padding-left:12px;
+        padding-right:12px;
+      }
+      .startlist-section { margin:0; }
+      .category-block,
+      .startlist-section { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .category-block table,
+      .startlist-table { min-width:480px; }
       .admin-bar { justify-content:flex-end; }
+    }
+
+    /* Zmenšení tabulky na mobilu */
+    @media (max-width:700px) {
+      table { font-size:13px; }
+      td { padding:10px 8px; }
+      thead th { padding:8px; font-size:10px; }
+      .tname { font-size:13px; }
+      .best-col { font-size:13px; }
+    }
+
+    /* Admin panel na mobilu pod sebe */
+    @media (max-width:600px) {
+      .admin-bar { flex-direction:column; align-items:stretch; gap:6px; }
+      .admin-input { width:100%; }
+      .admin-btn { width:100%; }
     }
   </style>
 </head>
@@ -217,7 +250,7 @@
   <img
     src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/548ea93f7b395b8492924007413149a5987b5fc2/sponzori_logo.jpg"
     alt="Sponzoři"
-    style="max-width:90%; width:auto; height:auto;"
+    style="max-width:100%; height:auto;"
   />
 </div>
 
