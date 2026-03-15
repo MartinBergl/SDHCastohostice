@@ -253,18 +253,18 @@ const auth = getAuth(app);
 // ─────────────────────────────────────────────────────
 
 const DEFAULT_DATA = [
-  { start:1,  team:"SDH Starý Kolín A", org:"SDH Starý Kolín", kategorie:"Mladší děti", cas1:28.70, cas2:27.33 },
-  { start:2,  team:"SDH Nymburk",       org:"SDH Nymburk",     kategorie:"Mladší děti", cas1:26.10, cas2:25.88 },
-  { start:3,  team:"SDH Poděbrady",     org:"SDH Poděbrady",   kategorie:"Mladší děti", cas1:29.55, cas2:28.90 },
-  { start:4,  team:"SDH Kouřim A",      org:"SDH Kouřim",      kategorie:"Mladší děti", cas1:27.40, cas2:"DSQ" },
-  { start:5,  team:"SDH Kolín centrum", org:"SDH Kolín",       kategorie:"Mladší děti", cas1:30.22, cas2:29.77 },
-  { start:6,  team:"SDH Velký Osek",    org:"SDH Velký Osek",  kategorie:"Mladší děti", cas1:null,  cas2:31.40 },
-  { start:7,  team:"SDH Pečky",         org:"SDH Pečky",       kategorie:"Starší děti", cas1:18.45, cas2:17.82 },
-  { start:8,  team:"SDH Kouřim B",      org:"SDH Kouřim",      kategorie:"Starší děti", cas1:19.10, cas2:18.97 },
-  { start:9,  team:"SDH Starý Kolín B", org:"SDH Starý Kolín", kategorie:"Starší děti", cas1:20.33, cas2:"DSQ" },
-  { start:10, team:"SDH Nymburk B",     org:"SDH Nymburk",     kategorie:"Starší děti", cas1:17.55, cas2:17.91 },
-  { start:11, team:"SDH Kolín B",       org:"SDH Kolín",       kategorie:"Starší děti", cas1:21.08, cas2:20.44 },
-  { start:12, team:"SDH Poděbrady B",   org:"SDH Poděbrady",   kategorie:"Starší děti", cas1:null,  cas2:22.15 },
+  { start:1,  team:"SDH Starý Kolín A", org:"SDH Starý Kolín", kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:2,  team:"SDH Nymburk",       org:"SDH Nymburk",     kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:3,  team:"SDH Poděbrady",     org:"SDH Poděbrady",   kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:4,  team:"SDH Kouřim A",      org:"SDH Kouřim",      kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:5,  team:"SDH Kolín centrum", org:"SDH Kolín",       kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:6,  team:"SDH Velký Osek",    org:"SDH Velký Osek",  kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:7,  team:"SDH Pečky",         org:"SDH Pečky",       kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:8,  team:"SDH Kouřim B",      org:"SDH Kouřim",      kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:9,  team:"SDH Starý Kolín B", org:"SDH Starý Kolín", kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:10, team:"SDH Nymburk B",     org:"SDH Nymburk",     kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:11, team:"SDH Kolín B",       org:"SDH Kolín",       kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:12, team:"SDH Poděbrady B",   org:"SDH Poděbrady",   kategorie:"Starší děti", cas1:null, cas2:null },
 ];
 
 const CATEGORIES = ["Mladší děti","Starší děti"];
@@ -366,7 +366,12 @@ function renderResults() {
   el.innerHTML = '';
 
   CATEGORIES.forEach(cat => {
-    let rows = data.filter(d => d.kategorie === cat);
+    function hasTime(d) {
+      const c1 = d.cas1, c2 = d.cas2;
+      const valid = v => v !== null && v !== undefined && v !== '' && v !== false;
+      return valid(c1) || valid(c2);
+    }
+    let rows = data.filter(d => d.kategorie === cat && hasTime(d));
     if (!rows.length) return;
 
     rows = [...rows].sort((a, b) => {
