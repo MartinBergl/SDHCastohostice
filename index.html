@@ -160,47 +160,97 @@
     footer span { font-size:12px; color:var(--muted); }
     footer strong { color:var(--sub); font-weight:500; }
 
-    .admin-footer { padding:16px 48px 24px; display:flex; justify-content:flex-end; background:var(--bg); }
+    .admin-footer { padding:16px 48px 24px; display:flex; justify-content:center; background:var(--bg); }
 
-    /* Responzivní header */
-    @media (max-width:700px) {
-      .header { padding:20px 12px; }
-      .header img { max-width:100%; height:auto; }
+    /* ── RESULT CARDS (mobile výsledky) — default: skryté ── */
+    .result-cards { display:none; }
+
+    .result-card {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:10px;
+      margin-bottom:8px;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      transition:background .12s;
     }
+    .result-card.rank-1 { background:#fffbf0; border-color:#f0d060; }
+    .result-card.rank-2 { background:#f8f9fa; }
+    .result-card.rank-3 { background:#fdf7f2; border-color:#e8c8a8; }
 
-    /* Menší paddingy na mobilu */
-    @media (max-width:800px) {
-      .header,
-      .content,
-      .startlist-section,
-      footer,
-      .edit-banner,
-      .admin-footer {
-        padding-left:12px;
-        padding-right:12px;
+    .rc-rank { font-size:22px; min-width:36px; text-align:center; flex-shrink:0; }
+    .rc-rank.num { font-size:15px; font-weight:700; color:var(--sub); }
+
+    .rc-body { flex:1; min-width:0; }
+    .rc-team { font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .rc-snum { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:2px; }
+
+    .rc-times { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
+    .rc-best { font-family:'DM Mono',monospace; font-size:16px; font-weight:700; color:var(--red); }
+    .rc-best.empty { color:var(--muted); font-size:13px; font-weight:400; font-family:'DM Sans',sans-serif; }
+    .rc-sub-times { font-family:'DM Mono',monospace; font-size:11px; color:var(--sub); }
+    .rc-sub-times .worst { color:var(--muted); }
+
+    /* ── STARTLIST CARDS (mobile startovní listina) — default: skryté ── */
+    .startlist-cards { display:none; }
+
+    .sl-card {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:10px;
+      margin-bottom:8px;
+      padding:12px 14px;
+      transition:background .12s;
+    }
+    .sl-card.done { background:#e6f4e6; border-left:4px solid #4ade80; opacity:.85; }
+    .sl-card.done .sl-team { text-decoration:line-through; color:#6b7280; }
+    .sl-card.next { background:#fff8ec; border-left:4px solid var(--gold); }
+
+    .sl-card-top { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .sl-snum-big { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; min-width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); flex-shrink:0; }
+    .done .sl-snum-big { color:#16a34a; border-color:#86efac; background:#f0fdf4; }
+
+    .sl-team { font-size:15px; font-weight:600; color:var(--text); flex:1; min-width:0; }
+    .sl-status { flex-shrink:0; }
+
+    .sl-card-bottom { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .sl-cat { flex:1; }
+    .sl-times { display:flex; gap:12px; align-items:center; }
+    .sl-time-item { display:flex; flex-direction:column; align-items:flex-end; }
+    .sl-time-label { font-size:9px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); }
+    .sl-time-val { font-family:'DM Mono',monospace; font-size:13px; color:var(--sub); }
+    .sl-time-val.empty { color:var(--muted); font-size:11px; }
+
+    .sl-card-actions { margin-top:10px; padding-top:10px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .sl-zapis { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-left:auto; }
+
+    /* Edit mode inputs in cards */
+    .sl-card .editable { display:block; }
+    .sl-card .cat-select { font-size:11px; }
+    .sl-card .time-input { width:72px; font-size:12px; }
+
+    /* ── MOBILE LAYOUT (musí být NA KONCI, aby přebilo výchozí display:none) ── */
+    @media (max-width:700px) {
+      .header, .content, .startlist-section, footer, .edit-banner, .admin-footer {
+        padding-left:16px; padding-right:16px;
       }
-      .startlist-section { margin:0; }
-      .category-block,
-      .startlist-section { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-      .category-block table,
-      .startlist-table { min-width:480px; }
-      .admin-bar { justify-content:flex-end; }
-    }
-
-    /* Zmenšení tabulky na mobilu */
-    @media (max-width:700px) {
-      table { font-size:13px; }
-      td { padding:10px 8px; }
-      thead th { padding:8px; font-size:10px; }
-      .tname { font-size:13px; }
-      .best-col { font-size:13px; }
-    }
-
-    /* Admin panel na mobilu pod sebe */
-    @media (max-width:600px) {
-      .admin-bar { flex-direction:column; align-items:stretch; gap:6px; }
-      .admin-input { width:100%; }
-      .admin-btn { width:100%; }
+      .startlist-section { margin-left:0; margin-right:0; padding-top:24px; }
+      .header { padding:16px; }
+      .header img { max-width:100% !important; }
+      .cat-label { padding:14px 0 10px; }
+      .cat-name { font-size:18px; }
+      .results-table { display:none; }
+      .result-cards { display:block; }
+      .startlist-table { display:none; }
+      .startlist-cards { display:block; }
+      .startlist-title { font-size:18px; }
+      .startlist-header { padding:14px 0 10px; margin-bottom:12px; }
+      .admin-bar { justify-content:center; width:100%; }
+      .admin-input { width:140px; }
+      .edit-banner { padding:8px 16px; font-size:11px; }
+      footer { flex-direction:column; align-items:flex-start; gap:4px; padding:16px; }
     }
   </style>
 </head>
@@ -250,7 +300,7 @@
   <img
     src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/548ea93f7b395b8492924007413149a5987b5fc2/sponzori_logo.jpg"
     alt="Sponzoři"
-    style="max-width:100%; height:auto;"
+    style="max-width:90%; width:auto; height:auto;"
   />
 </div>
 
@@ -437,6 +487,39 @@ function renderResults() {
       </tr>`;
     }).join('');
 
+    // Mobile cards for results
+    function fmtTime(val) {
+      if (val===null||val===undefined) return '<span class="worst">—</span>';
+      if (val==='DSQ') return '<span class="dsq-tag">DSQ</span>';
+      if (val==='NP')  return '<span class="np-tag">NP</span>';
+      return val.toFixed(2)+'s';
+    }
+    const cardsHtml = rows.map((d, i) => {
+      const bt = bestTime(d);
+      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const isNum = !['🥇','🥈','🥉'].includes(rankTxt);
+      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
+      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
+      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
+      const bestStr = bt!==null ? `${bt.toFixed(2)}&thinsp;s` : null;
+      return `<div class="result-card ${rc}">
+        <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
+        <div class="rc-body">
+          <div class="rc-team">${d.team}</div>
+          <div class="rc-snum">St. č. ${d.start}</div>
+        </div>
+        <div class="rc-times">
+          ${bestStr ? `<div class="rc-best">${bestStr}</div>` : `<div class="rc-best empty">—</div>`}
+          <div class="rc-sub-times">
+            <span class="${c1worst?'':'worst'}">${fmtTime(d.cas1)}</span>
+            <span style="color:var(--muted)"> / </span>
+            <span class="${c2worst?'':'worst'}">${fmtTime(d.cas2)}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
     const n = rows.length;
     const block = document.createElement('div');
     block.className = 'category-block';
@@ -445,13 +528,14 @@ function renderResults() {
         <span class="cat-name">${cat}</span>
         <span class="cat-pill">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
       </div>
-      <table>
+      <table class="results-table">
         <thead><tr>
           <th class="c">Poř.</th><th class="c">St. č.</th><th>Tým</th>
           <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th>
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
-      </table>`;
+      </table>
+      <div class="result-cards">${cardsHtml}</div>`;
     el.appendChild(block);
   });
 }
@@ -522,6 +606,76 @@ function renderStartlist() {
       ${actionCell}
     </tr>`;
   }).join('');
+
+  // ── Mobile cards for startlist ──
+  const mobileCards = sorted.map((d, i) => {
+    const isDone = doneSet.has(d.start);
+    const isNext = !isDone && sorted.findIndex(x => !doneSet.has(x.start)) === i;
+    const rowClass = isDone ? 'done' : isNext ? 'next' : '';
+    const editMode = isAdmin && document.body.classList.contains('edit-mode');
+
+    const statusTag = isDone
+      ? `<span class="done-tag">✓ Odběhnuto</span>`
+      : isNext ? `<span class="next-tag">▶ Na řadě</span>` : '';
+
+    const teamHtml = editMode
+      ? `<div class="tname editable sl-team" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${d.team}</div>`
+      : `<div class="sl-team">${d.team}</div>`;
+
+    const catHtml = editMode
+      ? `<select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">${CATEGORIES.map(c=>`<option value="${c}"${c===d.kategorie?' selected':''}>${c}</option>`).join('')}</select>`
+      : `<span class="cbadge ${BADGE[d.kategorie]}">${d.kategorie}</span>`;
+
+    const c1Html = editMode
+      ? `<input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" />`
+      : `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''}">${timeDisplay(d.cas1)}</span>`;
+
+    const c2Html = editMode
+      ? `<input class="time-input" value="${timeDisplay(d.cas2).replace(' s','')}" data-field="cas2" data-start="${d.start}" onblur="saveTimeField(this)" />`
+      : `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''}">${timeDisplay(d.cas2)}</span>`;
+
+    const actionsHtml = isAdmin ? `<div class="sl-card-actions">
+      ${editMode ? `
+        <button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>
+      ` : ''}
+      <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
+      ${editMode ? `<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>` : ''}
+      ${d.zapisCas ? `<span class="sl-zapis">${d.zapisCas}</span>` : ''}
+    </div>` : '';
+
+    return `<div class="sl-card ${rowClass}" data-start="${d.start}">
+      <div class="sl-card-top">
+        <span class="sl-snum-big">${d.start}</span>
+        ${teamHtml}
+        <div class="sl-status">${statusTag}</div>
+      </div>
+      <div class="sl-card-bottom">
+        <div class="sl-cat">${catHtml}</div>
+        <div class="sl-times">
+          <div class="sl-time-item">
+            <span class="sl-time-label">Levý</span>
+            ${c1Html}
+          </div>
+          <div class="sl-time-item">
+            <span class="sl-time-label">Pravý</span>
+            ${c2Html}
+          </div>
+        </div>
+      </div>
+      ${actionsHtml}
+    </div>`;
+  }).join('');
+
+  // Render or create the mobile cards container
+  let cardsContainer = document.getElementById('startlistCardsContainer');
+  if (!cardsContainer) {
+    cardsContainer = document.createElement('div');
+    cardsContainer.id = 'startlistCardsContainer';
+    cardsContainer.className = 'startlist-cards';
+    document.querySelector('.startlist-table').after(cardsContainer);
+  }
+  cardsContainer.innerHTML = mobileCards;
 }
 
 // ── EDIT FUNCTIONS ────────────────────────────────────
@@ -616,9 +770,9 @@ function renderAdminBar() {
     `;
   } else {
     bar.innerHTML = `
-      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email admina…"
+      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email"
         onkeydown="if(event.key==='Enter') document.getElementById('adminPwd').focus()" />
-      <input type="password" id="adminPwd"   class="admin-input" placeholder="Heslo…"
+      <input type="password" id="adminPwd"   class="admin-input" placeholder="Heslo"
         onkeydown="if(event.key==='Enter') login()" />
       <button class="admin-btn" onclick="login()">Přihlásit</button>
       <span class="admin-hint" id="adminHint"></span>
