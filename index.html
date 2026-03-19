@@ -28,8 +28,6 @@
 
     /* HEADER */
     .header { background:var(--surface); border-bottom:1px solid var(--border); padding:32px 48px; text-align:center; position:relative; }
-    .header-logo { position:absolute; left:32px; top:50%; transform:translateY(-50%); height:130px; width:auto; }
-    .header-logo-right { position:absolute; right:32px; top:50%; transform:translateY(-50%); height:110px; width:auto; }
     .header h1 { font-size:clamp(26px,4vw,42px); font-weight:600; letter-spacing:-0.5px; line-height:1.1; }
     .header h1 span { color:var(--red); }
     .header h1 small { display:block; font-size:0.45em; font-weight:400; color:var(--sub); letter-spacing:1px; margin-top:4px; }
@@ -71,9 +69,6 @@
 
     .snum { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); }
 
-    .tname { font-size:14px; font-weight:500; color:var(--text); }
-    .torg  { font-size:12px; color:var(--sub); margin-top:1px; }
-
     .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
     .tcell.best  { color:var(--text); font-weight:500; }
     .tcell.empty { color:var(--muted); font-size:12px; }
@@ -111,7 +106,6 @@
     .startlist-table tbody tr:hover { background:var(--bg); }
     .startlist-table tbody tr.done { background:#e6f4e6; opacity:.8; border-left:4px solid #4ade80; }
     .startlist-table tbody tr.done .tname { text-decoration:line-through; color:#6b7280; }
-    .startlist-table tbody tr.done .torg { color:var(--muted); }
     .startlist-table tbody tr.done .snum { color:#16a34a; border-color:#86efac; background:#f0fdf4; }
     .startlist-table tbody tr.done:hover { background:#d4edda; opacity:.9; }
     .startlist-table tbody tr.next { background:#fff8ec; border-left:3px solid var(--gold); }
@@ -231,6 +225,105 @@
     .sl-card .cat-select { font-size:11px; }
     .sl-card .time-input { width:72px; font-size:12px; }
 
+    /* ── RYCHLÉ ZADÁNÍ ČASU ── */
+    .quick-time-popup {
+      position: fixed;
+      z-index: 1000;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.14);
+      padding: 14px 16px;
+      min-width: 220px;
+      animation: popIn .15s ease;
+    }
+    @keyframes popIn { from { opacity:0; transform:scale(.95); } to { opacity:1; transform:scale(1); } }
+    .qtp-title { font-size:12px; font-weight:600; color:var(--sub); letter-spacing:.5px; margin-bottom:10px; }
+    .qtp-team  { font-size:14px; font-weight:600; color:var(--text); margin-bottom:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .qtp-row   { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .qtp-label { font-size:11px; font-weight:600; color:var(--sub); width:80px; flex-shrink:0; }
+    .qtp-input { font-family:'DM Mono',monospace; font-size:14px; background:var(--edit-bg); border:1px solid var(--edit-border); border-radius:5px; padding:5px 8px; width:100px; outline:none; color:var(--text); }
+    .qtp-input:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(240,192,64,.2); }
+    .qtp-btns  { display:flex; gap:6px; margin-top:12px; }
+    .qtp-save  { flex:1; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; background:var(--red); color:#fff; border:none; border-radius:6px; padding:7px; cursor:pointer; transition:background .15s; }
+    .qtp-save:hover { background:#b83020; }
+    .qtp-cancel { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; background:var(--bg); color:var(--sub); border:1px solid var(--border); border-radius:6px; padding:7px 12px; cursor:pointer; }
+    .qtp-cancel:hover { background:var(--border); }
+    .qtp-overlay { position:fixed; inset:0; z-index:999; }
+
+    /* Zvýraznění klikatelných časových buněk pro admina */
+    body.admin-mode .tcell.clickable {
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background .12s;
+    }
+    body.admin-mode .tcell.clickable:hover { background: rgba(240,192,64,.18); }
+
+    /* ── HISTORIE ZMĚN ── */
+    .history-panel {
+      margin: 0 48px 32px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      user-select: none;
+    }
+    .history-header:hover { background: var(--border); }
+    .history-title { font-size:13px; font-weight:600; color:var(--sub); }
+    .history-toggle { font-size:12px; color:var(--muted); }
+    .history-body { display:none; max-height:260px; overflow-y:auto; }
+    .history-body.open { display:block; }
+    .history-empty { font-size:13px; color:var(--muted); padding:16px; text-align:center; }
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap:10px;
+      padding: 9px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .history-item:last-child { border-bottom:none; }
+    .hi-time { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
+    .hi-text { flex:1; color:var(--text); }
+    .hi-text strong { font-weight:600; }
+    .hi-undo { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; border-radius:4px; padding:2px 8px; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+    .hi-undo:hover { background:#fde8e8; }
+
+    @media (max-width:700px) {
+      .history-panel { margin-left:0; margin-right:0; border-radius:0; border-left:none; border-right:none; }
+    }
+
+    /* ── DRAG & DROP ── */
+    .drag-handle {
+      cursor: grab;
+      color: var(--muted);
+      font-size: 16px;
+      padding: 0 6px;
+      user-select: none;
+      touch-action: none;
+      line-height: 1;
+    }
+    .drag-handle:active { cursor: grabbing; }
+    tr.dragging, .sl-card.dragging {
+      opacity: 0.4;
+      background: var(--edit-bg) !important;
+    }
+    tr.drag-over {
+      border-top: 3px solid var(--gold) !important;
+    }
+    .sl-card.drag-over {
+      border-top: 3px solid var(--gold) !important;
+    }
+
     /* ── MOBILE LAYOUT (musí být NA KONCI, aby přebilo výchozí display:none) ── */
     @media (max-width:700px) {
       .header, .content, .startlist-section, footer, .edit-banner, .admin-footer {
@@ -275,19 +368,10 @@
   <div class="startlist-header">
     <span class="startlist-title">Startovní listina</span>
   </div>
-  <table class="startlist-table">
-    <colgroup>
-      <col style="width:55px">
-      <col>
-      <col style="width:110px">
-      <col style="width:145px">
-      <col style="width:145px">
-      <col style="width:90px">
-      <col style="width:135px">
-      <col style="width:70px">
-    </colgroup>
+  <table class="startlist-table" id="startlistTable">
     <thead>
       <tr>
+        <th class="c" id="dragColHead" style="display:none"></th>
         <th class="c">St. č.</th>
         <th>Tým</th>
         <th>Kategorie</th>
@@ -300,6 +384,19 @@
     </thead>
     <tbody id="startlistBody"></tbody>
   </table>
+</div>
+
+<div class="history-panel" id="historyPanel" style="display:none">
+  <div class="history-header" onclick="toggleHistoryBody()">
+    <span class="history-title">📋 Historie změn</span>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="hi-undo" onclick="event.stopPropagation();clearHistory()" style="font-size:11px">🗑 Vymazat log</button>
+      <span class="history-toggle" id="historyToggleIcon">▼ zobrazit</span>
+    </div>
+  </div>
+  <div class="history-body" id="historyBody">
+    <div class="history-empty">Zatím žádné změny.</div>
+  </div>
 </div>
 
 <footer>
@@ -370,7 +467,6 @@ const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st" };
 let isAdmin = false;
 let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet = new Set();
-let _fbReady = false;
 
 function saveData() {
   set(ref(db, 'data'), data).catch(e => console.error('Firebase saveData:', e));
@@ -380,26 +476,36 @@ function saveDone() {
   set(ref(db, 'done'), [...doneSet]).catch(e => console.error('Firebase saveDone:', e));
 }
 
+function saveHistory() {
+  set(ref(db, 'history'), changeHistory.slice(0, 10)).catch(e => console.error('Firebase saveHistory:', e));
+}
+
 // Jednorázové načtení dat při startu (bez trvalého připojení)
 async function loadFromFirebase() {
   try {
-    const [dataSnap, doneSnap] = await Promise.all([
+    const [dataSnap, doneSnap, histSnap] = await Promise.all([
       get(ref(db, 'data')),
-      get(ref(db, 'done'))
+      get(ref(db, 'done')),
+      get(ref(db, 'history'))
     ]);
     if (dataSnap.exists()) {
       data = dataSnap.val();
     } else {
-      // První spuštění — nahraj výchozí data
       await set(ref(db, 'data'), DEFAULT_DATA);
       data = JSON.parse(JSON.stringify(DEFAULT_DATA));
     }
     doneSet = doneSnap.exists() ? new Set(doneSnap.val()) : new Set();
+    if (histSnap.exists()) {
+      const loaded = histSnap.val();
+      changeHistory.length = 0;
+      changeHistory.push(...loaded);
+    }
   } catch (e) {
     console.error('Firebase load error:', e);
   }
   renderResults();
   renderStartlist();
+  renderHistory();
 }
 
 // Sledovat stav přihlášení Firebase Auth
@@ -411,11 +517,11 @@ onAuthStateChanged(auth, user => {
   isAdmin = !!user;
   if (!isAdmin) {
     document.body.classList.remove('edit-mode');
-    // Odpojit realtime listenery při odhlášení
+    document.body.classList.remove('admin-mode');
     if (adminDataUnsub) { adminDataUnsub(); adminDataUnsub = null; }
     if (adminDoneUnsub) { adminDoneUnsub(); adminDoneUnsub = null; }
   } else {
-    // Admin dostane živé aktualizace
+    document.body.classList.add('admin-mode');
     adminDataUnsub = onValue(ref(db, 'data'), snap => {
       if (snap.exists()) data = snap.val();
       renderResults();
@@ -427,7 +533,12 @@ onAuthStateChanged(auth, user => {
     });
   }
   renderAdminBar();
-  renderStartlist();
+  // renderStartlist a renderHistory zavolají onValue listenery výše (pro admina)
+  // nebo loadFromFirebase (pro veřejnost) — zde stačí jen renderHistory pro stav odhlášení
+  if (!isAdmin) {
+    renderStartlist();
+    renderHistory();
+  }
 });
 
 loadFromFirebase();
@@ -572,9 +683,38 @@ function timeDisplay(val) {
 function renderStartlist() {
   const tbody = document.getElementById('startlistBody');
   const sorted = [...data].sort((a,b) => a.start - b.start);
+  const editMode = isAdmin && document.body.classList.contains('edit-mode');
 
+  // Aktualizuj colgroup podle edit módu
+  const table = document.getElementById('startlistTable');
+  let cg = table.querySelector('colgroup');
+  if (!cg) { cg = document.createElement('colgroup'); table.prepend(cg); }
+  if (editMode) {
+    cg.innerHTML = `
+      <col style="width:28px">
+      <col style="width:55px">
+      <col>
+      <col style="width:110px">
+      <col style="width:145px">
+      <col style="width:145px">
+      <col style="width:90px">
+      <col style="width:135px">
+      <col style="width:70px">`;
+  } else {
+    cg.innerHTML = `
+      <col style="width:55px">
+      <col>
+      <col style="width:110px">
+      <col style="width:145px">
+      <col style="width:145px">
+      <col style="width:90px">
+      <col style="width:135px">
+      <col style="width:70px">`;
+  }
   // Update action column header
   document.getElementById('actionColHead').textContent = isAdmin ? 'Akce' : '';
+  // Zobrazit/skrýt sloupec drag handle v hlavičce
+  document.getElementById('dragColHead').style.display = editMode ? '' : 'none';
 
   tbody.innerHTML = sorted.map((d, i) => {
     const isDone = doneSet.has(d.start);
@@ -586,8 +726,6 @@ function renderStartlist() {
       : isNext ? `<span class="next-tag">▶ Na řadě</span>` : '';
 
     // Editable cells (only in admin + edit mode)
-    const editMode = isAdmin && document.body.classList.contains('edit-mode');
-
     const teamCell = editMode
       ? `<td><div class="tname editable" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${d.team}</div></td>`
       : `<td><div class="tname">${d.team}</div></td>`;
@@ -600,11 +738,15 @@ function renderStartlist() {
 
     const cas1Cell = editMode
       ? `<td style="text-align:right"><input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" /></td>`
-      : `<td class="tcell">${timeDisplay(d.cas1)}</td>`;
+      : isAdmin
+        ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas1)}</td>`
+        : `<td class="tcell">${timeDisplay(d.cas1)}</td>`;
 
     const cas2Cell = editMode
       ? `<td style="text-align:right"><input class="time-input" value="${timeDisplay(d.cas2).replace(' s','')}" data-field="cas2" data-start="${d.start}" onblur="saveTimeField(this)" /></td>`
-      : `<td class="tcell">${timeDisplay(d.cas2)}</td>`;
+      : isAdmin
+        ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</td>`
+        : `<td class="tcell">${timeDisplay(d.cas2)}</td>`;
 
     const actionCell = isAdmin ? `<td style="text-align:right;white-space:nowrap">
         ${editMode ? `
@@ -619,7 +761,12 @@ function renderStartlist() {
       ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--sub)">${d.zapisCas}</span>`
       : `<span style="font-size:12px;color:var(--muted)">—</span>`;
 
-    return `<tr class="${rowClass}" data-start="${d.start}">
+    const dragHandle = editMode
+      ? `<td style="width:28px;text-align:center;padding:0 4px"><span class="drag-handle" title="Přetáhnout">⠿</span></td>`
+      : '';
+
+    return `<tr class="${rowClass}" data-start="${d.start}" ${editMode ? 'draggable="true"' : ''}>
+      ${dragHandle}
       <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
       ${teamCell}${catCell}${cas1Cell}${cas2Cell}
       <td style="width:100px;text-align:center">${tsVal}</td>
@@ -649,11 +796,15 @@ function renderStartlist() {
 
     const c1Html = editMode
       ? `<input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" />`
-      : `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''}">${timeDisplay(d.cas1)}</span>`;
+      : isAdmin
+        ? `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas1)}</span>`
+        : `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''}">${timeDisplay(d.cas1)}</span>`;
 
     const c2Html = editMode
       ? `<input class="time-input" value="${timeDisplay(d.cas2).replace(' s','')}" data-field="cas2" data-start="${d.start}" onblur="saveTimeField(this)" />`
-      : `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''}">${timeDisplay(d.cas2)}</span>`;
+      : isAdmin
+        ? `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</span>`
+        : `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''}">${timeDisplay(d.cas2)}</span>`;
 
     const actionsHtml = isAdmin ? `<div class="sl-card-actions">
       ${editMode ? `
@@ -665,8 +816,9 @@ function renderStartlist() {
       ${d.zapisCas ? `<span class="sl-zapis">${d.zapisCas}</span>` : ''}
     </div>` : '';
 
-    return `<div class="sl-card ${rowClass}" data-start="${d.start}">
+    return `<div class="sl-card ${rowClass}" data-start="${d.start}" ${editMode ? 'draggable="true"' : ''}>
       <div class="sl-card-top">
+        ${editMode ? `<span class="drag-handle" title="Přetáhnout">⠿</span>` : ''}
         <span class="sl-snum-big">${d.start}</span>
         ${teamHtml}
         <div class="sl-status">${statusTag}</div>
@@ -697,9 +849,235 @@ function renderStartlist() {
     document.querySelector('.startlist-table').after(cardsContainer);
   }
   cardsContainer.innerHTML = mobileCards;
+
+  // Inicializuj drag & drop pokud je admin v edit módu
+  if (isAdmin && document.body.classList.contains('edit-mode')) {
+    initDragDrop();
+  }
 }
 
-// ── EDIT FUNCTIONS ────────────────────────────────────
+// ── DRAG & DROP ───────────────────────────────────────
+let dragSrcStart = null;
+
+function initDragDrop() {
+  // ── Desktop drag (table rows) ──
+  const tbody = document.getElementById('startlistBody');
+  tbody.querySelectorAll('tr[draggable]').forEach(row => {
+    row.addEventListener('dragstart', e => {
+      dragSrcStart = parseInt(row.dataset.start);
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      const targetStart = parseInt(row.dataset.start);
+      if (dragSrcStart !== null && dragSrcStart !== targetStart) {
+        swapByPosition(dragSrcStart, targetStart);
+      }
+    });
+  });
+
+  // ── Touch drag (mobile cards) ──
+  const container = document.getElementById('startlistCardsContainer');
+  if (!container) return;
+  let touchDragEl = null, touchClone = null, touchOffsetY = 0;
+
+  container.querySelectorAll('.sl-card[draggable] .drag-handle').forEach(handle => {
+    handle.addEventListener('touchstart', e => {
+      const card = handle.closest('.sl-card');
+      dragSrcStart = parseInt(card.dataset.start);
+      touchDragEl = card;
+      const touch = e.touches[0];
+      const rect = card.getBoundingClientRect();
+      touchOffsetY = touch.clientY - rect.top;
+
+      touchClone = card.cloneNode(true);
+      touchClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;opacity:0.85;z-index:9999;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:10px;`;
+      document.body.appendChild(touchClone);
+      card.classList.add('dragging');
+      e.preventDefault();
+    }, { passive: false });
+  });
+
+  document.addEventListener('touchmove', e => {
+    if (!touchClone) return;
+    const touch = e.touches[0];
+    touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+    container.querySelectorAll('.sl-card').forEach(c => c.classList.remove('drag-over'));
+    const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.sl-card');
+    if (target && target !== touchDragEl) target.classList.add('drag-over');
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('touchend', e => {
+    if (!touchClone) return;
+    const touch = e.changedTouches[0];
+    const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.sl-card');
+    const targetStart = target ? parseInt(target.dataset.start) : null;
+
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    if (touchDragEl) { touchDragEl.classList.remove('dragging'); touchDragEl = null; }
+    container.querySelectorAll('.sl-card').forEach(c => c.classList.remove('drag-over'));
+
+    if (dragSrcStart !== null && targetStart !== null && dragSrcStart !== targetStart) {
+      swapByPosition(dragSrcStart, targetStart);
+    }
+    dragSrcStart = null;
+  });
+}
+
+function swapByPosition(srcStart, tgtStart) {
+  const sorted = [...data].sort((a, b) => a.start - b.start);
+  const srcIdx = sorted.findIndex(d => d.start === srcStart);
+  const tgtIdx = sorted.findIndex(d => d.start === tgtStart);
+  if (srcIdx === -1 || tgtIdx === -1) return;
+
+  // Přesuň src na pozici tgt — posuň ostatní
+  const moved = sorted.splice(srcIdx, 1)[0];
+  sorted.splice(tgtIdx, 0, moved);
+
+  // Přepiš start čísla podle nového pořadí
+  sorted.forEach((d, i) => { d.start = i + 1; });
+  saveData(); renderResults(); renderStartlist();
+}
+
+// ── QUICK TIME ENTRY ──────────────────────────────────
+function openQuickTime(startNum) {
+  if (!isAdmin) return;
+  const row = data.find(d => d.start === startNum);
+  if (!row) return;
+
+  document.getElementById('qtpOverlay')?.remove();
+  document.getElementById('qtpPopup')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'qtpOverlay';
+  overlay.className = 'qtp-overlay';
+  overlay.onclick = closeQuickTime;
+  document.body.appendChild(overlay);
+
+  const popup = document.createElement('div');
+  popup.id = 'qtpPopup';
+  popup.className = 'quick-time-popup';
+  popup.innerHTML = `
+    <div class="qtp-title">ZADÁNÍ ČASU — St. č. ${row.start}</div>
+    <div class="qtp-team">${row.team}</div>
+    <div class="qtp-row">
+      <span class="qtp-label">Levý terč</span>
+      <input class="qtp-input" id="qtpCas1" placeholder="např. 12.34"
+        value="${row.cas1 !== null && row.cas1 !== undefined ? (typeof row.cas1 === 'number' ? row.cas1.toFixed(2) : row.cas1) : ''}" />
+    </div>
+    <div class="qtp-row">
+      <span class="qtp-label">Pravý terč</span>
+      <input class="qtp-input" id="qtpCas2" placeholder="např. 11.85"
+        value="${row.cas2 !== null && row.cas2 !== undefined ? (typeof row.cas2 === 'number' ? row.cas2.toFixed(2) : row.cas2) : ''}" />
+    </div>
+    <div class="qtp-btns">
+      <button class="qtp-cancel" onclick="closeQuickTime()">Zrušit</button>
+      <button class="qtp-save" onclick="saveQuickTime(${startNum})">Uložit</button>
+    </div>`;
+  popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)';
+  document.body.appendChild(popup);
+  document.getElementById('qtpCas1').focus();
+  document.getElementById('qtpCas1').onkeydown = e => { if (e.key === 'Enter') document.getElementById('qtpCas2').focus(); };
+  document.getElementById('qtpCas2').onkeydown = e => { if (e.key === 'Enter') saveQuickTime(startNum); };
+}
+
+function closeQuickTime() {
+  document.getElementById('qtpOverlay')?.remove();
+  document.getElementById('qtpPopup')?.remove();
+}
+
+function saveQuickTime(startNum) {
+  const row = data.find(d => d.start === startNum);
+  if (!row) return;
+  const v1 = parseTimeVal(document.getElementById('qtpCas1').value);
+  const v2 = parseTimeVal(document.getElementById('qtpCas2').value);
+  const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
+  addHistory(row, prev, v1, v2);
+  row.cas1 = v1;
+  row.cas2 = v2;
+  const bothEmpty = row.cas1 === null && row.cas2 === null;
+  if (bothEmpty) {
+    row.zapisCas = null;
+  } else {
+    const now = new Date();
+    row.zapisCas = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  }
+  closeQuickTime();
+  saveData(); renderResults(); renderStartlist();
+}
+
+// ── HISTORIE ZMĚN ─────────────────────────────────────
+const changeHistory = [];
+
+function addHistory(row, prev, newCas1, newCas2) {
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  changeHistory.unshift({ ts, team: row.team, start: row.start, prev, next: { cas1: newCas1, cas2: newCas2 } });
+  if (changeHistory.length > 10) changeHistory.length = 10;
+  saveHistory();
+  renderHistory();
+}
+
+function renderHistory() {
+  const panel = document.getElementById('historyPanel');
+  const body  = document.getElementById('historyBody');
+  if (!panel) return;
+  panel.style.display = isAdmin ? '' : 'none';
+  if (!isAdmin) return;
+
+  const items = changeHistory.map((h, idx) => {
+    const parts = [];
+    if (h.prev.cas1 !== h.next.cas1) parts.push(`Levý: ${timeDisplay(h.prev.cas1)} → ${timeDisplay(h.next.cas1)}`);
+    if (h.prev.cas2 !== h.next.cas2) parts.push(`Pravý: ${timeDisplay(h.prev.cas2)} → ${timeDisplay(h.next.cas2)}`);
+    return `<div class="history-item">
+      <span class="hi-time">${h.ts}</span>
+      <span class="hi-text"><strong>${h.team}</strong> (St.č.${h.start}): ${parts.join(', ')}</span>
+      <button class="hi-undo" onclick="undoHistory(${idx})">↩ Vrátit</button>
+    </div>`;
+  }).join('');
+
+  body.innerHTML = items || '<div class="history-empty">Zatím žádné změny.</div>';
+}
+
+function undoHistory(idx) {
+  const h = changeHistory[idx];
+  if (!h) return;
+  const row = data.find(d => d.start === h.start);
+  if (!row) return;
+  row.cas1 = h.prev.cas1;
+  row.cas2 = h.prev.cas2;
+  row.zapisCas = h.prev.zapisCas;
+  changeHistory.splice(idx, 1);
+  saveData(); saveHistory(); renderResults(); renderStartlist(); renderHistory();
+}
+
+function clearHistory() {
+  if (!changeHistory.length) return;
+  if (!confirm('Opravdu vymazat celou historii změn?')) return;
+  changeHistory.length = 0;
+  saveHistory();
+  renderHistory();
+}
+
+function toggleHistoryBody() {
+  const body = document.getElementById('historyBody');
+  const icon = document.getElementById('historyToggleIcon');
+  body.classList.toggle('open');
+  icon.textContent = body.classList.contains('open') ? '▲ skrýt' : '▼ zobrazit';
+}
+
 function saveField(el) {
   const startNum = parseInt(el.dataset.start);
   const field = el.dataset.field;
@@ -930,8 +1308,8 @@ async function exportCSV() {
   ]);
   r2++;
 
-  const sorted = [...data].sort((a,b) => a.start - b.start);
-  sorted.forEach(d => {
+  const sortedList = [...data].sort((a,b) => a.start - b.start);
+  sortedList.forEach(d => {
     const isDone = doneSet.has(d.start);
     const stavCell = isDone ? cell('✓ Odběhnuto', sDone) : cell('', sNormal);
     wsData2.push([
@@ -993,9 +1371,9 @@ function logout() {
 }
 
 // ── INIT ─────────────────────────────────────────────
-renderResults();
-renderAdminBar();
-renderStartlist();
+// Poznámka: renderResults/renderStartlist/renderHistory jsou volány
+// uvnitř loadFromFirebase() a onAuthStateChanged() — zde nejsou potřeba.
+renderAdminBar(); // Admin bar se vykreslí ihned (přihlašovací formulář)
 
 // Zpřístupnit funkce globálně (nutné kvůli type="module")
 window.toggleDone    = toggleDone;
@@ -1009,6 +1387,12 @@ window.toggleEditMode = toggleEditMode;
 window.login         = login;
 window.logout        = logout;
 window.exportCSV     = exportCSV;
+window.openQuickTime = openQuickTime;
+window.closeQuickTime = closeQuickTime;
+window.saveQuickTime = saveQuickTime;
+window.undoHistory   = undoHistory;
+window.clearHistory  = clearHistory;
+window.toggleHistoryBody = toggleHistoryBody;
 </script>
 </body>
 </html>
