@@ -28,6 +28,8 @@
 
     /* HEADER */
     .header { background:var(--surface); border-bottom:1px solid var(--border); padding:32px 48px; text-align:center; position:relative; }
+    .header-logo { position:absolute; left:32px; top:50%; transform:translateY(-50%); height:130px; width:auto; }
+    .header-logo-right { position:absolute; right:32px; top:50%; transform:translateY(-50%); height:110px; width:auto; }
     .header h1 { font-size:clamp(26px,4vw,42px); font-weight:600; letter-spacing:-0.5px; line-height:1.1; }
     .header h1 span { color:var(--red); }
     .header h1 small { display:block; font-size:0.45em; font-weight:400; color:var(--sub); letter-spacing:1px; margin-top:4px; }
@@ -69,6 +71,9 @@
 
     .snum { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); }
 
+    .tname { font-size:14px; font-weight:500; color:var(--text); }
+    .torg  { font-size:12px; color:var(--sub); margin-top:1px; }
+
     .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
     .tcell.best  { color:var(--text); font-weight:500; }
     .tcell.empty { color:var(--muted); font-size:12px; }
@@ -106,6 +111,7 @@
     .startlist-table tbody tr:hover { background:var(--bg); }
     .startlist-table tbody tr.done { background:#e6f4e6; opacity:.8; border-left:4px solid #4ade80; }
     .startlist-table tbody tr.done .tname { text-decoration:line-through; color:#6b7280; }
+    .startlist-table tbody tr.done .torg { color:var(--muted); }
     .startlist-table tbody tr.done .snum { color:#16a34a; border-color:#86efac; background:#f0fdf4; }
     .startlist-table tbody tr.done:hover { background:#d4edda; opacity:.9; }
     .startlist-table tbody tr.next { background:#fff8ec; border-left:3px solid var(--gold); }
@@ -371,7 +377,6 @@
   <table class="startlist-table" id="startlistTable">
     <thead>
       <tr>
-        <th class="c" id="dragColHead" style="display:none"></th>
         <th class="c">St. č.</th>
         <th>Tým</th>
         <th>Kategorie</th>
@@ -395,7 +400,7 @@
     </div>
   </div>
   <div class="history-body" id="historyBody">
-    <div class="history-empty">Zatím žádné změny.</div>
+    <div class="history-empty" id="historyEmpty">Zatím žádné změny.</div>
   </div>
 </div>
 
@@ -467,6 +472,7 @@ const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st" };
 let isAdmin = false;
 let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet = new Set();
+let _fbReady = false;
 
 function saveData() {
   set(ref(db, 'data'), data).catch(e => console.error('Firebase saveData:', e));
@@ -476,36 +482,26 @@ function saveDone() {
   set(ref(db, 'done'), [...doneSet]).catch(e => console.error('Firebase saveDone:', e));
 }
 
-function saveHistory() {
-  set(ref(db, 'history'), changeHistory.slice(0, 10)).catch(e => console.error('Firebase saveHistory:', e));
-}
-
 // Jednorázové načtení dat při startu (bez trvalého připojení)
 async function loadFromFirebase() {
   try {
-    const [dataSnap, doneSnap, histSnap] = await Promise.all([
+    const [dataSnap, doneSnap] = await Promise.all([
       get(ref(db, 'data')),
-      get(ref(db, 'done')),
-      get(ref(db, 'history'))
+      get(ref(db, 'done'))
     ]);
     if (dataSnap.exists()) {
       data = dataSnap.val();
     } else {
+      // První spuštění — nahraj výchozí data
       await set(ref(db, 'data'), DEFAULT_DATA);
       data = JSON.parse(JSON.stringify(DEFAULT_DATA));
     }
     doneSet = doneSnap.exists() ? new Set(doneSnap.val()) : new Set();
-    if (histSnap.exists()) {
-      const loaded = histSnap.val();
-      changeHistory.length = 0;
-      changeHistory.push(...loaded);
-    }
   } catch (e) {
     console.error('Firebase load error:', e);
   }
   renderResults();
   renderStartlist();
-  renderHistory();
 }
 
 // Sledovat stav přihlášení Firebase Auth
@@ -533,12 +529,8 @@ onAuthStateChanged(auth, user => {
     });
   }
   renderAdminBar();
-  // renderStartlist a renderHistory zavolají onValue listenery výše (pro admina)
-  // nebo loadFromFirebase (pro veřejnost) — zde stačí jen renderHistory pro stav odhlášení
-  if (!isAdmin) {
-    renderStartlist();
-    renderHistory();
-  }
+  renderStartlist();
+  renderHistory();
 });
 
 loadFromFirebase();
@@ -713,8 +705,6 @@ function renderStartlist() {
   }
   // Update action column header
   document.getElementById('actionColHead').textContent = isAdmin ? 'Akce' : '';
-  // Zobrazit/skrýt sloupec drag handle v hlavičce
-  document.getElementById('dragColHead').style.display = editMode ? '' : 'none';
 
   tbody.innerHTML = sorted.map((d, i) => {
     const isDone = doneSet.has(d.start);
@@ -1025,8 +1015,7 @@ function addHistory(row, prev, newCas1, newCas2) {
   const now = new Date();
   const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   changeHistory.unshift({ ts, team: row.team, start: row.start, prev, next: { cas1: newCas1, cas2: newCas2 } });
-  if (changeHistory.length > 10) changeHistory.length = 10;
-  saveHistory();
+  if (changeHistory.length > 30) changeHistory.pop();
   renderHistory();
 }
 
@@ -1060,14 +1049,13 @@ function undoHistory(idx) {
   row.cas2 = h.prev.cas2;
   row.zapisCas = h.prev.zapisCas;
   changeHistory.splice(idx, 1);
-  saveData(); saveHistory(); renderResults(); renderStartlist(); renderHistory();
+  saveData(); renderResults(); renderStartlist(); renderHistory();
 }
 
 function clearHistory() {
   if (!changeHistory.length) return;
   if (!confirm('Opravdu vymazat celou historii změn?')) return;
   changeHistory.length = 0;
-  saveHistory();
   renderHistory();
 }
 
@@ -1308,8 +1296,8 @@ async function exportCSV() {
   ]);
   r2++;
 
-  const sortedList = [...data].sort((a,b) => a.start - b.start);
-  sortedList.forEach(d => {
+  const sorted = [...data].sort((a,b) => a.start - b.start);
+  sorted.forEach(d => {
     const isDone = doneSet.has(d.start);
     const stavCell = isDone ? cell('✓ Odběhnuto', sDone) : cell('', sNormal);
     wsData2.push([
@@ -1371,9 +1359,9 @@ function logout() {
 }
 
 // ── INIT ─────────────────────────────────────────────
-// Poznámka: renderResults/renderStartlist/renderHistory jsou volány
-// uvnitř loadFromFirebase() a onAuthStateChanged() — zde nejsou potřeba.
-renderAdminBar(); // Admin bar se vykreslí ihned (přihlašovací formulář)
+renderResults();
+renderAdminBar();
+renderStartlist();
 
 // Zpřístupnit funkce globálně (nutné kvůli type="module")
 window.toggleDone    = toggleDone;
