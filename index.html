@@ -391,7 +391,7 @@
   </table>
 </div>
 
-<div class="history-panel" id="historyPanel" style="display:none">
+<div class="history-panel" id="historyPanel">
   <div class="history-header" onclick="toggleHistoryBody()">
     <span class="history-title">📋 Historie změn</span>
     <div style="display:flex;align-items:center;gap:10px">
@@ -497,7 +497,7 @@ function restoreNull(val) {
   return val === '__null__' ? null : val;
 }
 
-// Jednorázové načtení dat při startu (bez trvalého připojení)
+// Jednorázové načtení dat pro nepřihlášené uživatele
 async function loadFromFirebase() {
   try {
     const [dataSnap, doneSnap, histSnap] = await Promise.all([
@@ -530,7 +530,7 @@ async function loadFromFirebase() {
 }
 
 // Sledovat stav přihlášení Firebase Auth
-// Admin dostane realtime listener aby viděl vlastní změny okamžitě
+// Admin dostane data výhradně přes realtime listenery (žádné dvojité načítání)
 let adminDataUnsub = null;
 let adminDoneUnsub = null;
 
@@ -541,8 +541,12 @@ onAuthStateChanged(auth, user => {
     document.body.classList.remove('admin-mode');
     if (adminDataUnsub) { adminDataUnsub(); adminDataUnsub = null; }
     if (adminDoneUnsub) { adminDoneUnsub(); adminDoneUnsub = null; }
+    renderAdminBar();
+    // Nepřihlášený uživatel načte data jednorázově
+    loadFromFirebase();
   } else {
     document.body.classList.add('admin-mode');
+    // Admin dostane data+done přes realtime listener (render proběhne uvnitř callbacků)
     adminDataUnsub = onValue(ref(db, 'data'), snap => {
       if (snap.exists()) data = snap.val();
       renderResults();
@@ -552,13 +556,22 @@ onAuthStateChanged(auth, user => {
       doneSet = snap.exists() ? new Set(snap.val()) : new Set();
       renderStartlist();
     });
+    // Historie se načte jednorázově — realtime listener pro ni není potřeba
+    get(ref(db, 'history')).then(histSnap => {
+      if (histSnap.exists()) {
+        const loaded = histSnap.val();
+        changeHistory.length = 0;
+        changeHistory.push(...loaded.map(h => ({
+          ...h,
+          prev: { cas1: restoreNull(h.prev.cas1), cas2: restoreNull(h.prev.cas2), zapisCas: restoreNull(h.prev.zapisCas) },
+          next: { cas1: restoreNull(h.next.cas1), cas2: restoreNull(h.next.cas2) }
+        })));
+      }
+      renderHistory();
+    }).catch(e => console.error('Firebase history load error:', e));
+    renderAdminBar();
   }
-  renderAdminBar();
-  renderStartlist();
-  renderHistory();
 });
-
-loadFromFirebase();
 
 // ── HELPER: parse time value ──────────────────────────
 function parseTimeVal(str) {
@@ -795,7 +808,6 @@ function renderStartlist() {
     const isDone = doneSet.has(d.start);
     const isNext = !isDone && sorted.findIndex(x => !doneSet.has(x.start)) === i;
     const rowClass = isDone ? 'done' : isNext ? 'next' : '';
-    const editMode = isAdmin && document.body.classList.contains('edit-mode');
 
     const statusTag = isDone
       ? `<span class="done-tag">✓ Odběhnuto</span>`
@@ -873,8 +885,14 @@ function renderStartlist() {
 
 // ── DRAG & DROP ───────────────────────────────────────
 let dragSrcStart = null;
+let _touchMoveHandler = null;
+let _touchEndHandler  = null;
 
 function initDragDrop() {
+  // Odeber předchozí touch listenery aby se nehromadily při každém renderu
+  if (_touchMoveHandler) { document.removeEventListener('touchmove', _touchMoveHandler, { passive: false }); _touchMoveHandler = null; }
+  if (_touchEndHandler)  { document.removeEventListener('touchend',  _touchEndHandler);  _touchEndHandler  = null; }
+
   // ── Desktop drag (table rows) ──
   const tbody = document.getElementById('startlistBody');
   tbody.querySelectorAll('tr[draggable]').forEach(row => {
@@ -923,7 +941,7 @@ function initDragDrop() {
     }, { passive: false });
   });
 
-  document.addEventListener('touchmove', e => {
+  _touchMoveHandler = e => {
     if (!touchClone) return;
     const touch = e.touches[0];
     touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
@@ -932,9 +950,10 @@ function initDragDrop() {
     const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.sl-card');
     if (target && target !== touchDragEl) target.classList.add('drag-over');
     e.preventDefault();
-  }, { passive: false });
+  };
+  document.addEventListener('touchmove', _touchMoveHandler, { passive: false });
 
-  document.addEventListener('touchend', e => {
+  _touchEndHandler = e => {
     if (!touchClone) return;
     const touch = e.changedTouches[0];
     const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.sl-card');
@@ -948,7 +967,8 @@ function initDragDrop() {
       swapByPosition(dragSrcStart, targetStart);
     }
     dragSrcStart = null;
-  });
+  };
+  document.addEventListener('touchend', _touchEndHandler);
 }
 
 function swapByPosition(srcStart, tgtStart) {
@@ -1142,7 +1162,14 @@ function addTeam() {
   data.push({ start: maxStart+1, team: 'Nový tým', org: 'Sbor', kategorie: 'Mladší děti', cas1: null, cas2: null });
   saveData();
   renderResults(); renderStartlist();
-  setTimeout(() => document.getElementById('startlistBody').lastElementChild?.scrollIntoView({behavior:'smooth'}), 50);
+  setTimeout(() => {
+    const mobileCards = document.getElementById('startlistCardsContainer');
+    const isMobile = mobileCards && window.getComputedStyle(mobileCards).display !== 'none';
+    const target = isMobile
+      ? mobileCards.lastElementChild
+      : document.getElementById('startlistBody')?.lastElementChild;
+    target?.scrollIntoView({ behavior: 'smooth' });
+  }, 50);
 }
 
 function moveTeam(startNum, dir) {
@@ -1179,14 +1206,14 @@ function renderAdminBar() {
         ${editMode ? '✏️ Editace ZAP' : '✏️ Editovat data'}
       </button>
       ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>` : ''}
-      <button class="admin-btn export" onclick="exportCSV()" title="Stáhnout výsledky jako Excel (.xlsx)">⬇ Export Excel</button>
+      <button class="admin-btn export" onclick="exportXLSX()" title="Stáhnout výsledky jako Excel (.xlsx)">⬇ Export Excel</button>
       <button class="admin-btn logout" onclick="logout()">Odhlásit</button>
     `;
   } else {
     bar.innerHTML = `
-      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email"
+      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email" autocomplete="off"
         onkeydown="if(event.key==='Enter') document.getElementById('adminPwd').focus()" />
-      <input type="password" id="adminPwd"   class="admin-input" placeholder="Heslo"
+      <input type="password" id="adminPwd"   class="admin-input" placeholder="Heslo" autocomplete="off"
         onkeydown="if(event.key==='Enter') login()" />
       <button class="admin-btn" onclick="login()">Přihlásit</button>
       <span class="admin-hint" id="adminHint"></span>
@@ -1195,7 +1222,7 @@ function renderAdminBar() {
 }
 
 // ── EXPORT XLSX ────────────────────────────────────────
-async function exportCSV() {
+async function exportXLSX() {
   const XLSX = window.XLSX;
   if (!XLSX) {
     alert('Chyba: Knihovna pro export se nenačetla. Zkuste obnovit stránku.');
@@ -1401,7 +1428,7 @@ window.moveTeam      = moveTeam;
 window.toggleEditMode = toggleEditMode;
 window.login         = login;
 window.logout        = logout;
-window.exportCSV     = exportCSV;
+window.exportXLSX    = exportXLSX;
 window.openQuickTime = openQuickTime;
 window.closeQuickTime = closeQuickTime;
 window.saveQuickTime = saveQuickTime;
