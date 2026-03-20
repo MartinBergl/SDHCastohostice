@@ -482,26 +482,51 @@ function saveDone() {
   set(ref(db, 'done'), [...doneSet]).catch(e => console.error('Firebase saveDone:', e));
 }
 
+function saveHistory() {
+  // Firebase odstraňuje null hodnoty — nahradíme je řetězcem '__null__'
+  const sanitize = val => val === null || val === undefined ? '__null__' : val;
+  const clean = changeHistory.slice(0, 10).map(h => ({
+    ...h,
+    prev: { cas1: sanitize(h.prev.cas1), cas2: sanitize(h.prev.cas2), zapisCas: sanitize(h.prev.zapisCas) },
+    next: { cas1: sanitize(h.next.cas1), cas2: sanitize(h.next.cas2) }
+  }));
+  set(ref(db, 'history'), clean.length ? clean : null).catch(e => console.error('Firebase saveHistory:', e));
+}
+
+function restoreNull(val) {
+  return val === '__null__' ? null : val;
+}
+
 // Jednorázové načtení dat při startu (bez trvalého připojení)
 async function loadFromFirebase() {
   try {
-    const [dataSnap, doneSnap] = await Promise.all([
+    const [dataSnap, doneSnap, histSnap] = await Promise.all([
       get(ref(db, 'data')),
-      get(ref(db, 'done'))
+      get(ref(db, 'done')),
+      get(ref(db, 'history'))
     ]);
     if (dataSnap.exists()) {
       data = dataSnap.val();
     } else {
-      // První spuštění — nahraj výchozí data
       await set(ref(db, 'data'), DEFAULT_DATA);
       data = JSON.parse(JSON.stringify(DEFAULT_DATA));
     }
     doneSet = doneSnap.exists() ? new Set(doneSnap.val()) : new Set();
+    if (histSnap.exists()) {
+      const loaded = histSnap.val();
+      changeHistory.length = 0;
+      changeHistory.push(...loaded.map(h => ({
+        ...h,
+        prev: { cas1: restoreNull(h.prev.cas1), cas2: restoreNull(h.prev.cas2), zapisCas: restoreNull(h.prev.zapisCas) },
+        next: { cas1: restoreNull(h.next.cas1), cas2: restoreNull(h.next.cas2) }
+      })));
+    }
   } catch (e) {
     console.error('Firebase load error:', e);
   }
   renderResults();
   renderStartlist();
+  renderHistory();
 }
 
 // Sledovat stav přihlášení Firebase Auth
@@ -994,7 +1019,6 @@ function saveQuickTime(startNum) {
   const v1 = parseTimeVal(document.getElementById('qtpCas1').value);
   const v2 = parseTimeVal(document.getElementById('qtpCas2').value);
   const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
-  addHistory(row, prev, v1, v2);
   row.cas1 = v1;
   row.cas2 = v2;
   const bothEmpty = row.cas1 === null && row.cas2 === null;
@@ -1004,6 +1028,7 @@ function saveQuickTime(startNum) {
     const now = new Date();
     row.zapisCas = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   }
+  addHistory(row, prev, v1, v2);
   closeQuickTime();
   saveData(); renderResults(); renderStartlist();
 }
@@ -1015,7 +1040,8 @@ function addHistory(row, prev, newCas1, newCas2) {
   const now = new Date();
   const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   changeHistory.unshift({ ts, team: row.team, start: row.start, prev, next: { cas1: newCas1, cas2: newCas2 } });
-  if (changeHistory.length > 30) changeHistory.pop();
+  if (changeHistory.length > 10) changeHistory.length = 10;
+  saveHistory();
   renderHistory();
 }
 
@@ -1049,13 +1075,14 @@ function undoHistory(idx) {
   row.cas2 = h.prev.cas2;
   row.zapisCas = h.prev.zapisCas;
   changeHistory.splice(idx, 1);
-  saveData(); renderResults(); renderStartlist(); renderHistory();
+  saveData(); saveHistory(); renderResults(); renderStartlist(); renderHistory();
 }
 
 function clearHistory() {
   if (!changeHistory.length) return;
   if (!confirm('Opravdu vymazat celou historii změn?')) return;
   changeHistory.length = 0;
+  saveHistory();
   renderHistory();
 }
 
