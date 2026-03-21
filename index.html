@@ -72,7 +72,7 @@
     .snum { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); }
 
     .tname { font-size:14px; font-weight:500; color:var(--text); }
-    .torg  { font-size:12px; color:var(--sub); margin-top:1px; }
+
 
     .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
     .tcell.best  { color:var(--text); font-weight:500; }
@@ -111,7 +111,6 @@
     .startlist-table tbody tr:hover { background:var(--bg); }
     .startlist-table tbody tr.done { background:#e6f4e6; opacity:.8; border-left:4px solid #4ade80; }
     .startlist-table tbody tr.done .tname { text-decoration:line-through; color:#6b7280; }
-    .startlist-table tbody tr.done .torg { color:var(--muted); }
     .startlist-table tbody tr.done .snum { color:#16a34a; border-color:#86efac; background:#f0fdf4; }
     .startlist-table tbody tr.done:hover { background:#d4edda; opacity:.9; }
     .startlist-table tbody tr.next { background:#fff8ec; border-left:3px solid var(--gold); }
@@ -330,6 +329,31 @@
       border-top: 3px solid var(--gold) !important;
     }
 
+    /* ── LOADING OVERLAY ── */
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.25s ease;
+    }
+    #loadingOverlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ── MOBILE LAYOUT (musí být NA KONCI, aby přebilo výchozí display:none) ── */
     @media (max-width:700px) {
       .header, .content, .startlist-section, footer, .edit-banner, .admin-footer {
@@ -355,6 +379,8 @@
   </style>
 </head>
 <body>
+
+<div id="loadingOverlay"><div class="loading-spinner"></div></div>
 
 <div class="edit-banner" id="editBanner">
   ✏️ Editační režim — klikni na libovolné pole a uprav hodnotu. Změny se ukládají automaticky.
@@ -451,18 +477,18 @@ const auth = getAuth(app);
 // ─────────────────────────────────────────────────────
 
 const DEFAULT_DATA = [
-  { start:1,  team:"SDH Starý Kolín A", org:"SDH Starý Kolín", kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:2,  team:"SDH Nymburk",       org:"SDH Nymburk",     kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:3,  team:"SDH Poděbrady",     org:"SDH Poděbrady",   kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:4,  team:"SDH Kouřim A",      org:"SDH Kouřim",      kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:5,  team:"SDH Kolín centrum", org:"SDH Kolín",       kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:6,  team:"SDH Velký Osek",    org:"SDH Velký Osek",  kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:7,  team:"SDH Pečky",         org:"SDH Pečky",       kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:8,  team:"SDH Kouřim B",      org:"SDH Kouřim",      kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:9,  team:"SDH Starý Kolín B", org:"SDH Starý Kolín", kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:10, team:"SDH Nymburk B",     org:"SDH Nymburk",     kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:11, team:"SDH Kolín B",       org:"SDH Kolín",       kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:12, team:"SDH Poděbrady B",   org:"SDH Poděbrady",   kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:1,  team:"SDH Starý Kolín A", kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:2,  team:"SDH Nymburk",       kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:3,  team:"SDH Poděbrady",     kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:4,  team:"SDH Kouřim A",      kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:5,  team:"SDH Kolín centrum", kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:6,  team:"SDH Velký Osek",    kategorie:"Mladší děti", cas1:null, cas2:null },
+  { start:7,  team:"SDH Pečky",         kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:8,  team:"SDH Kouřim B",      kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:9,  team:"SDH Starý Kolín B", kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:10, team:"SDH Nymburk B",     kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:11, team:"SDH Kolín B",       kategorie:"Starší děti", cas1:null, cas2:null },
+  { start:12, team:"SDH Poděbrady B",   kategorie:"Starší děti", cas1:null, cas2:null },
 ];
 
 const CATEGORIES = ["Mladší děti","Starší děti"];
@@ -497,6 +523,13 @@ function restoreNull(val) {
   return val === '__null__' ? null : val;
 }
 
+function hideOverlay() {
+  const el = document.getElementById('loadingOverlay');
+  if (!el) return;
+  el.classList.add('hidden');
+  setTimeout(() => el.remove(), 300);
+}
+
 // Jednorázové načtení dat pro nepřihlášené uživatele
 async function loadFromFirebase() {
   try {
@@ -527,6 +560,7 @@ async function loadFromFirebase() {
   renderResults();
   renderStartlist();
   renderHistory();
+  hideOverlay();
 }
 
 // Sledovat stav přihlášení Firebase Auth
@@ -551,6 +585,7 @@ onAuthStateChanged(auth, user => {
       if (snap.exists()) data = snap.val();
       renderResults();
       renderStartlist();
+      hideOverlay();
     });
     adminDoneUnsub = onValue(ref(db, 'done'), snap => {
       doneSet = snap.exists() ? new Set(snap.val()) : new Set();
@@ -1159,7 +1194,7 @@ function deleteTeam(startNum) {
 
 function addTeam() {
   const maxStart = data.length ? Math.max(...data.map(d=>d.start)) : 0;
-  data.push({ start: maxStart+1, team: 'Nový tým', org: 'Sbor', kategorie: 'Mladší děti', cas1: null, cas2: null });
+  data.push({ start: maxStart+1, team: 'Nový tým', kategorie: 'Mladší děti', cas1: null, cas2: null });
   saveData();
   renderResults(); renderStartlist();
   setTimeout(() => {
@@ -1413,9 +1448,7 @@ function logout() {
 }
 
 // ── INIT ─────────────────────────────────────────────
-renderResults();
 renderAdminBar();
-renderStartlist();
 
 // Zpřístupnit funkce globálně (nutné kvůli type="module")
 window.toggleDone    = toggleDone;
