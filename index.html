@@ -336,6 +336,89 @@
       border-top: 3px solid var(--gold) !important;
     }
 
+    /* ── VIDITELNOST (fáze soutěže) ── */
+    .phase-banner {
+      margin: 32px 48px;
+      padding: 28px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+    }
+    .phase-banner-icon { font-size: 40px; margin-bottom: 12px; }
+    .phase-banner h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .phase-banner p  { font-size: 14px; color: var(--sub); line-height: 1.6; }
+
+    /* Odpočet */
+    .countdown-wrap { margin-top: 20px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; }
+    .countdown-num  {
+      font-family: 'DM Mono', monospace;
+      font-size: 36px; font-weight: 700;
+      color: var(--red);
+      background: var(--red-soft);
+      border: 1px solid #f5c6c2;
+      border-radius: 10px;
+      padding: 8px 14px;
+      line-height: 1;
+      min-width: 64px;
+      text-align: center;
+    }
+    .countdown-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+    .countdown-done  { font-size: 16px; font-weight: 600; color: #16a34a; margin-top: 12px; }
+
+    /* Admin nastavení odpočtu */
+    .countdown-admin { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .countdown-admin label { font-size: 12px; color: var(--sub); font-weight: 500; }
+    .countdown-admin input[type="datetime-local"] {
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      background: var(--edit-bg); border: 1px solid var(--edit-border);
+      border-radius: 6px; padding: 5px 10px; color: var(--text); outline: none;
+    }
+    .countdown-admin input[type="datetime-local"]:focus { border-color: var(--gold); }
+    .countdown-admin-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+      padding: 5px 12px; border-radius: 6px; border: 1px solid var(--edit-border);
+      background: var(--edit-bg); color: #92620a; cursor: pointer; transition: all .15s;
+    }
+    .countdown-admin-btn:hover { background: #fef3c7; }
+    .countdown-admin-btn.clear { border-color: #fca5a5; color: var(--red); background: var(--red-soft); }
+    .countdown-admin-btn.clear:hover { background: #fde8e8; }
+
+    /* Roletka nastavení odpočtu */
+    .cdt-accordion-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+      color: #92620a; background: var(--edit-bg); border: 1px solid var(--edit-border);
+      border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: all .15s;
+      user-select: none;
+    }
+    .cdt-accordion-toggle:hover { background: #fef3c7; }
+    .cdt-accordion-toggle .cdt-arrow { transition: transform .22s ease; display: inline-block; }
+    .cdt-accordion-toggle.open .cdt-arrow { transform: rotate(180deg); }
+
+    .cdt-accordion-body {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .28s ease, opacity .22s ease, margin-top .22s ease;
+      opacity: 0;
+      margin-top: 0;
+    }
+    .cdt-accordion-body.open {
+      max-height: 120px;
+      opacity: 1;
+      margin-top: 12px;
+    }
+
+    .admin-btn.phase-hidden  { border-color:#fca5a5; color:var(--red);   background:var(--red-soft); }
+    .admin-btn.phase-hidden:hover  { background:#fde8e8; }
+    .admin-btn.phase-results { border-color:#86efac; color:#16a34a; background:#f0fdf4; }
+    .admin-btn.phase-results:hover { background:#dcfce7; }
+
+    @media (max-width:700px) {
+      .phase-banner { margin: 16px 0; padding: 20px 16px; }
+    }
+
     /* ── LOADING OVERLAY ── */
     #loadingOverlay {
       position: fixed;
@@ -402,6 +485,8 @@
   />
 </header>
 
+<div id="phaseBanner"></div>
+
 <div class="content" id="content"></div>
 
 <div class="startlist-section">
@@ -437,6 +522,8 @@
     <div class="history-empty" id="historyEmpty">Zatím žádné změny.</div>
   </div>
 </div>
+
+<div class="history-panel" id="countdownPanel" style="display:none"></div>
 
 <footer>
   <span>Dětské závody SDH Častohostice — Výsledková listina</span>
@@ -516,6 +603,154 @@ function saveDone() {
   set(ref(db, 'done'), [...doneSet]).catch(e => console.error('Firebase saveDone:', e));
 }
 
+// ── FÁZE SOUTĚŽE: 'hidden' | 'startlist' | 'results' ─
+let phase = 'hidden';
+
+function savePhase() {
+  set(ref(db, 'phase'), phase).catch(e => console.error('Firebase savePhase:', e));
+}
+
+// ── ODPOČET ───────────────────────────────────────────
+let countdownTarget = null; // ISO string nebo null
+let _countdownTimer = null;
+
+function saveCountdown() {
+  set(ref(db, 'countdown'), countdownTarget ?? null).catch(e => console.error('Firebase saveCountdown:', e));
+}
+
+function setCountdown(isoStr) {
+  countdownTarget = isoStr || null;
+  saveCountdown();
+  renderPhaseBanner();
+}
+
+function clearCountdown() {
+  setCountdown(null);
+}
+
+function startCountdownTick() {
+  if (_countdownTimer) clearInterval(_countdownTimer);
+  _countdownTimer = setInterval(() => {
+    const el = document.getElementById('countdownDisplay');
+    if (!el) { clearInterval(_countdownTimer); return; }
+    renderCountdownDisplay(el);
+  }, 1000);
+}
+
+function renderCountdownDisplay(el) {
+  if (!countdownTarget) { el.innerHTML = ''; return; }
+  const diff = new Date(countdownTarget) - Date.now();
+  if (diff <= 0) {
+    el.innerHTML = `<div class="countdown-done">🎉 Soutěž právě začíná!</div>`;
+    return;
+  }
+  const totalSec = Math.floor(diff / 1000);
+  const d = Math.floor(totalSec / 86400);
+  const h = Math.floor((totalSec % 86400) / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const pad = n => String(n).padStart(2, '0');
+  const units = d > 0
+    ? [{ v: d, l: 'dní' }, { v: h, l: 'hodin' }, { v: m, l: 'minut' }, { v: s, l: 'sekund' }]
+    : [{ v: h, l: 'hodin' }, { v: m, l: 'minut' }, { v: s, l: 'sekund' }];
+  el.innerHTML = `<div class="countdown-wrap">${
+    units.map(u => `<div class="countdown-unit">
+      <span class="countdown-num">${pad(u.v)}</span>
+      <span class="countdown-label">${u.l}</span>
+    </div>`).join('')
+  }</div>`;
+}
+
+function setPhase(newPhase) {
+  phase = newPhase;
+  savePhase();
+  renderPhaseBanner();
+  renderAdminBar();
+  renderResults();
+  renderStartlistSection();
+}
+
+function applyCountdown() {
+  const val = document.getElementById('cdtInput')?.value;
+  if (!val) return;
+  setCountdown(val);
+}
+
+function toggleCdtAccordion() {
+  const body = document.getElementById('cdtBody');
+  const icon = document.getElementById('cdtToggleIcon');
+  if (!body) return;
+  const isOpen = body.classList.toggle('open');
+  if (icon) icon.textContent = isOpen ? '▲ skrýt' : '▼ upravit';
+  if (isOpen) setTimeout(() => document.getElementById('cdtInput')?.focus(), 50);
+}
+
+function renderPhaseBanner() {
+  const el  = document.getElementById('phaseBanner');
+  const cdp = document.getElementById('countdownPanel');
+  if (!el) return;
+
+  // Admin countdown panel — renderuj do samostatného prvku pod historií
+  if (cdp) {
+    if (isAdmin) {
+      cdp.style.display = '';
+      const curVal   = countdownTarget ? countdownTarget.slice(0, 16) : '';
+      const hasTarget = !!countdownTarget;
+      cdp.innerHTML = `
+        <div class="history-header" onclick="toggleCdtAccordion()" id="cdtToggle" style="cursor:pointer;user-select:none;">
+          <span class="history-title">⏱️ Nastavení odpočtu</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            ${hasTarget ? `<span style="font-size:12px;color:#16a34a;font-weight:500;">✓ ${new Date(countdownTarget).toLocaleString('cs-CZ')}</span>` : ''}
+            ${hasTarget ? `<button class="hi-undo" onclick="event.stopPropagation();clearCountdown()" style="font-size:11px;border-color:#fca5a5;color:var(--red);background:var(--red-soft)">✕ Zrušit</button>` : ''}
+            <span class="history-toggle" id="cdtToggleIcon">▼ upravit</span>
+          </div>
+        </div>
+        <div class="history-body" id="cdtBody">
+          <div style="padding:16px;">
+            <div class="countdown-admin" style="margin-top:0">
+              <label for="cdtInput">Datum a čas začátku:</label>
+              <input type="datetime-local" id="cdtInput" value="${curVal}" />
+              <button class="countdown-admin-btn" onclick="applyCountdown()">✓ Nastavit</button>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      cdp.style.display = 'none';
+      cdp.innerHTML = '';
+    }
+  }
+
+  if (phase !== 'hidden') {
+    el.innerHTML = '';
+    if (_countdownTimer) { clearInterval(_countdownTimer); _countdownTimer = null; }
+    return;
+  }
+
+  if (isAdmin) {
+    el.innerHTML = '';
+    return;
+  }
+
+  // Návštěvník
+  el.innerHTML = `<div class="phase-banner">
+    <h2>Soutěž zatím nezačala</h2>
+    <p>Startovní listina bude zveřejněna před zahájením soutěže dle pořadí přihlášek na FireSportu.</p>
+    <div id="countdownDisplay"></div>
+  </div>`;
+
+  const cdEl = document.getElementById('countdownDisplay');
+  if (countdownTarget && cdEl) {
+    renderCountdownDisplay(cdEl);
+    startCountdownTick();
+  }
+}
+
+function renderStartlistSection() {
+  const sec = document.querySelector('.startlist-section');
+  if (!sec) return;
+  sec.style.display = (isAdmin || phase === 'results') ? '' : 'none';
+}
+
 function saveHistory() {
   // Firebase odstraňuje null hodnoty — nahradíme je řetězcem '__null__'
   const sanitize = val => val === null || val === undefined ? '__null__' : val;
@@ -541,10 +776,12 @@ function hideOverlay() {
 // Jednorázové načtení dat pro nepřihlášené uživatele
 async function loadFromFirebase() {
   try {
-    const [dataSnap, doneSnap, histSnap] = await Promise.all([
+    const [dataSnap, doneSnap, histSnap, phaseSnap, cdSnap] = await Promise.all([
       get(ref(db, 'data')),
       get(ref(db, 'done')),
-      get(ref(db, 'history'))
+      get(ref(db, 'history')),
+      get(ref(db, 'phase')),
+      get(ref(db, 'countdown'))
     ]);
     if (dataSnap.exists()) {
       data = dataSnap.val();
@@ -553,6 +790,8 @@ async function loadFromFirebase() {
       data = JSON.parse(JSON.stringify(DEFAULT_DATA));
     }
     doneSet = doneSnap.exists() ? new Set(doneSnap.val()) : new Set();
+    phase = phaseSnap.exists() ? phaseSnap.val() : 'hidden';
+    countdownTarget = cdSnap.exists() ? cdSnap.val() : null;
     if (histSnap.exists()) {
       const loaded = histSnap.val();
       changeHistory.length = 0;
@@ -565,6 +804,8 @@ async function loadFromFirebase() {
   } catch (e) {
     console.error('Firebase load error:', e);
   }
+  renderPhaseBanner();
+  renderStartlistSection();
   renderResults();
   renderStartlist();
   renderHistory();
@@ -575,20 +816,22 @@ async function loadFromFirebase() {
 // Admin dostane data výhradně přes realtime listenery (žádné dvojité načítání)
 let adminDataUnsub = null;
 let adminDoneUnsub = null;
+let adminPhaseUnsub = null;
 
 onAuthStateChanged(auth, user => {
   isAdmin = !!user;
   if (!isAdmin) {
     document.body.classList.remove('edit-mode');
     document.body.classList.remove('admin-mode');
-    if (adminDataUnsub) { adminDataUnsub(); adminDataUnsub = null; }
-    if (adminDoneUnsub) { adminDoneUnsub(); adminDoneUnsub = null; }
+    if (adminDataUnsub)  { adminDataUnsub();  adminDataUnsub  = null; }
+    if (adminDoneUnsub)  { adminDoneUnsub();  adminDoneUnsub  = null; }
+    if (adminPhaseUnsub) { adminPhaseUnsub(); adminPhaseUnsub = null; }
     renderAdminBar();
     // Nepřihlášený uživatel načte data jednorázově
     loadFromFirebase();
   } else {
     document.body.classList.add('admin-mode');
-    // Admin dostane data+done přes realtime listener (render proběhne uvnitř callbacků)
+    // Admin dostane data+done+phase přes realtime listener
     adminDataUnsub = onValue(ref(db, 'data'), snap => {
       if (snap.exists()) data = snap.val();
       renderResults();
@@ -599,7 +842,16 @@ onAuthStateChanged(auth, user => {
       doneSet = snap.exists() ? new Set(snap.val()) : new Set();
       renderStartlist();
     });
-    // Historie se načte jednorázově — realtime listener pro ni není potřeba
+    adminPhaseUnsub = onValue(ref(db, 'phase'), snap => {
+      phase = snap.exists() ? snap.val() : 'hidden';
+      renderAdminBar();
+      renderPhaseBanner();
+    });
+    onValue(ref(db, 'countdown'), snap => {
+      countdownTarget = snap.exists() ? snap.val() : null;
+      renderPhaseBanner();
+    });
+    // Historie se načte jednorázově
     get(ref(db, 'history')).then(histSnap => {
       if (histSnap.exists()) {
         const loaded = histSnap.val();
@@ -644,6 +896,9 @@ function renderTimeCell(val, isBest) {
 function renderResults() {
   const el = document.getElementById('content');
   el.innerHTML = '';
+
+  // Návštěvníci vidí výsledky jen ve fázi 'results'
+  if (!isAdmin && phase !== 'results') return;
 
   CATEGORIES.forEach(cat => {
     function hasTime(d) {
@@ -1243,8 +1498,19 @@ function renderAdminBar() {
   if (isAdmin) {
     const editMode = document.body.classList.contains('edit-mode');
     const email = auth.currentUser?.email ?? '';
+
+    const phaseLabels = {
+      hidden:  { cls:'phase-hidden',  icon:'🔒', label:'Skryto pro návštěvníky' },
+      results: { cls:'phase-results', icon:'🏆', label:'Viditelné pro návštěvníky' },
+    };
+    const nextPhase = { hidden:'results', results:'hidden' };
+    const ph = phaseLabels[phase] || phaseLabels.hidden;
+
     bar.innerHTML = `
       <span class="admin-on">🔓 ${email}</span>
+      <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')" title="Přepnout viditelnost pro návštěvníky">
+        ${ph.icon} ${ph.label}
+      </button>
       <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">
         ${editMode ? '✏️ Editace ZAP' : '✏️ Editovat data'}
       </button>
@@ -1459,7 +1725,11 @@ function logout() {
 renderAdminBar();
 
 // Zpřístupnit funkce globálně (nutné kvůli type="module")
-window.toggleDone    = toggleDone;
+window.toggleDone        = toggleDone;
+window.setPhase          = setPhase;
+window.toggleCdtAccordion = toggleCdtAccordion;
+window.applyCountdown = applyCountdown;
+window.clearCountdown = clearCountdown;
 window.saveField     = saveField;
 window.saveSelectField = saveSelectField;
 window.saveTimeField = saveTimeField;
