@@ -508,6 +508,7 @@
     </thead>
     <tbody id="startlistBody"></tbody>
   </table>
+  <div id="startlistCardsContainer" class="startlist-cards"></div>
 </div>
 
 <div class="history-panel" id="historyPanel">
@@ -942,6 +943,16 @@ onAuthStateChanged(auth, user => {
   }
 });
 
+// ── HELPER: HTML escape (ochrana proti XSS) ──────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── HELPER: parse time value ──────────────────────────
 function parseTimeVal(str) {
   const s = str.trim().toUpperCase();
@@ -1006,7 +1017,7 @@ function renderResults() {
       return `<tr class="${rc}">
         <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
-        <td><div class="tname">${d.team}</div></td>
+        <td><div class="tname">${esc(d.team)}</div></td>
         ${renderTimeCell(d.cas1, c1worst)}
         ${renderTimeCell(d.cas2, c2worst)}
         ${bestHtml}
@@ -1032,8 +1043,8 @@ function renderResults() {
       return `<div class="result-card ${rc}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
         <div class="rc-body">
-          <div class="rc-team">${d.team}</div>
-          <div class="rc-snum">St. č. ${d.start}</div>
+          <div class="rc-team">${esc(d.team)}</div>
+          <div class="rc-snum">St. č. ${esc(String(d.start))}</div>
         </div>
         <div class="rc-times">
           ${bestStr ? `<div class="rc-best">${bestStr}</div>` : `<div class="rc-best empty">—</div>`}
@@ -1051,7 +1062,7 @@ function renderResults() {
     block.className = 'category-block';
     block.innerHTML = `
       <div class="cat-label">
-        <span class="cat-name">${cat}</span>
+        <span class="cat-name">${esc(cat)}</span>
         <span class="cat-pill">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
       </div>
       <table class="results-table">
@@ -1127,14 +1138,14 @@ function renderStartlist() {
 
     // Editable cells (only in admin + edit mode)
     const teamCell = editMode
-      ? `<td><div class="tname editable" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${d.team}</div></td>`
-      : `<td><div class="tname">${d.team}</div></td>`;
+      ? `<td><div class="tname editable" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${esc(d.team)}</div></td>`
+      : `<td><div class="tname">${esc(d.team)}</div></td>`;
 
     const catCell = editMode
       ? `<td><select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">
-          ${CATEGORIES.map(c=>`<option value="${c}"${c===d.kategorie?' selected':''}>${c}</option>`).join('')}
+          ${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}
          </select></td>`
-      : `<td><span class="cbadge ${BADGE[d.kategorie]}">${d.kategorie}</span></td>`;
+      : `<td><span class="cbadge ${BADGE[d.kategorie]}">${esc(d.kategorie)}</span></td>`;
 
     const cas1Cell = editMode
       ? `<td style="text-align:right"><input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" /></td>`
@@ -1186,12 +1197,12 @@ function renderStartlist() {
       : isNext ? `<span class="next-tag">▶ Na řadě</span>` : '';
 
     const teamHtml = editMode
-      ? `<div class="tname editable sl-team" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${d.team}</div>`
-      : `<div class="sl-team">${d.team}</div>`;
+      ? `<div class="tname editable sl-team" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${esc(d.team)}</div>`
+      : `<div class="sl-team">${esc(d.team)}</div>`;
 
     const catHtml = editMode
-      ? `<select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">${CATEGORIES.map(c=>`<option value="${c}"${c===d.kategorie?' selected':''}>${c}</option>`).join('')}</select>`
-      : `<span class="cbadge ${BADGE[d.kategorie]}">${d.kategorie}</span>`;
+      ? `<select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}</select>`
+      : `<span class="cbadge ${BADGE[d.kategorie]}">${esc(d.kategorie)}</span>`;
 
     const c1Html = editMode
       ? `<input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" />`
@@ -1239,14 +1250,8 @@ function renderStartlist() {
     </div>`;
   }).join('');
 
-  // Render or create the mobile cards container
-  let cardsContainer = document.getElementById('startlistCardsContainer');
-  if (!cardsContainer) {
-    cardsContainer = document.createElement('div');
-    cardsContainer.id = 'startlistCardsContainer';
-    cardsContainer.className = 'startlist-cards';
-    document.querySelector('.startlist-table').after(cardsContainer);
-  }
+  // Render mobile cards container (already in HTML)
+  const cardsContainer = document.getElementById('startlistCardsContainer');
   cardsContainer.innerHTML = mobileCards;
 
   // Inicializuj drag & drop pokud je admin v edit módu
@@ -1379,8 +1384,8 @@ function openQuickTime(startNum) {
   popup.id = 'qtpPopup';
   popup.className = 'quick-time-popup';
   popup.innerHTML = `
-    <div class="qtp-title">ZADÁNÍ ČASU — St. č. ${row.start}</div>
-    <div class="qtp-team">${row.team}</div>
+    <div class="qtp-title">ZADÁNÍ ČASU — St. č. ${esc(String(row.start))}</div>
+    <div class="qtp-team">${esc(row.team)}</div>
     <div class="qtp-row">
       <span class="qtp-label">Levý terč</span>
       <input class="qtp-input" id="qtpCas1" placeholder="např. 12.34"
@@ -1455,7 +1460,7 @@ function renderHistory() {
     if (h.prev.cas2 !== h.next.cas2) parts.push(`Pravý: ${timeDisplay(h.prev.cas2)} → ${timeDisplay(h.next.cas2)}`);
     return `<div class="history-item">
       <span class="hi-time">${h.ts}</span>
-      <span class="hi-text"><strong>${h.team}</strong> (St.č.${h.start}): ${parts.join(', ')}</span>
+      <span class="hi-text"><strong>${esc(h.team)}</strong> (St.č.${esc(String(h.start))}): ${parts.join(', ')}</span>
       <button class="hi-undo" onclick="undoHistory(${idx})">↩ Vrátit</button>
     </div>`;
   }).join('');
@@ -1523,6 +1528,7 @@ function saveTimeField(el) {
   const val = parseTimeVal(el.value);
   const row = data.find(d => d.start === startNum);
   if (row) {
+    const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
     row[field] = val;
     const bothEmpty = row.cas1 === null && row.cas2 === null;
     if (bothEmpty) {
@@ -1533,6 +1539,7 @@ function saveTimeField(el) {
       const mm = String(now.getMinutes()).padStart(2,'0');
       row.zapisCas = `${hh}:${mm}`;
     }
+    addHistory(row, prev, row.cas1, row.cas2);
     // OPTIMALIZACE: patch jen časových polí jednoho týmu
     saveTeamPatch(startNum);
     renderResults(); renderStartlist();
@@ -1618,7 +1625,7 @@ function renderAdminBar() {
     `;
   } else {
     bar.innerHTML = `
-      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email" autocomplete="off"
+      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email" autocomplete="email"
         onkeydown="if(event.key==='Enter') document.getElementById('adminPwd').focus()" />
       <input type="password" id="adminPwd"   class="admin-input" placeholder="Heslo" autocomplete="off"
         onkeydown="if(event.key==='Enter') login()" />
