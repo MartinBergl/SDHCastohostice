@@ -80,7 +80,6 @@
 
     .tname { font-size:14px; font-weight:500; color:var(--text); }
 
-
     .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
     .tcell.best  { color:var(--text); font-weight:500; }
     .tcell.empty { color:var(--muted); font-size:12px; }
@@ -146,14 +145,11 @@
     .editable { cursor:text; border-radius:3px; transition:background .12s; }
     .editable:hover { background:rgba(240,192,64,.15); }
 
-    /* Editing mode — highlight editable cells */
     body.edit-mode .editable { background:var(--edit-bg); outline:1px dashed var(--edit-border); }
     body.edit-mode .editable:focus { outline:2px solid var(--edit-border); background:#fffdf0; box-shadow:0 0 0 3px rgba(240,192,64,.2); }
 
-    /* Categoria select */
     .cat-select { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:500; padding:2px 6px; border-radius:4px; border:1px solid var(--edit-border); background:var(--edit-bg); color:var(--text); cursor:pointer; }
 
-    /* Time input in table */
     .time-input { font-family:'DM Mono',monospace; font-size:13px; text-align:right; background:var(--edit-bg); border:1px solid var(--edit-border); border-radius:3px; padding:2px 6px; width:80px; color:var(--text); outline:none; }
     .time-input:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(240,192,64,.2); }
 
@@ -168,48 +164,29 @@
 
     .admin-footer { padding:16px 48px 24px; display:flex; justify-content:center; background:var(--bg); }
 
-    /* ── RESULT CARDS (mobile výsledky) — default: skryté ── */
+    /* ── RESULT CARDS (mobile) ── */
     .result-cards { display:none; }
 
-    .result-card {
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:10px;
-      margin-bottom:8px;
-      padding:12px 14px;
-      display:flex;
-      align-items:center;
-      gap:12px;
-      transition:background .12s;
-    }
+    .result-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; padding:12px 14px; display:flex; align-items:center; gap:12px; transition:background .12s; }
     .result-card.rank-1 { background:#fffbf0; border-color:#f0d060; }
     .result-card.rank-2 { background:#f8f9fa; }
     .result-card.rank-3 { background:#fdf7f2; border-color:#e8c8a8; }
 
     .rc-rank { font-size:22px; min-width:36px; text-align:center; flex-shrink:0; }
     .rc-rank.num { font-size:15px; font-weight:700; color:var(--sub); }
-
     .rc-body { flex:1; min-width:0; }
     .rc-team { font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .rc-snum { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:2px; }
-
     .rc-times { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
     .rc-best { font-family:'DM Mono',monospace; font-size:16px; font-weight:700; color:var(--red); }
     .rc-best.empty { color:var(--muted); font-size:13px; font-weight:400; font-family:'DM Sans',sans-serif; }
     .rc-sub-times { font-family:'DM Mono',monospace; font-size:11px; color:var(--sub); }
     .rc-sub-times .worst { color:var(--muted); }
 
-    /* ── STARTLIST CARDS (mobile startovní listina) — default: skryté ── */
+    /* ── STARTLIST CARDS (mobile) ── */
     .startlist-cards { display:none; }
 
-    .sl-card {
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:10px;
-      margin-bottom:8px;
-      padding:12px 14px;
-      transition:background .12s;
-    }
+    .sl-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; padding:12px 14px; transition:background .12s; }
     .sl-card.done { background:#e6f4e6; border-left:4px solid #4ade80; opacity:.85; }
     .sl-card.done .sl-team { text-decoration:line-through; color:#6b7280; }
     .sl-card.next { background:#fff8ec; border-left:4px solid var(--gold); }
@@ -217,10 +194,8 @@
     .sl-card-top { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
     .sl-snum-big { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; min-width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); flex-shrink:0; }
     .done .sl-snum-big { color:#16a34a; border-color:#86efac; background:#f0fdf4; }
-
     .sl-team { font-size:15px; font-weight:600; color:var(--text); flex:1; min-width:0; }
     .sl-status { flex-shrink:0; }
-
     .sl-card-bottom { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     .sl-cat { flex:1; }
     .sl-times { display:flex; gap:12px; align-items:center; }
@@ -228,28 +203,15 @@
     .sl-time-label { font-size:9px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); }
     .sl-time-val { font-family:'DM Mono',monospace; font-size:13px; color:var(--sub); }
     .sl-time-val.empty { color:var(--muted); font-size:11px; }
-
     .sl-card-actions { margin-top:10px; padding-top:10px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .sl-zapis { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-left:auto; }
-
-    /* Edit mode inputs in cards */
     .sl-card .editable { display:block; }
     .sl-card .cat-select { font-size:11px; }
     .sl-card .time-input { width:72px; font-size:12px; }
 
     /* ── RYCHLÉ ZADÁNÍ ČASU ── */
-    .quick-time-popup {
-      position: fixed;
-      z-index: 1000;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      box-shadow: 0 8px 32px rgba(0,0,0,.14);
-      padding: 14px 16px;
-      min-width: 220px;
-      animation: popIn .15s ease;
-    }
-    @keyframes popIn { from { opacity:0; transform:scale(.95); } to { opacity:1; transform:scale(1); } }
+    .quick-time-popup { position:fixed; z-index:1000; background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,.14); padding:14px 16px; min-width:220px; animation:popIn .15s ease; }
+    @keyframes popIn { from { opacity:0; transform:scale(.95) translate(-50%,-50%); } to { opacity:1; transform:scale(1) translate(-50%,-50%); } }
     .qtp-title { font-size:12px; font-weight:600; color:var(--sub); letter-spacing:.5px; margin-bottom:10px; }
     .qtp-team  { font-size:14px; font-weight:600; color:var(--text); margin-bottom:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .qtp-row   { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
@@ -263,46 +225,19 @@
     .qtp-cancel:hover { background:var(--border); }
     .qtp-overlay { position:fixed; inset:0; z-index:999; }
 
-    /* Zvýraznění klikatelných časových buněk pro admina */
-    body.admin-mode .tcell.clickable {
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background .12s;
-    }
-    body.admin-mode .tcell.clickable:hover { background: rgba(240,192,64,.18); }
+    body.admin-mode .tcell.clickable { cursor:pointer; border-radius:4px; transition:background .12s; }
+    body.admin-mode .tcell.clickable:hover { background:rgba(240,192,64,.18); }
 
     /* ── HISTORIE ZMĚN ── */
-    .history-panel {
-      margin: 0 48px 32px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--surface);
-      overflow: hidden;
-    }
-    .history-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
-      cursor: pointer;
-      user-select: none;
-    }
-    .history-header:hover { background: var(--border); }
+    .history-panel { margin:0 48px 32px; border:1px solid var(--border); border-radius:10px; background:var(--surface); overflow:hidden; }
+    .history-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--bg); cursor:pointer; user-select:none; }
+    .history-header:hover { background:var(--border); }
     .history-title { font-size:13px; font-weight:600; color:var(--sub); }
     .history-toggle { font-size:12px; color:var(--muted); }
     .history-body { display:none; max-height:260px; overflow-y:auto; }
     .history-body.open { display:block; }
     .history-empty { font-size:13px; color:var(--muted); padding:16px; text-align:center; }
-    .history-item {
-      display: flex;
-      align-items: center;
-      gap:10px;
-      padding: 9px 16px;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-    }
+    .history-item { display:flex; align-items:center; gap:10px; padding:9px 16px; border-bottom:1px solid var(--border); font-size:13px; }
     .history-item:last-child { border-bottom:none; }
     .hi-time { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
     .hi-text { flex:1; color:var(--text); }
@@ -315,100 +250,40 @@
     }
 
     /* ── DRAG & DROP ── */
-    .drag-handle {
-      cursor: grab;
-      color: var(--muted);
-      font-size: 16px;
-      padding: 0 6px;
-      user-select: none;
-      touch-action: none;
-      line-height: 1;
-    }
-    .drag-handle:active { cursor: grabbing; }
-    tr.dragging, .sl-card.dragging {
-      opacity: 0.4;
-      background: var(--edit-bg) !important;
-    }
-    tr.drag-over {
-      border-top: 3px solid var(--gold) !important;
-    }
-    .sl-card.drag-over {
-      border-top: 3px solid var(--gold) !important;
-    }
+    .drag-handle { cursor:grab; color:var(--muted); font-size:16px; padding:0 6px; user-select:none; touch-action:none; line-height:1; }
+    .drag-handle:active { cursor:grabbing; }
+    tr.dragging, .sl-card.dragging { opacity:0.4; background:var(--edit-bg) !important; }
+    tr.drag-over { border-top:3px solid var(--gold) !important; }
+    .sl-card.drag-over { border-top:3px solid var(--gold) !important; }
 
-    /* ── VIDITELNOST (fáze soutěže) ── */
-    .phase-banner {
-      margin: 32px 48px;
-      padding: 28px 32px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      text-align: center;
-    }
-    .phase-banner-icon { font-size: 40px; margin-bottom: 12px; }
-    .phase-banner h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-    .phase-banner p  { font-size: 14px; color: var(--sub); line-height: 1.6; }
+    /* ── FÁZE SOUTĚŽE ── */
+    .phase-banner { margin:32px 48px; padding:28px 32px; background:var(--surface); border:1px solid var(--border); border-radius:12px; text-align:center; }
+    .phase-banner-icon { font-size:40px; margin-bottom:12px; }
+    .phase-banner h2 { font-size:22px; font-weight:700; color:var(--text); margin-bottom:8px; }
+    .phase-banner p  { font-size:14px; color:var(--sub); line-height:1.6; }
 
     /* Odpočet */
-    .countdown-wrap { margin-top: 20px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-    .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; }
-    .countdown-num  {
-      font-family: 'DM Mono', monospace;
-      font-size: 36px; font-weight: 700;
-      color: var(--red);
-      background: var(--red-soft);
-      border: 1px solid #f5c6c2;
-      border-radius: 10px;
-      padding: 8px 14px;
-      line-height: 1;
-      min-width: 64px;
-      text-align: center;
-    }
-    .countdown-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
-    .countdown-done  { font-size: 16px; font-weight: 600; color: #16a34a; margin-top: 12px; }
+    .countdown-wrap { margin-top:20px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .countdown-unit { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:64px; }
+    .countdown-num  { font-family:'DM Mono',monospace; font-size:36px; font-weight:700; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; border-radius:10px; padding:8px 14px; line-height:1; min-width:64px; text-align:center; }
+    .countdown-label { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+    .countdown-done  { font-size:16px; font-weight:600; color:#16a34a; margin-top:12px; }
 
-    /* Admin nastavení odpočtu */
-    .countdown-admin { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-    .countdown-admin label { font-size: 12px; color: var(--sub); font-weight: 500; }
-    .countdown-admin input[type="datetime-local"] {
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      background: var(--edit-bg); border: 1px solid var(--edit-border);
-      border-radius: 6px; padding: 5px 10px; color: var(--text); outline: none;
-    }
-    .countdown-admin input[type="datetime-local"]:focus { border-color: var(--gold); }
-    .countdown-admin-btn {
-      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
-      padding: 5px 12px; border-radius: 6px; border: 1px solid var(--edit-border);
-      background: var(--edit-bg); color: #92620a; cursor: pointer; transition: all .15s;
-    }
-    .countdown-admin-btn:hover { background: #fef3c7; }
-    .countdown-admin-btn.clear { border-color: #fca5a5; color: var(--red); background: var(--red-soft); }
-    .countdown-admin-btn.clear:hover { background: #fde8e8; }
+    .countdown-admin { margin-top:16px; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; }
+    .countdown-admin label { font-size:12px; color:var(--sub); font-weight:500; }
+    .countdown-admin input[type="datetime-local"] { font-family:'DM Sans',sans-serif; font-size:13px; background:var(--edit-bg); border:1px solid var(--edit-border); border-radius:6px; padding:5px 10px; color:var(--text); outline:none; }
+    .countdown-admin input[type="datetime-local"]:focus { border-color:var(--gold); }
+    .countdown-admin-btn { font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; padding:5px 12px; border-radius:6px; border:1px solid var(--edit-border); background:var(--edit-bg); color:#92620a; cursor:pointer; transition:all .15s; }
+    .countdown-admin-btn:hover { background:#fef3c7; }
+    .countdown-admin-btn.clear { border-color:#fca5a5; color:var(--red); background:var(--red-soft); }
+    .countdown-admin-btn.clear:hover { background:#fde8e8; }
 
-    /* Roletka nastavení odpočtu */
-    .cdt-accordion-toggle {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
-      color: #92620a; background: var(--edit-bg); border: 1px solid var(--edit-border);
-      border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: all .15s;
-      user-select: none;
-    }
-    .cdt-accordion-toggle:hover { background: #fef3c7; }
-    .cdt-accordion-toggle .cdt-arrow { transition: transform .22s ease; display: inline-block; }
-    .cdt-accordion-toggle.open .cdt-arrow { transform: rotate(180deg); }
-
-    .cdt-accordion-body {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height .28s ease, opacity .22s ease, margin-top .22s ease;
-      opacity: 0;
-      margin-top: 0;
-    }
-    .cdt-accordion-body.open {
-      max-height: 120px;
-      opacity: 1;
-      margin-top: 12px;
-    }
+    .cdt-accordion-toggle { display:inline-flex; align-items:center; gap:6px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; color:#92620a; background:var(--edit-bg); border:1px solid var(--edit-border); border-radius:6px; padding:5px 12px; cursor:pointer; transition:all .15s; user-select:none; }
+    .cdt-accordion-toggle:hover { background:#fef3c7; }
+    .cdt-accordion-toggle .cdt-arrow { transition:transform .22s ease; display:inline-block; }
+    .cdt-accordion-toggle.open .cdt-arrow { transform:rotate(180deg); }
+    .cdt-accordion-body { overflow:hidden; max-height:0; transition:max-height .28s ease, opacity .22s ease, margin-top .22s ease; opacity:0; margin-top:0; }
+    .cdt-accordion-body.open { max-height:120px; opacity:1; margin-top:12px; }
 
     .admin-btn.phase-hidden  { border-color:#fca5a5; color:var(--red);   background:var(--red-soft); }
     .admin-btn.phase-hidden:hover  { background:#fde8e8; }
@@ -416,39 +291,43 @@
     .admin-btn.phase-results:hover { background:#dcfce7; }
 
     @media (max-width:700px) {
-      .phase-banner { margin: 16px 0; padding: 20px 16px; }
+      .phase-banner { margin:16px 0; padding:20px 16px; }
     }
 
     /* ── LOADING OVERLAY ── */
-    #loadingOverlay {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.25s ease;
-    }
-    #loadingOverlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .loading-spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid var(--border);
-      border-top-color: var(--red);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    #loadingOverlay { position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center; transition:opacity 0.25s ease; }
+    #loadingOverlay.hidden { opacity:0; pointer-events:none; }
+    .loading-spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin 0.7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
 
-    /* ── MOBILE LAYOUT (musí být NA KONCI, aby přebilo výchozí display:none) ── */
+    /* ── SAVING INDICATOR ── */
+    #savingIndicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sub);
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 9000;
+      transition: opacity .3s;
+    }
+    #savingIndicator.visible { display: flex; }
+    #savingIndicator.error { color: var(--red); border-color: #f5c6c2; }
+    .saving-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; animation: pulse .8s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+    #savingIndicator.error .saving-dot { background: var(--red); animation: none; }
+
+    /* ── MOBILE ── */
     @media (max-width:700px) {
-      .header, .content, .startlist-section, footer, .edit-banner, .admin-footer {
-        padding-left:16px; padding-right:16px;
-      }
+      .header, .content, .startlist-section, footer, .edit-banner, .admin-footer { padding-left:16px; padding-right:16px; }
       .startlist-section { margin-left:0; margin-right:0; padding-top:24px; }
       .header { padding:16px; }
       .header img { max-width:100% !important; }
@@ -472,6 +351,7 @@
 <body>
 
 <div id="loadingOverlay"><div class="loading-spinner"></div></div>
+<div id="savingIndicator"><div class="saving-dot"></div><span id="savingText">Ukládám…</span></div>
 
 <div class="edit-banner" id="editBanner">
   ✏️ Editační režim — klikni na libovolné pole a uprav hodnotu. Změny se ukládají automaticky.
@@ -480,13 +360,12 @@
 <header class="header">
   <img
     src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/57e158c77075191235ef49c414feb3db59b6bd1b/nadpis_logo.jpg"
-    alt="Dětské závody SDH Častohostice"
+    alt="Dětské závady SDH Častohostice"
     style="max-width:90%; width:auto; height:auto; display:block; margin:0 auto;"
   />
 </header>
 
 <div id="phaseBanner"></div>
-
 <div class="content" id="content"></div>
 
 <div class="startlist-section">
@@ -526,12 +405,6 @@
 
 <div class="history-panel" id="countdownPanel" style="display:none"></div>
 
-<footer>
-  <span>Dětské závody SDH Častohostice — Výsledková listina</span>
-  <span>Pořadatel: <strong>SDH Častohostice</strong></span>
-  <span>© 2026 Martin Bergl – Všechna práva vyhrazena.</span>
-</footer>
-
 <div style="background:var(--surface); border-top:1px solid var(--border); padding:24px 48px; text-align:center;">
   <img
     src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/a4d0c821effd3237aff776bf97df8b1a0591b993/sponzori_logo.jpg"
@@ -539,40 +412,27 @@
     style="max-width:90%; width:auto; height:auto;"
     class="sponzori-img"
   />
+  <div style="margin-top:16px; font-size:12px; color:var(--muted); text-align:center;">Copyright © 2026 Martin Bergl</div>
 </div>
 
 <div class="admin-footer">
   <div id="adminBar" class="admin-bar"></div>
 </div>
 
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, update, onValue, get }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+<script>
+// ═══════════════════════════════════════════════════════
+//  KONFIGURACE — vyplňte po nasazení Apps Scriptu
+// ═══════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5rptM4YUoyBLbioOZWHgO_YFI7_WuzpnpVC72oKQxhWAFpP2btZVq3me9vTPwd0xKZQ/exec";
+// Příklad: "https://script.google.com/macros/s/AKfycby.../exec"
 
-// ── FIREBASE KONFIGURACE ──────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyBSkaPYfmyD3Lzrmfj-PogXYwp5xByaWyM",
-  authDomain: "sdh-castohostice.firebaseapp.com",
-  databaseURL: "https://sdh-castohostice-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "sdh-castohostice",
-  storageBucket: "sdh-castohostice.firebasestorage.app",
-  messagingSenderId: "311939601767",
-  appId: "1:311939601767:web:5326348e8aee81e8714bc2",
-  measurementId: "G-SX6G94FBVE"
-};
+// ── Polling interval pro návštěvníky (ms) ─────────────
+const POLL_INTERVAL_VISITOR = 8000;   // každých 8 s
+const POLL_INTERVAL_ADMIN   = 5000;   // každých 5 s
 
-const app  = initializeApp(firebaseConfig);
-const db   = getDatabase(app);
-const auth = getAuth(app);
-
-// ── KONFIGURACE APLIKACE ──────────────────────────────
-// Heslo se spravuje v Firebase Console → Authentication → Users
-// ─────────────────────────────────────────────────────
-
+// ═══════════════════════════════════════════════════════
+//  VÝCHOZÍ DATA (použijí se při prvním spuštění)
+// ═══════════════════════════════════════════════════════
 const DEFAULT_DATA = [
   { start:1,  team:"SDH Starý Kolín A", kategorie:"Mladší děti", cas1:null, cas2:null },
   { start:2,  team:"SDH Nymburk",       kategorie:"Mladší děti", cas1:null, cas2:null },
@@ -591,120 +451,333 @@ const DEFAULT_DATA = [
 const CATEGORIES = ["Mladší děti","Starší děti"];
 const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st" };
 
-// ── STAV ─────────────────────────────────────────────
-let isAdmin = false;
-let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
-let doneSet = new Set();
+// ═══════════════════════════════════════════════════════
+//  STAV APLIKACE
+// ═══════════════════════════════════════════════════════
+let isAdmin        = false;
+let adminPassword  = null;           // heslo uložené po přihlášení (v paměti, ne v localStorage)
+let data           = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let doneSet        = new Set();
+let phase          = 'hidden';
+let countdownTarget = null;
+const changeHistory = [];
 
-// ── OPTIMALIZACE: debounce pro ukládání dat ───────────
-// Zabraňuje opakovaným zápisům při rychlých změnách (drag&drop, bulk editace).
-// Místo 5 zápisů za 500ms se provede jediný po uplynutí prodlevy.
+let _pollTimer     = null;
+
+// ═══════════════════════════════════════════════════════
+//  SAVING INDICATOR
+// ═══════════════════════════════════════════════════════
+let _savingTimer = null;
+function showSaving(text) {
+  const el = document.getElementById('savingIndicator');
+  const tx = document.getElementById('savingText');
+  if (!el) return;
+  el.classList.remove('error');
+  el.classList.add('visible');
+  if (tx) tx.textContent = text || 'Ukládám…';
+  if (_savingTimer) clearTimeout(_savingTimer);
+}
+function showSaved() {
+  const el = document.getElementById('savingIndicator');
+  const tx = document.getElementById('savingText');
+  if (!el) return;
+  el.classList.remove('error');
+  if (tx) tx.textContent = '✓ Uloženo';
+  if (_savingTimer) clearTimeout(_savingTimer);
+  _savingTimer = setTimeout(() => el.classList.remove('visible'), 1500);
+}
+function showSaveError(msg) {
+  const el = document.getElementById('savingIndicator');
+  const tx = document.getElementById('savingText');
+  if (!el) return;
+  el.classList.add('error');
+  if (tx) tx.textContent = '✗ ' + (msg || 'Chyba uložení');
+  if (_savingTimer) clearTimeout(_savingTimer);
+  _savingTimer = setTimeout(() => el.classList.remove('visible'), 4000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  API VOLÁNÍ
+// ═══════════════════════════════════════════════════════
+
+// GET — načti data ze Sheetu
+async function apiFetch(withHistory = false) {
+  let url = APPS_SCRIPT_URL + `?action=load`;
+  if (withHistory) url += `&pwd=${encodeURIComponent(adminPassword)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || 'API chyba');
+  return json;
+}
+
+// "POST" přes GET+payload — obchází CORS preflight (nutné pro file:// origin)
+async function apiPost(body) {
+  const action  = body.action;
+  // saveData posílá velké množství dat — použijeme POST (GET má limit URL délky)
+  if (action === 'saveData') {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ ...body, pwd: adminPassword }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'API chyba');
+    return json;
+  }
+  // Ostatní akce jsou krátké — GET stačí
+  const payload = JSON.stringify(body);
+  const url = APPS_SCRIPT_URL
+    + `?action=${encodeURIComponent(action)}`
+    + `&pwd=${encodeURIComponent(adminPassword)}`
+    + `&payload=${encodeURIComponent(payload)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || 'API chyba');
+  return json;
+}
+
+// ── Debounced save helpers ─────────────────────────────
 let _saveDataTimer = null;
 function saveData(immediate = false) {
   if (_saveDataTimer) clearTimeout(_saveDataTimer);
-  const doSave = () => set(ref(db, 'data'), data).catch(e => console.error('Firebase saveData:', e));
+  const doSave = async () => {
+    showSaving();
+    try {
+      await apiPost({ action: 'saveData', data });
+      showSaved();
+    } catch(e) { showSaveError(e.message); }
+  };
   if (immediate) { doSave(); }
   else { _saveDataTimer = setTimeout(doSave, 400); }
 }
 
-// ── OPTIMALIZACE: patch jednoho záznamu místo celého pole ─
-// Při zadání/úpravě času se zapíše pouze dotčený záznam,
-// ne celé pole 12 týmů. Úspora ~90 % objemu dat při každém zadání času.
-function saveTeamPatch(startNum) {
+async function saveTeamPatch(startNum) {
   const row = data.find(d => d.start === startNum);
   if (!row) return;
-  const idx = data.indexOf(row);
-  // Firebase Realtime DB ukládá pole jako objekt s číselnými klíči
-  const patch = {};
-  patch[`data/${idx}/cas1`]     = row.cas1     ?? null;
-  patch[`data/${idx}/cas2`]     = row.cas2     ?? null;
-  patch[`data/${idx}/zapisCas`] = row.zapisCas ?? null;
-  update(ref(db), patch).catch(e => console.error('Firebase patch:', e));
+  showSaving();
+  try {
+    await apiPost({ action: 'patchTeamTime', start: startNum, cas1: row.cas1 ?? null, cas2: row.cas2 ?? null, zapisCas: row.zapisCas ?? null });
+    showSaved();
+  } catch(e) { showSaveError(e.message); }
 }
 
-// ── OPTIMALIZACE: patch celého záznamu (přejmenování/kategorie) ─
-function saveTeamFullPatch(startNum) {
+async function saveTeamFullPatch(startNum) {
   const row = data.find(d => d.start === startNum);
   if (!row) return;
-  const idx = data.indexOf(row);
-  const patch = {};
-  ['start','team','kategorie','cas1','cas2','zapisCas'].forEach(k => {
-    patch[`data/${idx}/${k}`] = row[k] ?? null;
-  });
-  update(ref(db), patch).catch(e => console.error('Firebase fullPatch:', e));
+  showSaving();
+  try {
+    await apiPost({ action: 'patchTeamFull', start: startNum, team: row.team, kategorie: row.kategorie, cas1: row.cas1 ?? null, cas2: row.cas2 ?? null, zapisCas: row.zapisCas ?? null });
+    showSaved();
+  } catch(e) { showSaveError(e.message); }
 }
 
-// ── OPTIMALIZACE: done jako objekt s klíčem per-tým ──
-// Místo pole [1,3,5] → objekt { "1": true, "3": true, "5": true }
-// Při označení/odznačení 1 týmu se zapíše jen 1 cesta, ne celé pole.
-// ── OPTIMALIZACE: done jako objekt s klíčem per-tým ──
-// Ukládá celý doneSet jako objekt { "1": true, "3": true }.
-// Původní per-item remove() byl nespolehlivý — Firebase Security Rules
-// nebo timing mohl způsobit ztrátu dat po refreshi.
+let _saveDoneTimer = null;
 function saveDone() {
-  const obj = {};
-  doneSet.forEach(id => { obj[String(id)] = true; });
-  set(ref(db, 'done'), Object.keys(obj).length ? obj : null)
-    .catch(e => console.error('Firebase saveDone:', e));
+  if (_saveDoneTimer) clearTimeout(_saveDoneTimer);
+  _saveDoneTimer = setTimeout(async () => {
+    const obj = {};
+    doneSet.forEach(id => { obj[String(id)] = true; });
+    showSaving();
+    try {
+      await apiPost({ action: 'saveDone', done: Object.keys(obj).length ? obj : null });
+      showSaved();
+    } catch(e) { showSaveError(e.message); }
+  }, 300);
 }
 
-// ── FÁZE SOUTĚŽE: 'hidden' | 'results' ───────────────
-let phase = 'hidden';
-
-function savePhase() {
-  set(ref(db, 'phase'), phase).catch(e => console.error('Firebase savePhase:', e));
+async function savePhase() {
+  showSaving();
+  try {
+    await apiPost({ action: 'savePhase', phase });
+    showSaved();
+  } catch(e) { showSaveError(e.message); }
 }
 
-// ── ODPOČET ───────────────────────────────────────────
-let countdownTarget = null; // ISO string nebo null
-let _countdownTimer = null;
-
-function saveCountdown() {
-  set(ref(db, 'countdown'), countdownTarget ?? null).catch(e => console.error('Firebase saveCountdown:', e));
+async function saveCountdown() {
+  showSaving();
+  try {
+    await apiPost({ action: 'saveCountdown', countdown: countdownTarget ?? null });
+    showSaved();
+  } catch(e) { showSaveError(e.message); }
 }
 
-function setCountdown(isoStr) {
-  countdownTarget = isoStr || null;
-  saveCountdown();
-  renderPhaseBanner();
+let _saveHistoryTimer = null;
+function saveHistory() {
+  if (_saveHistoryTimer) clearTimeout(_saveHistoryTimer);
+  _saveHistoryTimer = setTimeout(async () => {
+    try {
+      await apiPost({ action: 'saveHistory', history: changeHistory.slice(0, 10) });
+    } catch(e) { console.warn('saveHistory:', e.message); }
+  }, 800);
 }
 
-function clearCountdown() {
-  setCountdown(null);
-}
-
-function startCountdownTick() {
-  if (_countdownTimer) clearInterval(_countdownTimer);
-  _countdownTimer = setInterval(() => {
-    const el = document.getElementById('countdownDisplay');
-    if (!el) { clearInterval(_countdownTimer); return; }
-    renderCountdownDisplay(el);
-  }, 1000);
-}
-
-function renderCountdownDisplay(el) {
-  if (!countdownTarget) { el.innerHTML = ''; return; }
-  const diff = new Date(countdownTarget) - Date.now();
-  if (diff <= 0) {
-    el.innerHTML = `<div class="countdown-done">🎉 Soutěž právě začíná!</div>`;
-    return;
+// ═══════════════════════════════════════════════════════
+//  NAČTENÍ DAT
+// ═══════════════════════════════════════════════════════
+async function loadData(forAdmin = false) {
+  try {
+    const json = await apiFetch(forAdmin);
+    if (json.data && json.data.length) {
+      data = json.data;
+    } else if (!json.data || !json.data.length) {
+      // Sheet je prázdný — inicializuj výchozími daty
+      data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      if (forAdmin) saveData(true);
+    }
+    doneSet = new Set((json.done || []).map(Number));
+    phase = json.phase || 'hidden';
+    countdownTarget = json.countdown || null;
+    if (forAdmin && json.history) {
+      changeHistory.length = 0;
+      changeHistory.push(...json.history);
+    }
+  } catch(e) {
+    console.error('loadData:', e);
+    // Při chybě načtení zobraz výchozí data
+    if (!data.length) data = JSON.parse(JSON.stringify(DEFAULT_DATA));
   }
-  const totalSec = Math.floor(diff / 1000);
-  const d = Math.floor(totalSec / 86400);
-  const h = Math.floor((totalSec % 86400) / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  const pad = n => String(n).padStart(2, '0');
-  const units = d > 0
-    ? [{ v: d, l: 'dní' }, { v: h, l: 'hodin' }, { v: m, l: 'minut' }, { v: s, l: 'sekund' }]
-    : [{ v: h, l: 'hodin' }, { v: m, l: 'minut' }, { v: s, l: 'sekund' }];
-  el.innerHTML = `<div class="countdown-wrap">${
-    units.map(u => `<div class="countdown-unit">
-      <span class="countdown-num">${pad(u.v)}</span>
-      <span class="countdown-label">${u.l}</span>
-    </div>`).join('')
-  }</div>`;
+  renderAll();
+  hideOverlay();
 }
+
+function renderAll() {
+  renderPhaseBanner();
+  renderStartlistSection();
+  renderResults();
+  renderStartlist();
+  renderHistory();
+}
+
+// ── Polling ────────────────────────────────────────────
+function startPolling() {
+  if (_pollTimer) clearInterval(_pollTimer);
+  const interval = isAdmin ? POLL_INTERVAL_ADMIN : POLL_INTERVAL_VISITOR;
+  _pollTimer = setInterval(async () => {
+    try {
+      const json = await apiFetch(isAdmin);
+      let changed = false;
+      if (json.data && JSON.stringify(json.data) !== JSON.stringify(data)) {
+        data = json.data; changed = true;
+      }
+      const newDone = new Set((json.done || []).map(Number));
+      if (JSON.stringify([...newDone].sort()) !== JSON.stringify([...doneSet].sort())) {
+        doneSet = newDone; changed = true;
+      }
+      if (json.phase !== phase) { phase = json.phase; changed = true; }
+      if ((json.countdown || null) !== countdownTarget) { countdownTarget = json.countdown || null; changed = true; }
+      if (changed) renderAll();
+    } catch(e) { /* tiché selhání pollingu */ }
+  }, interval);
+}
+
+function stopPolling() {
+  if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+}
+
+// ═══════════════════════════════════════════════════════
+//  AUTENTIZACE (heslo v paměti, bez Firebase Auth)
+// ═══════════════════════════════════════════════════════
+async function login() {
+  const pwd  = document.getElementById('adminPwd')?.value;
+  const hint = document.getElementById('adminHint');
+  if (!pwd) { if (hint) hint.textContent = '✗ Zadejte heslo'; return; }
+
+  // Ověř heslo voláním API — action=load s pwd vrátí data + history
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + `?action=load&pwd=${encodeURIComponent(pwd)}`);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error);
+    // Heslo je správné (API vrátilo data) — ulož do paměti
+    adminPassword = pwd;
+    isAdmin = true;
+    document.body.classList.add('admin-mode');
+    stopPolling();
+    // Aplikuj načtená data
+    if (json.data && json.data.length) data = json.data;
+    doneSet = new Set((json.done || []).map(Number));
+    phase = json.phase || 'hidden';
+    countdownTarget = json.countdown || null;
+    if (json.history) {
+      changeHistory.length = 0;
+      changeHistory.push(...json.history);
+    }
+    renderAdminBar();
+    renderAll();
+    startPolling();
+  } catch(e) {
+    if (hint) {
+      hint.textContent = '✗ Špatné heslo';
+      setTimeout(() => { const h = document.getElementById('adminHint'); if (h) h.textContent = ''; }, 3000);
+    }
+    if (document.getElementById('adminPwd')) document.getElementById('adminPwd').value = '';
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  adminPassword = null;
+  document.body.classList.remove('edit-mode', 'admin-mode');
+  stopPolling();
+  renderAdminBar();
+  loadData(false).then(() => startPolling());
+}
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function parseTimeVal(str) {
+  const s = str.trim().toUpperCase();
+  if (s===''||s==='-'||s==='—') return null;
+  if (s==='DSQ') return 'DSQ';
+  if (s==='NP')  return 'NP';
+  const n = parseFloat(s.replace(',','.'));
+  return isNaN(n) ? null : n;
+}
+
+function bestTime(d) {
+  const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
+  if (nums.length === 2) return Math.max(...nums);
+  if (nums.length === 1) return nums[0];
+  return null;
+}
+
+function formatZapis(val) {
+  if (!val) return null;
+  // Already in HH:MM or HH:MM:SS format
+  if (/^\d{1,2}:\d{2}/.test(String(val))) return String(val).slice(0, 5);
+  // Google Sheets date-time string: "Sat Dec 30 1899 21:37:00 GMT+0100 ..."
+  const d = new Date(val);
+  if (!isNaN(d.getTime())) {
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+  return String(val);
+}
+
+function timeDisplay(val) {
+  if (val===null||val===undefined) return '—';
+  if (val==='DSQ') return 'DSQ';
+  if (val==='NP')  return 'NP';
+  return val.toFixed(2)+' s';
+}
+
+function hideOverlay() {
+  const el = document.getElementById('loadingOverlay');
+  if (!el) return;
+  el.classList.add('hidden');
+  setTimeout(() => el.remove(), 300);
+}
+
+// ═══════════════════════════════════════════════════════
+//  FÁZE + ODPOČET
+// ═══════════════════════════════════════════════════════
+let _countdownTimer = null;
 
 function setPhase(newPhase) {
   phase = newPhase;
@@ -714,6 +787,14 @@ function setPhase(newPhase) {
   renderResults();
   renderStartlistSection();
 }
+
+function setCountdown(isoStr) {
+  countdownTarget = isoStr || null;
+  saveCountdown();
+  renderPhaseBanner();
+}
+
+function clearCountdown() { setCountdown(null); }
 
 function applyCountdown() {
   const val = document.getElementById('cdtInput')?.value;
@@ -730,19 +811,43 @@ function toggleCdtAccordion() {
   if (isOpen) setTimeout(() => document.getElementById('cdtInput')?.focus(), 50);
 }
 
+function startCountdownTick() {
+  if (_countdownTimer) clearInterval(_countdownTimer);
+  _countdownTimer = setInterval(() => {
+    const el = document.getElementById('countdownDisplay');
+    if (!el) { clearInterval(_countdownTimer); return; }
+    renderCountdownDisplay(el);
+  }, 1000);
+}
+
+function renderCountdownDisplay(el) {
+  if (!countdownTarget) { el.innerHTML = ''; return; }
+  const diff = new Date(countdownTarget) - Date.now();
+  if (diff <= 0) { el.innerHTML = `<div class="countdown-done">🎉 Soutěž právě začíná!</div>`; return; }
+  const totalSec = Math.floor(diff / 1000);
+  const d = Math.floor(totalSec / 86400);
+  const h = Math.floor((totalSec % 86400) / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const pad = n => String(n).padStart(2, '0');
+  const units = d > 0
+    ? [{ v:d, l:'dní' }, { v:h, l:'hodin' }, { v:m, l:'minut' }, { v:s, l:'sekund' }]
+    : [{ v:h, l:'hodin' }, { v:m, l:'minut' }, { v:s, l:'sekund' }];
+  el.innerHTML = `<div class="countdown-wrap">${units.map(u=>`<div class="countdown-unit"><span class="countdown-num">${pad(u.v)}</span><span class="countdown-label">${u.l}</span></div>`).join('')}</div>`;
+}
+
 function renderPhaseBanner() {
   const el  = document.getElementById('phaseBanner');
   const cdp = document.getElementById('countdownPanel');
   if (!el) return;
 
-  // Admin countdown panel — renderuj do samostatného prvku pod historií
   if (cdp) {
     if (isAdmin) {
       cdp.style.display = '';
-      const curVal   = countdownTarget ? countdownTarget.slice(0, 16) : '';
+      const curVal    = countdownTarget ? countdownTarget.slice(0, 16) : '';
       const hasTarget = !!countdownTarget;
       cdp.innerHTML = `
-        <div class="history-header" onclick="toggleCdtAccordion()" id="cdtToggle" style="cursor:pointer;user-select:none;">
+        <div class="history-header" onclick="toggleCdtAccordion()" id="cdtToggle">
           <span class="history-title">⏱️ Nastavení odpočtu</span>
           <div style="display:flex;align-items:center;gap:10px">
             ${hasTarget ? `<span style="font-size:12px;color:#16a34a;font-weight:500;">✓ ${new Date(countdownTarget).toLocaleString('cs-CZ')}</span>` : ''}
@@ -770,24 +875,15 @@ function renderPhaseBanner() {
     if (_countdownTimer) { clearInterval(_countdownTimer); _countdownTimer = null; }
     return;
   }
+  if (isAdmin) { el.innerHTML = ''; return; }
 
-  if (isAdmin) {
-    el.innerHTML = '';
-    return;
-  }
-
-  // Návštěvník
   el.innerHTML = `<div class="phase-banner">
     <h2>Soutěž zatím nezačala</h2>
     <p>Startovní listina bude zveřejněna před zahájením soutěže dle pořadí přihlášek na FireSportu.</p>
     <div id="countdownDisplay"></div>
   </div>`;
-
   const cdEl = document.getElementById('countdownDisplay');
-  if (countdownTarget && cdEl) {
-    renderCountdownDisplay(cdEl);
-    startCountdownTick();
-  }
+  if (countdownTarget && cdEl) { renderCountdownDisplay(cdEl); startCountdownTick(); }
 }
 
 function renderStartlistSection() {
@@ -796,250 +892,68 @@ function renderStartlistSection() {
   sec.style.display = (isAdmin || phase === 'results') ? '' : 'none';
 }
 
-// ── OPTIMALIZACE: debounce pro ukládání historie ──────
-// Historie se mění jen při zadání času — ukládá se max 1× za 800ms,
-// aby rychlé opravy nevygenerovaly 3–4 zápisy za sebou.
-let _saveHistoryTimer = null;
-function saveHistory() {
-  if (_saveHistoryTimer) clearTimeout(_saveHistoryTimer);
-  _saveHistoryTimer = setTimeout(() => {
-    // Firebase odstraňuje null hodnoty — nahradíme je řetězcem '__null__'
-    const sanitize = val => val === null || val === undefined ? '__null__' : val;
-    const clean = changeHistory.slice(0, 10).map(h => ({
-      ...h,
-      prev: { cas1: sanitize(h.prev.cas1), cas2: sanitize(h.prev.cas2), zapisCas: sanitize(h.prev.zapisCas) },
-      next: { cas1: sanitize(h.next.cas1), cas2: sanitize(h.next.cas2) }
-    }));
-    set(ref(db, 'history'), clean.length ? clean : null)
-      .catch(e => console.error('Firebase saveHistory:', e));
-  }, 800);
-}
-
-function restoreNull(val) {
-  return val === '__null__' ? null : val;
-}
-
-// ── OPTIMALIZACE: načítání done jako objekt → Set ─────
-// done je uloženo jako { "1": true, "3": true } — převedeme na Set
-function parseDoneSnap(snap) {
-  if (!snap.exists()) return new Set();
-  const val = snap.val();
-  // Podpora starého formátu (pole) i nového (objekt)
-  if (Array.isArray(val)) return new Set(val.map(Number));
-  return new Set(Object.keys(val).map(Number));
-}
-
-function hideOverlay() {
-  const el = document.getElementById('loadingOverlay');
-  if (!el) return;
-  el.classList.add('hidden');
-  setTimeout(() => el.remove(), 300);
-}
-
-// ── OPTIMALIZACE: načtení pouze veřejných dat pro návštěvníky ─
-// Návštěvník nepotřebuje historii — ušetříme 1 read z 5.
-// Vše načteme v 1 jediném get() z kořenového uzlu 'public',
-// místo 4 samostatných get() volání (data, done, phase, countdown).
-//
-// POZNÁMKA: Aby tato optimalizace fungovala naplno, je potřeba
-// v Firebase pravidlech přesunout data/done/phase/countdown
-// pod uzel "public/" a nastavit read přístup jen tam pro nepřihlášené.
-// Aktuálně funguje jako 1 × Promise.all se 4 get() — stále lepší
-// než 5 samostatných volání kvůli paralelnímu zpracování.
-async function loadFromFirebase() {
-  try {
-    const [dataSnap, doneSnap, phaseSnap, cdSnap] = await Promise.all([
-      get(ref(db, 'data')),
-      get(ref(db, 'done')),
-      get(ref(db, 'phase')),
-      get(ref(db, 'countdown'))
-    ]);
-    if (dataSnap.exists()) {
-      data = dataSnap.val();
-    } else {
-      await set(ref(db, 'data'), DEFAULT_DATA);
-      data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-    }
-    doneSet = parseDoneSnap(doneSnap);
-    phase = phaseSnap.exists() ? phaseSnap.val() : 'hidden';
-    countdownTarget = cdSnap.exists() ? cdSnap.val() : null;
-    // Historie se pro návštěvníky vůbec nenačítá — není třeba
-  } catch (e) {
-    console.error('Firebase load error:', e);
-  }
-  renderPhaseBanner();
-  renderStartlistSection();
-  renderResults();
-  renderStartlist();
-  renderHistory();
-  hideOverlay();
-}
-
-// ── REALTIME LISTENERY PRO ADMINA ─────────────────────
-// OPTIMALIZACE: Listenery pro done a countdown jsou sdíleny do
-// jediného uzlu. Countdown listener má vlastní unsubscribe proměnnou
-// (dříve chyběl — způsoboval memory leak a duplikované listenery
-// po opakovaném přihlášení/odhlášení).
-let adminDataUnsub     = null;
-let adminDoneUnsub     = null;
-let adminPhaseUnsub    = null;
-let adminCdUnsub       = null;
-
-onAuthStateChanged(auth, user => {
-  isAdmin = !!user;
-  if (!isAdmin) {
-    document.body.classList.remove('edit-mode');
-    document.body.classList.remove('admin-mode');
-    // Odhlášení: zruš všechny listenery včetně countdown
-    if (adminDataUnsub)  { adminDataUnsub();  adminDataUnsub  = null; }
-    if (adminDoneUnsub)  { adminDoneUnsub();  adminDoneUnsub  = null; }
-    if (adminPhaseUnsub) { adminPhaseUnsub(); adminPhaseUnsub = null; }
-    if (adminCdUnsub)    { adminCdUnsub();    adminCdUnsub    = null; }
-    renderAdminBar();
-    loadFromFirebase();
-  } else {
-    document.body.classList.add('admin-mode');
-
-    // OPTIMALIZACE: Admin dostává data přes onValue (realtime),
-    // ale hideOverlay se volá jen při prvním načtení, ne při každém update.
-    let _dataFirstLoad = true;
-    adminDataUnsub = onValue(ref(db, 'data'), snap => {
-      if (snap.exists()) data = snap.val();
-      renderResults();
-      renderStartlist();
-      if (_dataFirstLoad) { hideOverlay(); _dataFirstLoad = false; }
-    });
-
-    adminDoneUnsub = onValue(ref(db, 'done'), snap => {
-      doneSet = parseDoneSnap(snap);
-      renderStartlist();
-    });
-
-    adminPhaseUnsub = onValue(ref(db, 'phase'), snap => {
-      phase = snap.exists() ? snap.val() : 'hidden';
-      renderAdminBar();
-      renderPhaseBanner();
-    });
-
-    adminCdUnsub = onValue(ref(db, 'countdown'), snap => {
-      countdownTarget = snap.exists() ? snap.val() : null;
-      renderPhaseBanner();
-    });
-
-    // Historie se načte jednorázově (jen pro admina, není veřejná)
-    get(ref(db, 'history')).then(histSnap => {
-      if (histSnap.exists()) {
-        const loaded = histSnap.val();
-        changeHistory.length = 0;
-        changeHistory.push(...loaded.map(h => ({
-          ...h,
-          prev: { cas1: restoreNull(h.prev.cas1), cas2: restoreNull(h.prev.cas2), zapisCas: restoreNull(h.prev.zapisCas) },
-          next: { cas1: restoreNull(h.next.cas1), cas2: restoreNull(h.next.cas2) }
-        })));
-      }
-      renderHistory();
-    }).catch(e => console.error('Firebase history load error:', e));
-    renderAdminBar();
-  }
-});
-
-// ── HELPER: HTML escape (ochrana proti XSS) ──────────
-function esc(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-// ── HELPER: parse time value ──────────────────────────
-function parseTimeVal(str) {
-  const s = str.trim().toUpperCase();
-  if (s === '' || s === '-' || s === '—') return null;
-  if (s === 'DSQ') return 'DSQ';
-  if (s === 'NP')  return 'NP';
-  const n = parseFloat(s.replace(',', '.'));
-  return isNaN(n) ? null : n;
-}
-
-// ── VÝSLEDKOVÁ TABULKA ────────────────────────────────
-function bestTime(d) {
-  const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
-  if (nums.length === 2) return Math.max(...nums);
-  if (nums.length === 1) return nums[0];
-  return null;
-}
-
+// ═══════════════════════════════════════════════════════
+//  VÝSLEDKOVÁ TABULKA
+// ═══════════════════════════════════════════════════════
 function renderTimeCell(val, isBest) {
-  if (val === null || val === undefined) return `<td class="tcell empty">—</td>`;
-  if (val === "DSQ") return `<td class="tcell" style="text-align:right"><span class="dsq-tag">DSQ</span></td>`;
-  if (val === "NP")  return `<td class="tcell" style="text-align:right"><span class="np-tag">NP</span></td>`;
+  if (val===null||val===undefined) return `<td class="tcell empty">—</td>`;
+  if (val==='DSQ') return `<td class="tcell" style="text-align:right"><span class="dsq-tag">DSQ</span></td>`;
+  if (val==='NP')  return `<td class="tcell" style="text-align:right"><span class="np-tag">NP</span></td>`;
   return `<td class="tcell${isBest?' best':''}">${val.toFixed(2)}&thinsp;s</td>`;
 }
 
 function renderResults() {
   const el = document.getElementById('content');
   el.innerHTML = '';
-
-  // Návštěvníci vidí výsledky jen ve fázi 'results'
   if (!isAdmin && phase !== 'results') return;
 
   CATEGORIES.forEach(cat => {
     function hasTime(d) {
-      const c1 = d.cas1, c2 = d.cas2;
-      const valid = v => v !== null && v !== undefined && v !== '' && v !== false;
-      return valid(c1) || valid(c2);
+      const valid = v => v!==null&&v!==undefined&&v!==''&&v!==false;
+      return valid(d.cas1)||valid(d.cas2);
     }
-    let rows = data.filter(d => d.kategorie === cat && hasTime(d));
+    let rows = data.filter(d => d.kategorie===cat && hasTime(d));
     if (!rows.length) return;
 
-    rows = [...rows].sort((a, b) => {
-      const ta = bestTime(a), tb = bestTime(b);
-      if (ta===null && tb===null) return 0;
-      if (ta===null) return 1;
-      if (tb===null) return -1;
-      return ta - tb;
+    rows = [...rows].sort((a,b) => {
+      const ta=bestTime(a), tb=bestTime(b);
+      if (ta===null&&tb===null) return 0;
+      if (ta===null) return 1; if (tb===null) return -1;
+      return ta-tb;
     });
 
-    const rowsHtml = rows.map((d, i) => {
-      const bt = bestTime(d);
-      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
-      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':(i+1)+'.';
-      const rankCls = i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':'';
-      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
-      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
-      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      const bestHtml = bt!==null
-        ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>`
-        : `<td class="best-col empty">—</td>`;
-
+    const rowsHtml = rows.map((d,i) => {
+      const bt=bestTime(d);
+      const rc=bt!==null?(i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''):'';
+      const rankTxt=i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':(i+1)+'.';
+      const rankCls=i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':'';
+      const c1n=typeof d.cas1==='number', c2n=typeof d.cas2==='number';
+      const c1worst=c1n&&c2n?d.cas1>=d.cas2:c1n;
+      const c2worst=c1n&&c2n?d.cas2>d.cas1:c2n;
+      const bestHtml=bt!==null?`<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>`:`<td class="best-col empty">—</td>`;
       return `<tr class="${rc}">
         <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
         <td><div class="tname">${esc(d.team)}</div></td>
-        ${renderTimeCell(d.cas1, c1worst)}
-        ${renderTimeCell(d.cas2, c2worst)}
-        ${bestHtml}
+        ${renderTimeCell(d.cas1,c1worst)}${renderTimeCell(d.cas2,c2worst)}${bestHtml}
       </tr>`;
     }).join('');
 
-    // Mobile cards for results
     function fmtTime(val) {
       if (val===null||val===undefined) return '<span class="worst">—</span>';
       if (val==='DSQ') return '<span class="dsq-tag">DSQ</span>';
       if (val==='NP')  return '<span class="np-tag">NP</span>';
       return val.toFixed(2)+'s';
     }
-    const cardsHtml = rows.map((d, i) => {
-      const bt = bestTime(d);
-      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
-      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
-      const isNum = !['🥇','🥈','🥉'].includes(rankTxt);
-      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
-      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
-      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      const bestStr = bt!==null ? `${bt.toFixed(2)}&thinsp;s` : null;
+    const cardsHtml = rows.map((d,i) => {
+      const bt=bestTime(d);
+      const rc=bt!==null?(i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''):'';
+      const rankTxt=i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const isNum=!['🥇','🥈','🥉'].includes(rankTxt);
+      const c1n=typeof d.cas1==='number', c2n=typeof d.cas2==='number';
+      const c1worst=c1n&&c2n?d.cas1>=d.cas2:c1n;
+      const c2worst=c1n&&c2n?d.cas2>d.cas1:c2n;
+      const bestStr=bt!==null?`${bt.toFixed(2)}&thinsp;s`:null;
       return `<div class="result-card ${rc}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
         <div class="rc-body">
@@ -1047,7 +961,7 @@ function renderResults() {
           <div class="rc-snum">St. č. ${esc(String(d.start))}</div>
         </div>
         <div class="rc-times">
-          ${bestStr ? `<div class="rc-best">${bestStr}</div>` : `<div class="rc-best empty">—</div>`}
+          ${bestStr?`<div class="rc-best">${bestStr}</div>`:`<div class="rc-best empty">—</div>`}
           <div class="rc-sub-times">
             <span class="${c1worst?'':'worst'}">${fmtTime(d.cas1)}</span>
             <span style="color:var(--muted)"> / </span>
@@ -1057,27 +971,17 @@ function renderResults() {
       </div>`;
     }).join('');
 
-    const n = rows.length;
-    const block = document.createElement('div');
-    block.className = 'category-block';
-    block.innerHTML = `
+    const n=rows.length;
+    const block=document.createElement('div');
+    block.className='category-block';
+    block.innerHTML=`
       <div class="cat-label">
         <span class="cat-name">${esc(cat)}</span>
         <span class="cat-pill">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
       </div>
       <table class="results-table">
-        <colgroup>
-          <col style="width:50px">
-          <col style="width:60px">
-          <col>
-          <col style="width:155px">
-          <col style="width:155px">
-          <col style="width:165px">
-        </colgroup>
-        <thead><tr>
-          <th class="c">Poř.</th><th class="c">St. č.</th><th>Tým</th>
-          <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th>
-        </tr></thead>
+        <colgroup><col style="width:50px"><col style="width:60px"><col><col style="width:155px"><col style="width:155px"><col style="width:165px"></colgroup>
+        <thead><tr><th class="c">Poř.</th><th class="c">St. č.</th><th>Tým</th><th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
       <div class="result-cards">${cardsHtml}</div>`;
@@ -1085,66 +989,45 @@ function renderResults() {
   });
 }
 
-// ── STARTOVNÍ LISTINA ────────────────────────────────
-function timeDisplay(val) {
-  if (val===null||val===undefined) return '—';
-  if (val==='DSQ') return 'DSQ';
-  if (val==='NP')  return 'NP';
-  return val.toFixed(2)+' s';
-}
-
+// ═══════════════════════════════════════════════════════
+//  STARTOVNÍ LISTINA
+// ═══════════════════════════════════════════════════════
 function renderStartlist() {
   const tbody = document.getElementById('startlistBody');
   const sorted = [...data].sort((a,b) => a.start - b.start);
   const editMode = isAdmin && document.body.classList.contains('edit-mode');
 
-  // Aktualizuj colgroup podle edit módu
   const table = document.getElementById('startlistTable');
   let cg = table.querySelector('colgroup');
   if (!cg) { cg = document.createElement('colgroup'); table.prepend(cg); }
   if (editMode) {
-    cg.innerHTML = `
-      <col style="width:28px">
-      <col style="width:55px">
-      <col>
-      <col style="width:110px">
-      <col style="width:145px">
-      <col style="width:145px">
-      <col style="width:90px">
-      <col style="width:135px">
-      <col style="width:70px">`;
+    cg.innerHTML = `<col style="width:28px"><col style="width:55px"><col><col style="width:110px"><col style="width:145px"><col style="width:145px"><col style="width:90px"><col style="width:135px"><col style="width:70px">`;
   } else {
-    cg.innerHTML = `
-      <col style="width:55px">
-      <col>
-      <col style="width:110px">
-      <col style="width:145px">
-      <col style="width:145px">
-      <col style="width:90px">
-      <col style="width:135px">
-      <col style="width:70px">`;
+    cg.innerHTML = `<col style="width:55px"><col><col style="width:110px"><col style="width:145px"><col style="width:145px"><col style="width:90px"><col style="width:135px"><col style="width:70px">`;
   }
-  // Update action column header
   document.getElementById('actionColHead').textContent = isAdmin ? 'Akce' : '';
+  const thead = table.querySelector('thead tr');
+  const existingDragTh = thead.querySelector('.drag-th');
+  if (editMode && !existingDragTh) {
+    const th = document.createElement('th');
+    th.className = 'drag-th';
+    thead.prepend(th);
+  } else if (!editMode && existingDragTh) {
+    existingDragTh.remove();
+  }
 
-  tbody.innerHTML = sorted.map((d, i) => {
+  tbody.innerHTML = sorted.map((d,i) => {
     const isDone = doneSet.has(d.start);
     const isNext = !isDone && sorted.findIndex(x => !doneSet.has(x.start)) === i;
     const rowClass = isDone ? 'done' : isNext ? 'next' : '';
+    const statusTag = isDone ? `<span class="done-tag">✓ Odběhnuto</span>` : isNext ? `<span class="next-tag">▶ Příprava</span>` : '';
 
-    const statusTag = isDone
-      ? `<span class="done-tag">✓ Odběhnuto</span>`
-      : isNext ? `<span class="next-tag">▶ Na řadě</span>` : '';
-
-    // Editable cells (only in admin + edit mode)
     const teamCell = editMode
       ? `<td><div class="tname editable" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${esc(d.team)}</div></td>`
       : `<td><div class="tname">${esc(d.team)}</div></td>`;
 
     const catCell = editMode
-      ? `<td><select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">
-          ${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}
-         </select></td>`
+      ? `<td><select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}</select></td>`
       : `<td><span class="cbadge ${BADGE[d.kategorie]}">${esc(d.kategorie)}</span></td>`;
 
     const cas1Cell = editMode
@@ -1160,23 +1043,19 @@ function renderStartlist() {
         : `<td class="tcell">${timeDisplay(d.cas2)}</td>`;
 
     const actionCell = isAdmin ? `<td style="text-align:right;white-space:nowrap">
-        ${editMode ? `
-          <button class="order-btn" title="Posunout nahoru" onclick="moveTeam(${d.start}, -1)" ${i===0?'disabled':''}>↑</button>
-          <button class="order-btn" title="Posunout dolů" onclick="moveTeam(${d.start}, 1)" ${i===sorted.length-1?'disabled':''}>↓</button>
-        ` : ''}
-        <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
-        ${editMode ? `<button class="del-btn" title="Odstranit tým" onclick="deleteTeam(${d.start})">✕</button>` : ''}
-      </td>` : '';
+      ${editMode ? `<button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button><button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>` : ''}
+      <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
+      ${editMode ? `<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>` : ''}
+    </td>` : '';
 
     const tsVal = d.zapisCas
-      ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--sub)">${d.zapisCas}</span>`
+      ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--sub)">${formatZapis(d.zapisCas)}</span>`
       : `<span style="font-size:12px;color:var(--muted)">—</span>`;
 
     const dragHandle = editMode
-      ? `<td style="width:28px;text-align:center;padding:0 4px"><span class="drag-handle" title="Přetáhnout">⠿</span></td>`
-      : '';
+      ? `<td style="width:28px;text-align:center;padding:0 4px"><span class="drag-handle" title="Přetáhnout">⠿</span></td>` : '';
 
-    return `<tr class="${rowClass}" data-start="${d.start}" ${editMode ? 'draggable="true"' : ''}>
+    return `<tr class="${rowClass}" data-start="${d.start}" ${editMode?'draggable="true"':''}>
       ${dragHandle}
       <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
       ${teamCell}${catCell}${cas1Cell}${cas2Cell}
@@ -1186,15 +1065,12 @@ function renderStartlist() {
     </tr>`;
   }).join('');
 
-  // ── Mobile cards for startlist ──
-  const mobileCards = sorted.map((d, i) => {
+  // Mobile cards
+  const mobileCards = sorted.map((d,i) => {
     const isDone = doneSet.has(d.start);
     const isNext = !isDone && sorted.findIndex(x => !doneSet.has(x.start)) === i;
     const rowClass = isDone ? 'done' : isNext ? 'next' : '';
-
-    const statusTag = isDone
-      ? `<span class="done-tag">✓ Odběhnuto</span>`
-      : isNext ? `<span class="next-tag">▶ Na řadě</span>` : '';
+    const statusTag = isDone ? `<span class="done-tag">✓ Odběhnuto</span>` : isNext ? `<span class="next-tag">▶ Příprava</span>` : '';
 
     const teamHtml = editMode
       ? `<div class="tname editable sl-team" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${esc(d.team)}</div>`
@@ -1207,28 +1083,25 @@ function renderStartlist() {
     const c1Html = editMode
       ? `<input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" />`
       : isAdmin
-        ? `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas1)}</span>`
+        ? `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer">${timeDisplay(d.cas1)}</span>`
         : `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''}">${timeDisplay(d.cas1)}</span>`;
 
     const c2Html = editMode
       ? `<input class="time-input" value="${timeDisplay(d.cas2).replace(' s','')}" data-field="cas2" data-start="${d.start}" onblur="saveTimeField(this)" />`
       : isAdmin
-        ? `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</span>`
+        ? `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer">${timeDisplay(d.cas2)}</span>`
         : `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''}">${timeDisplay(d.cas2)}</span>`;
 
     const actionsHtml = isAdmin ? `<div class="sl-card-actions">
-      ${editMode ? `
-        <button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button>
-        <button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>
-      ` : ''}
+      ${editMode?`<button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button><button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>`:''}
       <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
-      ${editMode ? `<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>` : ''}
-      ${d.zapisCas ? `<span class="sl-zapis">${d.zapisCas}</span>` : ''}
+      ${editMode?`<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>`:''}
+      ${d.zapisCas?`<span class="sl-zapis">${formatZapis(d.zapisCas)}</span>`:''}
     </div>` : '';
 
-    return `<div class="sl-card ${rowClass}" data-start="${d.start}" ${editMode ? 'draggable="true"' : ''}>
+    return `<div class="sl-card ${rowClass}" data-start="${d.start}" ${editMode?'draggable="true"':''}>
       <div class="sl-card-top">
-        ${editMode ? `<span class="drag-handle" title="Přetáhnout">⠿</span>` : ''}
+        ${editMode?`<span class="drag-handle">⠿</span>`:''}
         <span class="sl-snum-big">${d.start}</span>
         ${teamHtml}
         <div class="sl-status">${statusTag}</div>
@@ -1236,175 +1109,116 @@ function renderStartlist() {
       <div class="sl-card-bottom">
         <div class="sl-cat">${catHtml}</div>
         <div class="sl-times">
-          <div class="sl-time-item">
-            <span class="sl-time-label">Levý</span>
-            ${c1Html}
-          </div>
-          <div class="sl-time-item">
-            <span class="sl-time-label">Pravý</span>
-            ${c2Html}
-          </div>
+          <div class="sl-time-item"><span class="sl-time-label">Levý</span>${c1Html}</div>
+          <div class="sl-time-item"><span class="sl-time-label">Pravý</span>${c2Html}</div>
         </div>
       </div>
       ${actionsHtml}
     </div>`;
   }).join('');
 
-  // Render mobile cards container (already in HTML)
-  const cardsContainer = document.getElementById('startlistCardsContainer');
-  cardsContainer.innerHTML = mobileCards;
+  document.getElementById('startlistCardsContainer').innerHTML = mobileCards;
 
-  // Inicializuj drag & drop pokud je admin v edit módu
-  if (isAdmin && document.body.classList.contains('edit-mode')) {
-    initDragDrop();
-  }
+  if (isAdmin && document.body.classList.contains('edit-mode')) initDragDrop();
 }
 
-// ── DRAG & DROP ───────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  DRAG & DROP (beze změny logiky)
+// ═══════════════════════════════════════════════════════
 let dragSrcStart = null;
 let _touchMoveHandler = null;
 let _touchEndHandler  = null;
 
 function initDragDrop() {
-  // Odeber předchozí touch listenery aby se nehromadily při každém renderu
-  if (_touchMoveHandler) { document.removeEventListener('touchmove', _touchMoveHandler, { passive: false }); _touchMoveHandler = null; }
+  if (_touchMoveHandler) { document.removeEventListener('touchmove', _touchMoveHandler, { passive:false }); _touchMoveHandler = null; }
   if (_touchEndHandler)  { document.removeEventListener('touchend',  _touchEndHandler);  _touchEndHandler  = null; }
 
-  // ── Desktop drag (table rows) ──
   const tbody = document.getElementById('startlistBody');
   tbody.querySelectorAll('tr[draggable]').forEach(row => {
-    row.addEventListener('dragstart', e => {
-      dragSrcStart = parseInt(row.dataset.start);
-      row.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    row.addEventListener('dragend', () => {
-      row.classList.remove('dragging');
-      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
-    });
-    row.addEventListener('dragover', e => {
-      e.preventDefault();
-      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
-      row.classList.add('drag-over');
-    });
-    row.addEventListener('drop', e => {
-      e.preventDefault();
-      const targetStart = parseInt(row.dataset.start);
-      if (dragSrcStart !== null && dragSrcStart !== targetStart) {
-        swapByPosition(dragSrcStart, targetStart);
-      }
-    });
+    row.addEventListener('dragstart', e => { dragSrcStart=parseInt(row.dataset.start); row.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+    row.addEventListener('dragend', () => { row.classList.remove('dragging'); tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('drag-over')); });
+    row.addEventListener('dragover', e => { e.preventDefault(); tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('drag-over')); row.classList.add('drag-over'); });
+    row.addEventListener('drop', e => { e.preventDefault(); const t=parseInt(row.dataset.start); if(dragSrcStart!==null&&dragSrcStart!==t) swapByPosition(dragSrcStart,t); });
   });
 
-  // ── Touch drag (mobile cards) ──
   const container = document.getElementById('startlistCardsContainer');
   if (!container) return;
-  let touchDragEl = null, touchClone = null, touchOffsetY = 0;
+  let touchDragEl=null, touchClone=null, touchOffsetY=0;
 
   container.querySelectorAll('.sl-card[draggable] .drag-handle').forEach(handle => {
     handle.addEventListener('touchstart', e => {
-      const card = handle.closest('.sl-card');
-      dragSrcStart = parseInt(card.dataset.start);
-      touchDragEl = card;
-      const touch = e.touches[0];
-      const rect = card.getBoundingClientRect();
-      touchOffsetY = touch.clientY - rect.top;
-
-      touchClone = card.cloneNode(true);
-      touchClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;opacity:0.85;z-index:9999;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:10px;`;
-      document.body.appendChild(touchClone);
-      card.classList.add('dragging');
-      e.preventDefault();
-    }, { passive: false });
+      const card=handle.closest('.sl-card');
+      dragSrcStart=parseInt(card.dataset.start); touchDragEl=card;
+      const touch=e.touches[0]; const rect=card.getBoundingClientRect();
+      touchOffsetY=touch.clientY-rect.top;
+      touchClone=card.cloneNode(true);
+      touchClone.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;opacity:0.85;z-index:9999;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:10px;`;
+      document.body.appendChild(touchClone); card.classList.add('dragging'); e.preventDefault();
+    }, { passive:false });
   });
 
   _touchMoveHandler = e => {
     if (!touchClone) return;
-    const touch = e.touches[0];
-    touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
-
-    container.querySelectorAll('.sl-card').forEach(c => c.classList.remove('drag-over'));
-    const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.sl-card');
-    if (target && target !== touchDragEl) target.classList.add('drag-over');
+    const touch=e.touches[0]; touchClone.style.top=(touch.clientY-touchOffsetY)+'px';
+    container.querySelectorAll('.sl-card').forEach(c=>c.classList.remove('drag-over'));
+    const target=document.elementFromPoint(touch.clientX,touch.clientY)?.closest('.sl-card');
+    if (target&&target!==touchDragEl) target.classList.add('drag-over');
     e.preventDefault();
   };
-  document.addEventListener('touchmove', _touchMoveHandler, { passive: false });
+  document.addEventListener('touchmove', _touchMoveHandler, { passive:false });
 
   _touchEndHandler = e => {
     if (!touchClone) return;
-    const touch = e.changedTouches[0];
-    const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.sl-card');
-    const targetStart = target ? parseInt(target.dataset.start) : null;
-
-    if (touchClone) { touchClone.remove(); touchClone = null; }
-    if (touchDragEl) { touchDragEl.classList.remove('dragging'); touchDragEl = null; }
-    container.querySelectorAll('.sl-card').forEach(c => c.classList.remove('drag-over'));
-
-    if (dragSrcStart !== null && targetStart !== null && dragSrcStart !== targetStart) {
-      swapByPosition(dragSrcStart, targetStart);
-    }
-    dragSrcStart = null;
+    const touch=e.changedTouches[0];
+    const target=document.elementFromPoint(touch.clientX,touch.clientY)?.closest('.sl-card');
+    const targetStart=target?parseInt(target.dataset.start):null;
+    if (touchClone) { touchClone.remove(); touchClone=null; }
+    if (touchDragEl) { touchDragEl.classList.remove('dragging'); touchDragEl=null; }
+    container.querySelectorAll('.sl-card').forEach(c=>c.classList.remove('drag-over'));
+    if (dragSrcStart!==null&&targetStart!==null&&dragSrcStart!==targetStart) swapByPosition(dragSrcStart,targetStart);
+    dragSrcStart=null;
   };
   document.addEventListener('touchend', _touchEndHandler);
 }
 
 function swapByPosition(srcStart, tgtStart) {
-  const sorted = [...data].sort((a, b) => a.start - b.start);
-  const srcIdx = sorted.findIndex(d => d.start === srcStart);
-  const tgtIdx = sorted.findIndex(d => d.start === tgtStart);
-  if (srcIdx === -1 || tgtIdx === -1) return;
-
-  // Přesuň src na pozici tgt — posuň ostatní
-  const moved = sorted.splice(srcIdx, 1)[0];
-  sorted.splice(tgtIdx, 0, moved);
-
-  // Přepiš start čísla podle nového pořadí
-  sorted.forEach((d, i) => { d.start = i + 1; });
-  // Drag & drop mění start čísla více záznamů najednou — nutný plný zápis.
-  // Debounce zabrání vícenásobnému zápisu při rychlém přetahování.
+  const sorted=[...data].sort((a,b)=>a.start-b.start);
+  const srcIdx=sorted.findIndex(d=>d.start===srcStart);
+  const tgtIdx=sorted.findIndex(d=>d.start===tgtStart);
+  if (srcIdx===-1||tgtIdx===-1) return;
+  const moved=sorted.splice(srcIdx,1)[0];
+  sorted.splice(tgtIdx,0,moved);
+  sorted.forEach((d,i)=>{d.start=i+1;});
   saveData(); renderResults(); renderStartlist();
 }
 
-// ── QUICK TIME ENTRY ──────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  QUICK TIME ENTRY
+// ═══════════════════════════════════════════════════════
 function openQuickTime(startNum) {
   if (!isAdmin) return;
-  const row = data.find(d => d.start === startNum);
+  const row=data.find(d=>d.start===startNum);
   if (!row) return;
-
   document.getElementById('qtpOverlay')?.remove();
   document.getElementById('qtpPopup')?.remove();
 
-  const overlay = document.createElement('div');
-  overlay.id = 'qtpOverlay';
-  overlay.className = 'qtp-overlay';
-  overlay.onclick = closeQuickTime;
+  const overlay=document.createElement('div');
+  overlay.id='qtpOverlay'; overlay.className='qtp-overlay'; overlay.onclick=closeQuickTime;
   document.body.appendChild(overlay);
 
-  const popup = document.createElement('div');
-  popup.id = 'qtpPopup';
-  popup.className = 'quick-time-popup';
-  popup.innerHTML = `
+  const popup=document.createElement('div');
+  popup.id='qtpPopup'; popup.className='quick-time-popup';
+  popup.innerHTML=`
     <div class="qtp-title">ZADÁNÍ ČASU — St. č. ${esc(String(row.start))}</div>
     <div class="qtp-team">${esc(row.team)}</div>
-    <div class="qtp-row">
-      <span class="qtp-label">Levý terč</span>
-      <input class="qtp-input" id="qtpCas1" placeholder="např. 12.34"
-        value="${row.cas1 !== null && row.cas1 !== undefined ? (typeof row.cas1 === 'number' ? row.cas1.toFixed(2) : row.cas1) : ''}" />
-    </div>
-    <div class="qtp-row">
-      <span class="qtp-label">Pravý terč</span>
-      <input class="qtp-input" id="qtpCas2" placeholder="např. 11.85"
-        value="${row.cas2 !== null && row.cas2 !== undefined ? (typeof row.cas2 === 'number' ? row.cas2.toFixed(2) : row.cas2) : ''}" />
-    </div>
-    <div class="qtp-btns">
-      <button class="qtp-cancel" onclick="closeQuickTime()">Zrušit</button>
-      <button class="qtp-save" onclick="saveQuickTime(${startNum})">Uložit</button>
-    </div>`;
-  popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)';
+    <div class="qtp-row"><span class="qtp-label">Levý terč</span><input class="qtp-input" id="qtpCas1" placeholder="např. 12.34" value="${row.cas1!==null&&row.cas1!==undefined?(typeof row.cas1==='number'?row.cas1.toFixed(2):row.cas1):''}" /></div>
+    <div class="qtp-row"><span class="qtp-label">Pravý terč</span><input class="qtp-input" id="qtpCas2" placeholder="např. 11.85" value="${row.cas2!==null&&row.cas2!==undefined?(typeof row.cas2==='number'?row.cas2.toFixed(2):row.cas2):''}" /></div>
+    <div class="qtp-btns"><button class="qtp-cancel" onclick="closeQuickTime()">Zrušit</button><button class="qtp-save" onclick="saveQuickTime(${startNum})">Uložit</button></div>`;
+  popup.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)';
   document.body.appendChild(popup);
   document.getElementById('qtpCas1').focus();
-  document.getElementById('qtpCas1').onkeydown = e => { if (e.key === 'Enter') document.getElementById('qtpCas2').focus(); };
-  document.getElementById('qtpCas2').onkeydown = e => { if (e.key === 'Enter') saveQuickTime(startNum); };
+  document.getElementById('qtpCas1').onkeydown=e=>{if(e.key==='Enter') document.getElementById('qtpCas2').focus();};
+  document.getElementById('qtpCas2').onkeydown=e=>{if(e.key==='Enter') saveQuickTime(startNum);};
 }
 
 function closeQuickTime() {
@@ -1413,134 +1227,58 @@ function closeQuickTime() {
 }
 
 function saveQuickTime(startNum) {
-  const row = data.find(d => d.start === startNum);
+  const row=data.find(d=>d.start===startNum);
   if (!row) return;
-  const v1 = parseTimeVal(document.getElementById('qtpCas1').value);
-  const v2 = parseTimeVal(document.getElementById('qtpCas2').value);
-  const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
-  row.cas1 = v1;
-  row.cas2 = v2;
-  const bothEmpty = row.cas1 === null && row.cas2 === null;
-  if (bothEmpty) {
-    row.zapisCas = null;
+  const v1=parseTimeVal(document.getElementById('qtpCas1').value);
+  const v2=parseTimeVal(document.getElementById('qtpCas2').value);
+  const prev={cas1:row.cas1,cas2:row.cas2,zapisCas:row.zapisCas};
+  row.cas1=v1; row.cas2=v2;
+  if (row.cas1===null&&row.cas2===null) {
+    row.zapisCas=null;
   } else {
-    const now = new Date();
-    row.zapisCas = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const now=new Date();
+    row.zapisCas=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   }
-  addHistory(row, prev, v1, v2);
+  addHistory(row,prev,v1,v2);
   closeQuickTime();
-  // OPTIMALIZACE: patch jen 3 pole (cas1, cas2, zapisCas) jednoho týmu
-  // místo celého pole všech týmů → ~90 % úspora dat při zadávání časů
   saveTeamPatch(startNum);
   renderResults(); renderStartlist();
 }
 
-// ── HISTORIE ZMĚN ─────────────────────────────────────
-const changeHistory = [];
-
-function addHistory(row, prev, newCas1, newCas2) {
-  const now = new Date();
-  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
-  changeHistory.unshift({ ts, team: row.team, start: row.start, prev, next: { cas1: newCas1, cas2: newCas2 } });
-  if (changeHistory.length > 10) changeHistory.length = 10;
-  saveHistory();
-  renderHistory();
-}
-
-function renderHistory() {
-  const panel = document.getElementById('historyPanel');
-  const body  = document.getElementById('historyBody');
-  if (!panel) return;
-  panel.style.display = isAdmin ? '' : 'none';
-  if (!isAdmin) return;
-
-  const items = changeHistory.map((h, idx) => {
-    const parts = [];
-    if (h.prev.cas1 !== h.next.cas1) parts.push(`Levý: ${timeDisplay(h.prev.cas1)} → ${timeDisplay(h.next.cas1)}`);
-    if (h.prev.cas2 !== h.next.cas2) parts.push(`Pravý: ${timeDisplay(h.prev.cas2)} → ${timeDisplay(h.next.cas2)}`);
-    return `<div class="history-item">
-      <span class="hi-time">${h.ts}</span>
-      <span class="hi-text"><strong>${esc(h.team)}</strong> (St.č.${esc(String(h.start))}): ${parts.join(', ')}</span>
-      <button class="hi-undo" onclick="undoHistory(${idx})">↩ Vrátit</button>
-    </div>`;
-  }).join('');
-
-  body.innerHTML = items || '<div class="history-empty">Zatím žádné změny.</div>';
-}
-
-function undoHistory(idx) {
-  const h = changeHistory[idx];
-  if (!h) return;
-  const row = data.find(d => d.start === h.start);
-  if (!row) return;
-  row.cas1 = h.prev.cas1;
-  row.cas2 = h.prev.cas2;
-  row.zapisCas = h.prev.zapisCas;
-  changeHistory.splice(idx, 1);
-  // OPTIMALIZACE: patch jen obnoveného záznamu
-  saveTeamPatch(h.start);
-  saveHistory(); renderResults(); renderStartlist(); renderHistory();
-}
-
-function clearHistory() {
-  if (!changeHistory.length) return;
-  if (!confirm('Opravdu vymazat celou historii změn?')) return;
-  changeHistory.length = 0;
-  saveHistory();
-  renderHistory();
-}
-
-function toggleHistoryBody() {
-  const body = document.getElementById('historyBody');
-  const icon = document.getElementById('historyToggleIcon');
-  body.classList.toggle('open');
-  icon.textContent = body.classList.contains('open') ? '▲ skrýt' : '▼ zobrazit';
-}
-
+// ═══════════════════════════════════════════════════════
+//  SAVE FIELD HANDLERS
+// ═══════════════════════════════════════════════════════
 function saveField(el) {
-  const startNum = parseInt(el.dataset.start);
-  const field = el.dataset.field;
-  const val = el.innerText.trim();
-  const row = data.find(d => d.start === startNum);
-  if (row) {
-    row[field] = val;
-    // OPTIMALIZACE: přejmenování týmu → patch jen 1 záznamu
-    saveTeamFullPatch(startNum);
-    renderResults();
-  }
+  const startNum=parseInt(el.dataset.start);
+  const field=el.dataset.field;
+  const val=el.innerText.trim();
+  const row=data.find(d=>d.start===startNum);
+  if (row) { row[field]=val; saveTeamFullPatch(startNum); renderResults(); }
 }
 
 function saveSelectField(el) {
-  const startNum = parseInt(el.dataset.start);
-  const field = el.dataset.field;
-  const val = el.value;
-  const row = data.find(d => d.start === startNum);
-  if (row) {
-    row[field] = val;
-    saveTeamFullPatch(startNum);
-    renderResults(); renderStartlist();
-  }
+  const startNum=parseInt(el.dataset.start);
+  const field=el.dataset.field;
+  const val=el.value;
+  const row=data.find(d=>d.start===startNum);
+  if (row) { row[field]=val; saveTeamFullPatch(startNum); renderResults(); renderStartlist(); }
 }
 
 function saveTimeField(el) {
-  const startNum = parseInt(el.dataset.start);
-  const field = el.dataset.field;
-  const val = parseTimeVal(el.value);
-  const row = data.find(d => d.start === startNum);
+  const startNum=parseInt(el.dataset.start);
+  const field=el.dataset.field;
+  const val=parseTimeVal(el.value);
+  const row=data.find(d=>d.start===startNum);
   if (row) {
-    const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
-    row[field] = val;
-    const bothEmpty = row.cas1 === null && row.cas2 === null;
-    if (bothEmpty) {
-      row.zapisCas = null;
-    } else if (val !== null) {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2,'0');
-      const mm = String(now.getMinutes()).padStart(2,'0');
-      row.zapisCas = `${hh}:${mm}`;
+    const prev={cas1:row.cas1,cas2:row.cas2,zapisCas:row.zapisCas};
+    row[field]=val;
+    if (row.cas1===null&&row.cas2===null) {
+      row.zapisCas=null;
+    } else if (val!==null) {
+      const now=new Date();
+      row.zapisCas=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     }
-    addHistory(row, prev, row.cas1, row.cas2);
-    // OPTIMALIZACE: patch jen časových polí jednoho týmu
+    addHistory(row,prev,row.cas1,row.cas2);
     saveTeamPatch(startNum);
     renderResults(); renderStartlist();
   }
@@ -1548,86 +1286,117 @@ function saveTimeField(el) {
 
 function deleteTeam(startNum) {
   if (!confirm('Opravdu odstranit tento tým?')) return;
-  data = data.filter(d => d.start !== startNum);
+  data=data.filter(d=>d.start!==startNum);
   doneSet.delete(startNum);
-  // Smazání týmu vyžaduje přepis celého pole (nelze patchovat mazání)
-  saveData(true);
-  saveDone();
+  saveData(true); saveDone();
   renderResults(); renderStartlist();
 }
 
 function addTeam() {
-  const maxStart = data.length ? Math.max(...data.map(d=>d.start)) : 0;
-  data.push({ start: maxStart+1, team: 'Nový tým', kategorie: 'Mladší děti', cas1: null, cas2: null });
-  // Přidání týmu mění délku pole — nutný plný zápis
+  const maxStart=data.length?Math.max(...data.map(d=>d.start)):0;
+  data.push({start:maxStart+1,team:'Nový tým',kategorie:'Mladší děti',cas1:null,cas2:null});
   saveData(true);
   renderResults(); renderStartlist();
   setTimeout(() => {
-    const mobileCards = document.getElementById('startlistCardsContainer');
-    const isMobile = mobileCards && window.getComputedStyle(mobileCards).display !== 'none';
-    const target = isMobile
-      ? mobileCards.lastElementChild
-      : document.getElementById('startlistBody')?.lastElementChild;
-    target?.scrollIntoView({ behavior: 'smooth' });
+    const mc=document.getElementById('startlistCardsContainer');
+    const isMobile=mc&&window.getComputedStyle(mc).display!=='none';
+    const target=isMobile?mc.lastElementChild:document.getElementById('startlistBody')?.lastElementChild;
+    target?.scrollIntoView({behavior:'smooth'});
   }, 50);
 }
 
-function moveTeam(startNum, dir) {
-  // Sort by current start number, swap with neighbour
-  const sorted = [...data].sort((a,b) => a.start - b.start);
-  const idx = sorted.findIndex(d => d.start === startNum);
-  const swapIdx = idx + dir;
-  if (swapIdx < 0 || swapIdx >= sorted.length) return;
-
-  // Swap start numbers between the two rows
-  const tmpStart = sorted[idx].start;
-  sorted[idx].start = sorted[swapIdx].start;
-  sorted[swapIdx].start = tmpStart;
-
-  // OPTIMALIZACE: debounce — při rychlém klikání ↑↓ se provede jen 1 zápis
+function moveTeam(startNum,dir) {
+  const sorted=[...data].sort((a,b)=>a.start-b.start);
+  const idx=sorted.findIndex(d=>d.start===startNum);
+  const swapIdx=idx+dir;
+  if (swapIdx<0||swapIdx>=sorted.length) return;
+  const tmp=sorted[idx].start;
+  sorted[idx].start=sorted[swapIdx].start;
+  sorted[swapIdx].start=tmp;
   saveData(); renderResults(); renderStartlist();
 }
 
-// ── DONE TOGGLE ───────────────────────────────────────
 function toggleDone(startNum) {
   if (!isAdmin) return;
-  const isDone = doneSet.has(startNum);
-  isDone ? doneSet.delete(startNum) : doneSet.add(startNum);
-  saveDone();
-  renderStartlist();
+  doneSet.has(startNum)?doneSet.delete(startNum):doneSet.add(startNum);
+  saveDone(); renderStartlist();
 }
 
-// ── ADMIN BAR ─────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  HISTORIE ZMĚN
+// ═══════════════════════════════════════════════════════
+function addHistory(row,prev,newCas1,newCas2) {
+  const now=new Date();
+  const ts=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  changeHistory.unshift({ts,team:row.team,start:row.start,prev,next:{cas1:newCas1,cas2:newCas2}});
+  if (changeHistory.length>10) changeHistory.length=10;
+  saveHistory(); renderHistory();
+}
+
+function renderHistory() {
+  const panel=document.getElementById('historyPanel');
+  const body=document.getElementById('historyBody');
+  if (!panel) return;
+  panel.style.display=isAdmin?'':'none';
+  if (!isAdmin) return;
+
+  const items=changeHistory.map((h,idx)=>{
+    const parts=[];
+    if(h.prev.cas1!==h.next.cas1) parts.push(`Levý: ${timeDisplay(h.prev.cas1)} → ${timeDisplay(h.next.cas1)}`);
+    if(h.prev.cas2!==h.next.cas2) parts.push(`Pravý: ${timeDisplay(h.prev.cas2)} → ${timeDisplay(h.next.cas2)}`);
+    return `<div class="history-item">
+      <span class="hi-time">${h.ts}</span>
+      <span class="hi-text"><strong>${esc(h.team)}</strong> (St.č.${esc(String(h.start))}): ${parts.join(', ')}</span>
+      <button class="hi-undo" onclick="undoHistory(${idx})">↩ Vrátit</button>
+    </div>`;
+  }).join('');
+  body.innerHTML=items||'<div class="history-empty">Zatím žádné změny.</div>';
+}
+
+function undoHistory(idx) {
+  const h=changeHistory[idx];
+  if (!h) return;
+  const row=data.find(d=>d.start===h.start);
+  if (!row) return;
+  row.cas1=h.prev.cas1; row.cas2=h.prev.cas2; row.zapisCas=h.prev.zapisCas;
+  changeHistory.splice(idx,1);
+  saveTeamPatch(h.start); saveHistory(); renderResults(); renderStartlist(); renderHistory();
+}
+
+function clearHistory() {
+  if (!changeHistory.length) return;
+  if (!confirm('Opravdu vymazat celou historii změn?')) return;
+  changeHistory.length=0; saveHistory(); renderHistory();
+}
+
+function toggleHistoryBody() {
+  const body=document.getElementById('historyBody');
+  const icon=document.getElementById('historyToggleIcon');
+  body.classList.toggle('open');
+  icon.textContent=body.classList.contains('open')?'▲ skrýt':'▼ zobrazit';
+}
+
+// ═══════════════════════════════════════════════════════
+//  ADMIN BAR
+// ═══════════════════════════════════════════════════════
 function renderAdminBar() {
-  const bar = document.getElementById('adminBar');
+  const bar=document.getElementById('adminBar');
   if (isAdmin) {
-    const editMode = document.body.classList.contains('edit-mode');
-    const email = auth.currentUser?.email ?? '';
-
-    const phaseLabels = {
-      hidden:  { cls:'phase-hidden',  icon:'🔒', label:'Skryto pro návštěvníky' },
-      results: { cls:'phase-results', icon:'🏆', label:'Viditelné pro návštěvníky' },
-    };
-    const nextPhase = { hidden:'results', results:'hidden' };
-    const ph = phaseLabels[phase] || phaseLabels.hidden;
-
-    bar.innerHTML = `
-      <span class="admin-on">🔓 ${email}</span>
-      <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')" title="Přepnout viditelnost pro návštěvníky">
-        ${ph.icon} ${ph.label}
-      </button>
-      <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">
-        ${editMode ? '✏️ Editace ZAP' : '✏️ Editovat data'}
-      </button>
-      ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>` : ''}
-      <button class="admin-btn export" onclick="exportXLSX()" title="Stáhnout výsledky jako Excel (.xlsx)">⬇ Export Excel</button>
+    const editMode=document.body.classList.contains('edit-mode');
+    const phaseLabels={ hidden:{cls:'phase-hidden',icon:'🔒',label:'Skryto pro návštěvníky'}, results:{cls:'phase-results',icon:'🏆',label:'Viditelné pro návštěvníky'} };
+    const nextPhase={ hidden:'results', results:'hidden' };
+    const ph=phaseLabels[phase]||phaseLabels.hidden;
+    bar.innerHTML=`
+      <span class="admin-on">🔓 Admin</span>
+      <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')">${ph.icon} ${ph.label}</button>
+      <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">${editMode?'✏️ Editace ZAP':'✏️ Editovat data'}</button>
+      ${editMode?`<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>`:''}
+      <button class="admin-btn export" onclick="exportXLSX()">⬇ Export Excel</button>
       <button class="admin-btn logout" onclick="logout()">Odhlásit</button>
     `;
   } else {
-    bar.innerHTML = `
-      <input type="email"    id="adminEmail" class="admin-input" placeholder="Email" autocomplete="email"
-        onkeydown="if(event.key==='Enter') document.getElementById('adminPwd').focus()" />
-      <input type="password" id="adminPwd"   class="admin-input" placeholder="Heslo" autocomplete="off"
+    bar.innerHTML=`
+      <input type="password" id="adminPwd" class="admin-input" placeholder="Heslo admina" autocomplete="off"
         onkeydown="if(event.key==='Enter') login()" />
       <button class="admin-btn" onclick="login()">Přihlásit</button>
       <span class="admin-hint" id="adminHint"></span>
@@ -1635,221 +1404,117 @@ function renderAdminBar() {
   }
 }
 
-// ── EXPORT XLSX ────────────────────────────────────────
-async function exportXLSX() {
-  const XLSX = window.XLSX;
-  if (!XLSX) {
-    alert('Chyba: Knihovna pro export se nenačetla. Zkuste obnovit stránku.');
-    return;
-  }
-
-  const wb = XLSX.utils.book_new();
-
-  // ── STYLY ────────────────────────────────────────────
-  const sBold   = { font:{ bold:true, sz:11, name:'Arial' } };
-  const sTitle  = { font:{ bold:true, sz:14, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'1D6FBA' } }, alignment:{ horizontal:'center' } };
-  const sCatHdr = { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'2D7DD2' } }, alignment:{ horizontal:'left' } };
-  const sColHdr = { font:{ bold:true, sz:10, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'4A90C4' } }, alignment:{ horizontal:'center' }, border:{ bottom:{ style:'thin', color:{ rgb:'FFFFFF' } } } };
-  const sRank1  = { font:{ bold:true, sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'FFF8DC' } } };
-  const sRank2  = { font:{ sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'F0F4F8' } } };
-  const sRank3  = { font:{ sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'FDF3EC' } } };
-  const sNormal = { font:{ sz:11, name:'Arial' } };
-  const sTime   = { font:{ sz:11, name:'Arial' }, alignment:{ horizontal:'right' } };
-  const sTimeB  = { font:{ bold:true, sz:11, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } };
-  const sCenter = { font:{ sz:11, name:'Arial' }, alignment:{ horizontal:'center' } };
-  const sDone   = { font:{ sz:11, name:'Arial', color:{ rgb:'16A34A' } }, fill:{ fgColor:{ rgb:'F0FDF4' } } };
-  const sEmpty  = { font:{ sz:11, name:'Arial', color:{ rgb:'AAAAAA' } }, alignment:{ horizontal:'right' } };
-
-  function cell(v, s) { return { v, s, t: typeof v === 'number' ? 'n' : 's' }; }
-  function timeCell(val, isBest) {
-    if (val === null || val === undefined) return cell('—', sEmpty);
-    if (val === 'DSQ') return cell('DSQ', { font:{ sz:11, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } });
-    if (val === 'NP')  return cell('NP',  { font:{ sz:11, name:'Arial', color:{ rgb:'B45309' } }, alignment:{ horizontal:'right' } });
-    return cell(parseFloat(val.toFixed(2)), isBest ? sTimeB : sTime);
-  }
-
-  // ══════════════════════════════════════════════════════
-  // LIST 1: VÝSLEDKY
-  // ══════════════════════════════════════════════════════
-  const wsData = [];
-  const merges1 = [];
-  let r1 = 0;
-
-  // Hlavní nadpis
-  wsData.push([cell('DĚTSKÉ ZÁVODY SDH ČASTOHOSTICE — VÝSLEDKY', sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle)]);
-  merges1.push({ s:{ r:r1, c:0 }, e:{ r:r1, c:5 } });
-  r1++;
-  wsData.push([cell('',sNormal)]);
-  r1++;
-
-  CATEGORIES.forEach(cat => {
-    let catRows = data.filter(d => d.kategorie === cat);
-    if (!catRows.length) return;
-    catRows = [...catRows].sort((a, b) => {
-      const ta = bestTime(a), tb = bestTime(b);
-      if (ta===null && tb===null) return 0;
-      if (ta===null) return 1; if (tb===null) return -1;
-      return ta - tb;
-    });
-
-    // Název kategorie
-    wsData.push([cell(cat, sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr)]);
-    merges1.push({ s:{ r:r1, c:0 }, e:{ r:r1, c:5 } });
-    r1++;
-
-    // Záhlaví sloupců
-    wsData.push([
-      cell('Pořadí', sColHdr), cell('St. č.', sColHdr), cell('Tým', sColHdr),
-      cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Výsledný čas (s)', sColHdr)
-    ]);
-    r1++;
-
-    catRows.forEach((d, i) => {
-      const bt = bestTime(d);
-      const rowStyle = i===0 ? sRank1 : i===1 ? sRank2 : i===2 ? sRank3 : sNormal;
-      const rankTxt  = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
-      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
-      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
-      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      const bestCell = bt !== null
-        ? cell(parseFloat(bt.toFixed(2)), { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } })
-        : cell('—', sEmpty);
-      wsData.push([
-        cell(rankTxt, { ...rowStyle, alignment:{ horizontal:'center' } }),
-        cell(d.start, { ...rowStyle, alignment:{ horizontal:'center' } }),
-        cell(d.team,  rowStyle),
-        timeCell(d.cas1, c1worst),
-        timeCell(d.cas2, c2worst),
-        bestCell
-      ]);
-      r1++;
-    });
-    wsData.push([cell('',sNormal)]);
-    r1++;
-  });
-
-  const ws1 = XLSX.utils.aoa_to_sheet(wsData.map(row => row.map(c => c.v)));
-  // Přidat styly ručně
-  const range1 = XLSX.utils.decode_range(ws1['!ref']);
-  for (let R = range1.s.r; R <= range1.e.r; R++) {
-    for (let C = range1.s.c; C <= range1.e.c; C++) {
-      const addr = XLSX.utils.encode_cell({ r: R, c: C });
-      if (!ws1[addr]) ws1[addr] = { v: '', t: 's' };
-      if (wsData[R] && wsData[R][C]) ws1[addr].s = wsData[R][C].s;
-      if (wsData[R] && wsData[R][C] && typeof wsData[R][C].v === 'number') ws1[addr].t = 'n';
-    }
-  }
-  ws1['!merges'] = merges1;
-  ws1['!cols'] = [{ wch:8 }, { wch:7 }, { wch:28 }, { wch:14 }, { wch:14 }, { wch:16 }];
-  XLSX.utils.book_append_sheet(wb, ws1, 'Výsledky');
-
-  // ══════════════════════════════════════════════════════
-  // LIST 2: STARTOVNÍ LISTINA
-  // ══════════════════════════════════════════════════════
-  const wsData2 = [];
-  const merges2 = [];
-  let r2 = 0;
-
-  // Hlavní nadpis
-  wsData2.push([cell('STARTOVNÍ LISTINA — SDH ČASTOHOSTICE', sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle)]);
-  merges2.push({ s:{ r:r2, c:0 }, e:{ r:r2, c:5 } });
-  r2++;
-  wsData2.push([cell('',sNormal)]);
-  r2++;
-
-  // Záhlaví
-  wsData2.push([
-    cell('St. č.', sColHdr), cell('Tým', sColHdr), cell('Kategorie', sColHdr),
-    cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Stav', sColHdr)
-  ]);
-  r2++;
-
-  const sorted = [...data].sort((a,b) => a.start - b.start);
-  sorted.forEach(d => {
-    const isDone = doneSet.has(d.start);
-    const stavCell = isDone ? cell('✓ Odběhnuto', sDone) : cell('', sNormal);
-    wsData2.push([
-      cell(d.start,     { ...sCenter }),
-      cell(d.team,      isDone ? { font:{ sz:11, name:'Arial', color:{ rgb:'888888' } } } : sNormal),
-      cell(d.kategorie, sNormal),
-      timeCell(d.cas1, false),
-      timeCell(d.cas2, false),
-      stavCell
-    ]);
-    r2++;
-  });
-
-  const ws2 = XLSX.utils.aoa_to_sheet(wsData2.map(row => row.map(c => c.v)));
-  const range2 = XLSX.utils.decode_range(ws2['!ref']);
-  for (let R = range2.s.r; R <= range2.e.r; R++) {
-    for (let C = range2.s.c; C <= range2.e.c; C++) {
-      const addr = XLSX.utils.encode_cell({ r: R, c: C });
-      if (!ws2[addr]) ws2[addr] = { v: '', t: 's' };
-      if (wsData2[R] && wsData2[R][C]) ws2[addr].s = wsData2[R][C].s;
-      if (wsData2[R] && wsData2[R][C] && typeof wsData2[R][C].v === 'number') ws2[addr].t = 'n';
-    }
-  }
-  ws2['!merges'] = merges2;
-  ws2['!cols'] = [{ wch:7 }, { wch:28 }, { wch:16 }, { wch:14 }, { wch:14 }, { wch:14 }];
-  XLSX.utils.book_append_sheet(wb, ws2, 'Startovní listina');
-
-  // ── Stáhnout soubor ───────────────────────────────────
-  XLSX.writeFile(wb, 'vysledky-castohostice.xlsx');
-}
-
 function toggleEditMode() {
   document.body.classList.toggle('edit-mode');
-  renderAdminBar();
-  renderStartlist();
+  renderAdminBar(); renderStartlist();
 }
 
-function login() {
-  const email = document.getElementById('adminEmail')?.value?.trim();
-  const pwd   = document.getElementById('adminPwd')?.value;
-  const hint  = document.getElementById('adminHint');
-  if (!email || !pwd) {
-    if (hint) hint.textContent = '✗ Vyplňte email a heslo';
-    return;
+// ═══════════════════════════════════════════════════════
+//  EXPORT XLSX (beze změny)
+// ═══════════════════════════════════════════════════════
+async function exportXLSX() {
+  const XLSX = window.XLSX;
+  if (!XLSX) { alert('Chyba: Knihovna pro export se nenačetla. Zkuste obnovit stránku.'); return; }
+  const wb=XLSX.utils.book_new();
+  const sBold={font:{bold:true,sz:11,name:'Arial'}};
+  const sTitle={font:{bold:true,sz:14,name:'Arial',color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1D6FBA'}},alignment:{horizontal:'center'}};
+  const sCatHdr={font:{bold:true,sz:12,name:'Arial',color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'2D7DD2'}},alignment:{horizontal:'left'}};
+  const sColHdr={font:{bold:true,sz:10,name:'Arial',color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'4A90C4'}},alignment:{horizontal:'center'},border:{bottom:{style:'thin',color:{rgb:'FFFFFF'}}}};
+  const sRank1={font:{bold:true,sz:11,name:'Arial'},fill:{fgColor:{rgb:'FFF8DC'}}};
+  const sRank2={font:{sz:11,name:'Arial'},fill:{fgColor:{rgb:'F0F4F8'}}};
+  const sRank3={font:{sz:11,name:'Arial'},fill:{fgColor:{rgb:'FDF3EC'}}};
+  const sNormal={font:{sz:11,name:'Arial'}};
+  const sTime={font:{sz:11,name:'Arial'},alignment:{horizontal:'right'}};
+  const sTimeB={font:{bold:true,sz:11,name:'Arial',color:{rgb:'C0392B'}},alignment:{horizontal:'right'}};
+  const sCenter={font:{sz:11,name:'Arial'},alignment:{horizontal:'center'}};
+  const sDone={font:{sz:11,name:'Arial',color:{rgb:'16A34A'}},fill:{fgColor:{rgb:'F0FDF4'}}};
+  const sEmpty={font:{sz:11,name:'Arial',color:{rgb:'AAAAAA'}},alignment:{horizontal:'right'}};
+
+  function cell(v,s){return{v,s,t:typeof v==='number'?'n':'s'};}
+  function timeCell(val,isBest){
+    if(val===null||val===undefined) return cell('—',sEmpty);
+    if(val==='DSQ') return cell('DSQ',{font:{sz:11,name:'Arial',color:{rgb:'C0392B'}},alignment:{horizontal:'right'}});
+    if(val==='NP')  return cell('NP', {font:{sz:11,name:'Arial',color:{rgb:'B45309'}},alignment:{horizontal:'right'}});
+    return cell(parseFloat(val.toFixed(2)),isBest?sTimeB:sTime);
   }
-  signInWithEmailAndPassword(auth, email, pwd)
-    .catch(err => {
-      const h = document.getElementById('adminHint');
-      if (h) {
-        h.textContent = '✗ Špatný email nebo heslo';
-        setTimeout(() => { const h2 = document.getElementById('adminHint'); if (h2) h2.textContent = ''; }, 3000);
-      }
-      if (document.getElementById('adminPwd')) document.getElementById('adminPwd').value = '';
+
+  // List 1: Výsledky
+  const wsData=[],merges1=[];let r1=0;
+  wsData.push([cell('DĚTSKÉ ZÁVODY SDH ČASTOHOSTICE — VÝSLEDKY',sTitle),cell('',sTitle),cell('',sTitle),cell('',sTitle),cell('',sTitle),cell('',sTitle)]);
+  merges1.push({s:{r:r1,c:0},e:{r:r1,c:5}});r1++;
+  wsData.push([cell('',sNormal)]);r1++;
+  CATEGORIES.forEach(cat=>{
+    let catRows=data.filter(d=>d.kategorie===cat);
+    if(!catRows.length) return;
+    catRows=[...catRows].sort((a,b)=>{const ta=bestTime(a),tb=bestTime(b);if(ta===null&&tb===null)return 0;if(ta===null)return 1;if(tb===null)return -1;return ta-tb;});
+    wsData.push([cell(cat,sCatHdr),cell('',sCatHdr),cell('',sCatHdr),cell('',sCatHdr),cell('',sCatHdr),cell('',sCatHdr)]);
+    merges1.push({s:{r:r1,c:0},e:{r:r1,c:5}});r1++;
+    wsData.push([cell('Pořadí',sColHdr),cell('St. č.',sColHdr),cell('Tým',sColHdr),cell('Levý terč (s)',sColHdr),cell('Pravý terč (s)',sColHdr),cell('Výsledný čas (s)',sColHdr)]);r1++;
+    catRows.forEach((d,i)=>{
+      const bt=bestTime(d);
+      const rowStyle=i===0?sRank1:i===1?sRank2:i===2?sRank3:sNormal;
+      const rankTxt=i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const c1n=typeof d.cas1==='number',c2n=typeof d.cas2==='number';
+      const c1worst=c1n&&c2n?d.cas1>=d.cas2:c1n;
+      const c2worst=c1n&&c2n?d.cas2>d.cas1:c2n;
+      const bestCell=bt!==null?cell(parseFloat(bt.toFixed(2)),{font:{bold:true,sz:12,name:'Arial',color:{rgb:'C0392B'}},alignment:{horizontal:'right'}}):cell('—',sEmpty);
+      wsData.push([cell(rankTxt,{...rowStyle,alignment:{horizontal:'center'}}),cell(d.start,{...rowStyle,alignment:{horizontal:'center'}}),cell(d.team,rowStyle),timeCell(d.cas1,c1worst),timeCell(d.cas2,c2worst),bestCell]);r1++;
     });
+    wsData.push([cell('',sNormal)]);r1++;
+  });
+  const ws1=XLSX.utils.aoa_to_sheet(wsData.map(row=>row.map(c=>c.v)));
+  const range1=XLSX.utils.decode_range(ws1['!ref']);
+  for(let R=range1.s.r;R<=range1.e.r;R++){for(let C=range1.s.c;C<=range1.e.c;C++){const addr=XLSX.utils.encode_cell({r:R,c:C});if(!ws1[addr])ws1[addr]={v:'',t:'s'};if(wsData[R]&&wsData[R][C])ws1[addr].s=wsData[R][C].s;if(wsData[R]&&wsData[R][C]&&typeof wsData[R][C].v==='number')ws1[addr].t='n';}}
+  ws1['!merges']=merges1;ws1['!cols']=[{wch:8},{wch:7},{wch:28},{wch:14},{wch:14},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Výsledky');
+
+  // List 2: Startovní listina
+  const wsData2=[],merges2=[];let r2=0;
+  wsData2.push([cell('STARTOVNÍ LISTINA — SDH ČASTOHOSTICE',sTitle),cell('',sTitle),cell('',sTitle),cell('',sTitle),cell('',sTitle),cell('',sTitle)]);
+  merges2.push({s:{r:r2,c:0},e:{r:r2,c:5}});r2++;
+  wsData2.push([cell('',sNormal)]);r2++;
+  wsData2.push([cell('St. č.',sColHdr),cell('Tým',sColHdr),cell('Kategorie',sColHdr),cell('Levý terč (s)',sColHdr),cell('Pravý terč (s)',sColHdr),cell('Stav',sColHdr)]);r2++;
+  const sorted2=[...data].sort((a,b)=>a.start-b.start);
+  sorted2.forEach(d=>{
+    const isDone=doneSet.has(d.start);
+    const stavCell=isDone?cell('✓ Odběhnuto',sDone):cell('',sNormal);
+    wsData2.push([cell(d.start,{...sCenter}),cell(d.team,isDone?{font:{sz:11,name:'Arial',color:{rgb:'888888'}}}:sNormal),cell(d.kategorie,sNormal),timeCell(d.cas1,false),timeCell(d.cas2,false),stavCell]);r2++;
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(wsData2.map(row=>row.map(c=>c.v)));
+  const range2=XLSX.utils.decode_range(ws2['!ref']);
+  for(let R=range2.s.r;R<=range2.e.r;R++){for(let C=range2.s.c;C<=range2.e.c;C++){const addr=XLSX.utils.encode_cell({r:R,c:C});if(!ws2[addr])ws2[addr]={v:'',t:'s'};if(wsData2[R]&&wsData2[R][C])ws2[addr].s=wsData2[R][C].s;if(wsData2[R]&&wsData2[R][C]&&typeof wsData2[R][C].v==='number')ws2[addr].t='n';}}
+  ws2['!merges']=merges2;ws2['!cols']=[{wch:7},{wch:28},{wch:16},{wch:14},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Startovní listina');
+  XLSX.writeFile(wb,'vysledky-castohostice.xlsx');
 }
 
-function logout() {
-  signOut(auth);
-}
-
-// ── INIT ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  INICIALIZACE
+// ═══════════════════════════════════════════════════════
 renderAdminBar();
+loadData(false).then(() => startPolling());
 
-// Zpřístupnit funkce globálně (nutné kvůli type="module")
+// Globální zpřístupnění funkcí
 window.toggleDone        = toggleDone;
 window.setPhase          = setPhase;
 window.toggleCdtAccordion = toggleCdtAccordion;
-window.applyCountdown = applyCountdown;
-window.clearCountdown = clearCountdown;
-window.saveField     = saveField;
-window.saveSelectField = saveSelectField;
-window.saveTimeField = saveTimeField;
-window.deleteTeam    = deleteTeam;
-window.addTeam       = addTeam;
-window.moveTeam      = moveTeam;
-window.toggleEditMode = toggleEditMode;
-window.login         = login;
-window.logout        = logout;
-window.exportXLSX    = exportXLSX;
-window.openQuickTime = openQuickTime;
-window.closeQuickTime = closeQuickTime;
-window.saveQuickTime = saveQuickTime;
-window.undoHistory   = undoHistory;
-window.clearHistory  = clearHistory;
+window.applyCountdown    = applyCountdown;
+window.clearCountdown    = clearCountdown;
+window.saveField         = saveField;
+window.saveSelectField   = saveSelectField;
+window.saveTimeField     = saveTimeField;
+window.deleteTeam        = deleteTeam;
+window.addTeam           = addTeam;
+window.moveTeam          = moveTeam;
+window.toggleEditMode    = toggleEditMode;
+window.login             = login;
+window.logout            = logout;
+window.exportXLSX        = exportXLSX;
+window.openQuickTime     = openQuickTime;
+window.closeQuickTime    = closeQuickTime;
+window.saveQuickTime     = saveQuickTime;
+window.undoHistory       = undoHistory;
+window.clearHistory      = clearHistory;
 window.toggleHistoryBody = toggleHistoryBody;
 </script>
 </body>
