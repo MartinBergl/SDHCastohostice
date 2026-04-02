@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Startovní listina — Dětské závody Častohostice</title>
+  <title>SDH-Častohostice</title>
+  <link rel="icon" type="image/png" href="https://github.com/MartinBergl/SDHCastohostice/blob/main/favicon.png?raw=true" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -44,7 +45,7 @@
 
     .cat-label { display:flex; align-items:center; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
     .cat-name { font-size:22px; font-weight:700; letter-spacing:-0.3px; text-transform:none; color:var(--text); }
-    .cat-pill { font-size:11px; font-weight:600; color:#1d6fba; background:#fff; border:1px solid #93c5fd; padding:3px 10px; border-radius:99px; }
+    .cat-pill { font-size:11px; font-weight:400; color:var(--muted); background:transparent; border:none; padding:0; border-radius:0; }
 
     /* TABLES */
     table { width:100%; border-collapse:collapse; }
@@ -78,7 +79,7 @@
 
     .snum { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); }
 
-    .tname { font-size:14px; font-weight:500; color:var(--text); }
+    .tname { font-size:16px; font-weight:500; color:var(--text); }
 
     .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
     .tcell.best  { color:var(--text); font-weight:500; }
@@ -137,9 +138,9 @@
     .order-btn:hover:not(:disabled) { background:var(--edit-bg); border-color:var(--edit-border); color:var(--text); }
     .order-btn:disabled { opacity:.25; cursor:default; }
 
-    .cbadge { font-size:11px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:default; }
+    .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:default; }
     .cb-ml { background:#eff6ff; color:#3b82f6; }
-    .cb-st { background:#f0fdf4; color:#16a34a; }
+    .cb-st { background:#fefce8; color:#a16207; }
 
     /* ── INLINE EDITING ── */
     .editable { cursor:text; border-radius:3px; transition:background .12s; }
@@ -359,7 +360,7 @@
 
 <header class="header">
   <img
-    src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/57e158c77075191235ef49c414feb3db59b6bd1b/nadpis_logo.jpg"
+    src="https://github.com/MartinBergl/SDHCastohostice/blob/main/logo_nadpis.jpg?raw=true"
     alt="Dětské závady SDH Častohostice"
     style="max-width:90%; width:auto; height:auto; display:block; margin:0 auto;"
   />
@@ -423,7 +424,7 @@
 // ═══════════════════════════════════════════════════════
 //  KONFIGURACE — vyplňte po nasazení Apps Scriptu
 // ═══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5rptM4YUoyBLbioOZWHgO_YFI7_WuzpnpVC72oKQxhWAFpP2btZVq3me9vTPwd0xKZQ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpVa_AZtycva6szflnLslNGX6Caw8HFJST4V2b9g3gGflMry1hrmyjme7V1ah13Uiv/exec";
 // Příklad: "https://script.google.com/macros/s/AKfycby.../exec"
 
 // ── Polling interval pro návštěvníky (ms) ─────────────
@@ -455,7 +456,7 @@ const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st" };
 //  STAV APLIKACE
 // ═══════════════════════════════════════════════════════
 let isAdmin        = false;
-let adminPassword  = null;           // heslo uložené po přihlášení (v paměti, ne v localStorage)
+let adminPassword  = null;           // heslo uložené po přihlášení (+ sessionStorage pro přežití refreshe)
 let data           = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet        = new Set();
 let phase          = 'hidden';
@@ -653,24 +654,7 @@ function renderAll() {
 
 // ── Polling ────────────────────────────────────────────
 function startPolling() {
-  if (_pollTimer) clearInterval(_pollTimer);
-  const interval = isAdmin ? POLL_INTERVAL_ADMIN : POLL_INTERVAL_VISITOR;
-  _pollTimer = setInterval(async () => {
-    try {
-      const json = await apiFetch(isAdmin);
-      let changed = false;
-      if (json.data && JSON.stringify(json.data) !== JSON.stringify(data)) {
-        data = json.data; changed = true;
-      }
-      const newDone = new Set((json.done || []).map(Number));
-      if (JSON.stringify([...newDone].sort()) !== JSON.stringify([...doneSet].sort())) {
-        doneSet = newDone; changed = true;
-      }
-      if (json.phase !== phase) { phase = json.phase; changed = true; }
-      if ((json.countdown || null) !== countdownTarget) { countdownTarget = json.countdown || null; changed = true; }
-      if (changed) renderAll();
-    } catch(e) { /* tiché selhání pollingu */ }
-  }, interval);
+  // Polling vypnut pro všechny — data se načtou jen při načtení stránky
 }
 
 function stopPolling() {
@@ -692,6 +676,7 @@ async function login() {
     if (!json.ok) throw new Error(json.error);
     // Heslo je správné (API vrátilo data) — ulož do paměti
     adminPassword = pwd;
+    sessionStorage.setItem('adminPwd', pwd);
     isAdmin = true;
     document.body.classList.add('admin-mode');
     stopPolling();
@@ -719,6 +704,7 @@ async function login() {
 function logout() {
   isAdmin = false;
   adminPassword = null;
+  sessionStorage.removeItem('adminPwd');
   document.body.classList.remove('edit-mode', 'admin-mode');
   stopPolling();
   renderAdminBar();
@@ -1491,8 +1477,34 @@ async function exportXLSX() {
 // ═══════════════════════════════════════════════════════
 //  INICIALIZACE
 // ═══════════════════════════════════════════════════════
-renderAdminBar();
-loadData(false).then(() => startPolling());
+(async () => {
+  const savedPwd = sessionStorage.getItem('adminPwd');
+  if (savedPwd) {
+    try {
+      const res = await fetch(APPS_SCRIPT_URL + `?action=load&pwd=${encodeURIComponent(savedPwd)}`);
+      const json = await res.json();
+      if (json.ok) {
+        adminPassword = savedPwd;
+        isAdmin = true;
+        document.body.classList.add('admin-mode');
+        if (json.data && json.data.length) data = json.data;
+        doneSet = new Set((json.done || []).map(Number));
+        phase = json.phase || 'hidden';
+        countdownTarget = json.countdown || null;
+        if (json.history) { changeHistory.length = 0; changeHistory.push(...json.history); }
+        renderAdminBar();
+        renderAll();
+        hideOverlay();
+        startPolling();
+        return;
+      }
+    } catch(e) {}
+    // Heslo v session je neplatné — vyčistit
+    sessionStorage.removeItem('adminPwd');
+  }
+  renderAdminBar();
+  loadData(false).then(() => startPolling());
+})();
 
 // Globální zpřístupnění funkcí
 window.toggleDone        = toggleDone;
