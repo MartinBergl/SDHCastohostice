@@ -424,7 +424,7 @@
 // ═══════════════════════════════════════════════════════
 //  KONFIGURACE — vyplňte po nasazení Apps Scriptu
 // ═══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpVa_AZtycva6szflnLslNGX6Caw8HFJST4V2b9g3gGflMry1hrmyjme7V1ah13Uiv/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJz27sYX4LYYge1nhamElFnK9T8pIIrz3BMwTeS3yfclwpAlQiel5y_NFz7kVnflxQLg/exec";
 // Příklad: "https://script.google.com/macros/s/AKfycby.../exec"
 
 // ── Polling interval pro návštěvníky (ms) ─────────────
@@ -456,6 +456,7 @@ const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st" };
 //  STAV APLIKACE
 // ═══════════════════════════════════════════════════════
 let isAdmin        = false;
+let callStats      = null;            // statistika volání { today, yesterday }
 let adminPassword  = null;           // heslo uložené po přihlášení (+ sessionStorage pro přežití refreshe)
 let data           = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet        = new Set();
@@ -689,6 +690,7 @@ async function login() {
       changeHistory.length = 0;
       changeHistory.push(...json.history);
     }
+    if (json.callStats) callStats = json.callStats;
     renderAdminBar();
     renderAll();
     startPolling();
@@ -1374,6 +1376,7 @@ function renderAdminBar() {
     const ph=phaseLabels[phase]||phaseLabels.hidden;
     bar.innerHTML=`
       <span class="admin-on">🔓 Admin</span>
+      ${callStats ? `<span style="font-size:11px;color:var(--sub);" title="Volání Apps Scriptu">📊 dnes: ${callStats.today} / včera: ${callStats.yesterday}</span>` : ''}
       <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')">${ph.icon} ${ph.label}</button>
       <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">${editMode?'✏️ Editace ZAP':'✏️ Editovat data'}</button>
       ${editMode?`<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>`:''}
@@ -1382,7 +1385,7 @@ function renderAdminBar() {
     `;
   } else {
     bar.innerHTML=`
-      <input type="password" id="adminPwd" class="admin-input" placeholder="Heslo admina" autocomplete="off"
+      <input type="password" id="adminPwd" class="admin-input" placeholder="Heslo" autocomplete="off"
         onkeydown="if(event.key==='Enter') login()" />
       <button class="admin-btn" onclick="login()">Přihlásit</button>
       <span class="admin-hint" id="adminHint"></span>
@@ -1492,6 +1495,7 @@ async function exportXLSX() {
         phase = json.phase || 'hidden';
         countdownTarget = json.countdown || null;
         if (json.history) { changeHistory.length = 0; changeHistory.push(...json.history); }
+        if (json.callStats) callStats = json.callStats;
         renderAdminBar();
         renderAll();
         hideOverlay();
