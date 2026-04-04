@@ -305,7 +305,8 @@
     #savingIndicator {
       position: fixed;
       bottom: 20px;
-      right: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -361,7 +362,7 @@
 <header class="header">
   <img
     src="https://github.com/MartinBergl/SDHCastohostice/blob/main/logo_nadpis.jpg?raw=true"
-    alt="Dětské závady SDH Častohostice"
+    alt="Dětské závody SDH Častohostice"
     style="max-width:90%; width:auto; height:auto; display:block; margin:0 auto;"
   />
 </header>
@@ -406,7 +407,7 @@
 
 <div class="history-panel" id="countdownPanel" style="display:none"></div>
 
-<div style="background:var(--surface); border-top:1px solid var(--border); padding:24px 48px; text-align:center;">
+<footer style="background:var(--surface); border-top:1px solid var(--border); padding:24px 48px; text-align:center; display:block;">
   <img
     src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/a4d0c821effd3237aff776bf97df8b1a0591b993/sponzori_logo.jpg"
     alt="Sponzoři"
@@ -414,7 +415,7 @@
     class="sponzori-img"
   />
   <div style="margin-top:16px; font-size:12px; color:var(--muted); text-align:center;">Copyright © 2026 Martin Bergl</div>
-</div>
+</footer>
 
 <div class="admin-footer">
   <div id="adminBar" class="admin-bar"></div>
@@ -503,9 +504,9 @@ function showSaveError(msg) {
 // ═══════════════════════════════════════════════════════
 
 // GET — načti data ze Sheetu
-async function apiFetch(withHistory = false) {
+async function apiFetch(asAdmin = false) {
   let url = APPS_SCRIPT_URL + `?action=load`;
-  if (withHistory) url += `&pwd=${encodeURIComponent(adminPassword)}`;
+  if (asAdmin) url += `&pwd=${encodeURIComponent(adminPassword)}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('HTTP ' + res.status);
   const json = await res.json();
@@ -729,12 +730,15 @@ function parseTimeVal(str) {
   return isNaN(n) ? null : n;
 }
 
-function bestTime(d) {
+// Vrací rozhodující (horší) čas — v požárním sportu platí horší ze dvou pokusů
+function resultTime(d) {
   const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
   if (nums.length === 2) return Math.max(...nums);
   if (nums.length === 1) return nums[0];
   return null;
 }
+// Alias pro zpětnou kompatibilitu
+const bestTime = resultTime;
 
 function formatZapis(val) {
   if (!val) return null;
@@ -916,14 +920,14 @@ function renderResults() {
       const rankTxt=i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':(i+1)+'.';
       const rankCls=i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':'';
       const c1n=typeof d.cas1==='number', c2n=typeof d.cas2==='number';
-      const c1worst=c1n&&c2n?d.cas1>=d.cas2:c1n;
-      const c2worst=c1n&&c2n?d.cas2>d.cas1:c2n;
+      const c1deciding=c1n&&c2n?d.cas1>=d.cas2:c1n;
+      const c2deciding=c1n&&c2n?d.cas2>=d.cas1:c2n;
       const bestHtml=bt!==null?`<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>`:`<td class="best-col empty">—</td>`;
       return `<tr class="${rc}">
         <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
         <td><div class="tname">${esc(d.team)}</div></td>
-        ${renderTimeCell(d.cas1,c1worst)}${renderTimeCell(d.cas2,c2worst)}${bestHtml}
+        ${renderTimeCell(d.cas1,c1deciding)}${renderTimeCell(d.cas2,c2deciding)}${bestHtml}
       </tr>`;
     }).join('');
 
@@ -939,8 +943,8 @@ function renderResults() {
       const rankTxt=i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
       const isNum=!['🥇','🥈','🥉'].includes(rankTxt);
       const c1n=typeof d.cas1==='number', c2n=typeof d.cas2==='number';
-      const c1worst=c1n&&c2n?d.cas1>=d.cas2:c1n;
-      const c2worst=c1n&&c2n?d.cas2>d.cas1:c2n;
+      const c1deciding=c1n&&c2n?d.cas1>=d.cas2:c1n;
+      const c2deciding=c1n&&c2n?d.cas2>=d.cas1:c2n;
       const bestStr=bt!==null?`${bt.toFixed(2)}&thinsp;s`:null;
       return `<div class="result-card ${rc}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
@@ -951,9 +955,9 @@ function renderResults() {
         <div class="rc-times">
           ${bestStr?`<div class="rc-best">${bestStr}</div>`:`<div class="rc-best empty">—</div>`}
           <div class="rc-sub-times">
-            <span class="${c1worst?'':'worst'}">${fmtTime(d.cas1)}</span>
+            <span class="${c1deciding?'':'worst'}">${fmtTime(d.cas1)}</span>
             <span style="color:var(--muted)"> / </span>
-            <span class="${c2worst?'':'worst'}">${fmtTime(d.cas2)}</span>
+            <span class="${c2deciding?'':'worst'}">${fmtTime(d.cas2)}</span>
           </div>
         </div>
       </div>`;
@@ -1405,7 +1409,6 @@ async function exportXLSX() {
   const XLSX = window.XLSX;
   if (!XLSX) { alert('Chyba: Knihovna pro export se nenačetla. Zkuste obnovit stránku.'); return; }
   const wb=XLSX.utils.book_new();
-  const sBold={font:{bold:true,sz:11,name:'Arial'}};
   const sTitle={font:{bold:true,sz:14,name:'Arial',color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1D6FBA'}},alignment:{horizontal:'center'}};
   const sCatHdr={font:{bold:true,sz:12,name:'Arial',color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'2D7DD2'}},alignment:{horizontal:'left'}};
   const sColHdr={font:{bold:true,sz:10,name:'Arial',color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'4A90C4'}},alignment:{horizontal:'center'},border:{bottom:{style:'thin',color:{rgb:'FFFFFF'}}}};
@@ -1444,10 +1447,10 @@ async function exportXLSX() {
       const rowStyle=i===0?sRank1:i===1?sRank2:i===2?sRank3:sNormal;
       const rankTxt=i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
       const c1n=typeof d.cas1==='number',c2n=typeof d.cas2==='number';
-      const c1worst=c1n&&c2n?d.cas1>=d.cas2:c1n;
-      const c2worst=c1n&&c2n?d.cas2>d.cas1:c2n;
+      const c1deciding=c1n&&c2n?d.cas1>=d.cas2:c1n;
+      const c2deciding=c1n&&c2n?d.cas2>=d.cas1:c2n;
       const bestCell=bt!==null?cell(parseFloat(bt.toFixed(2)),{font:{bold:true,sz:12,name:'Arial',color:{rgb:'C0392B'}},alignment:{horizontal:'right'}}):cell('—',sEmpty);
-      wsData.push([cell(rankTxt,{...rowStyle,alignment:{horizontal:'center'}}),cell(d.start,{...rowStyle,alignment:{horizontal:'center'}}),cell(d.team,rowStyle),timeCell(d.cas1,c1worst),timeCell(d.cas2,c2worst),bestCell]);r1++;
+      wsData.push([cell(rankTxt,{...rowStyle,alignment:{horizontal:'center'}}),cell(d.start,{...rowStyle,alignment:{horizontal:'center'}}),cell(d.team,rowStyle),timeCell(d.cas1,c1deciding),timeCell(d.cas2,c2deciding),bestCell]);r1++;
     });
     wsData.push([cell('',sNormal)]);r1++;
   });
