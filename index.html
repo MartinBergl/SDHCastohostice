@@ -140,7 +140,7 @@
 
     .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:default; }
     .cb-ml { background:#eff6ff; color:#3b82f6; }
-    .cb-st { background:#fefce8; color:#a16207; }
+    .cb-st { background:#fdf1f0; color:#d63b2a; }
 
     /* ── INLINE EDITING ── */
     .editable { cursor:text; border-radius:3px; transition:background .12s; }
@@ -295,6 +295,14 @@
       .phase-banner { margin:16px 0; padding:20px 16px; }
     }
 
+    /* ── QUOTA BANNER ── */
+    #quotaBanner { display:none; position:fixed; top:0; left:0; right:0; z-index:8000; padding:10px 24px; font-size:13px; font-weight:600; text-align:center; }
+    #quotaBanner.warning  { background:#fffbeb; color:#92600a; border-bottom:2px solid #fcd34d; display:block; }
+    #quotaBanner.exceeded { background:#fef2f2; color:#991b1b; border-bottom:2px solid #fca5a5; display:block; }
+    #quotaBanner a { color:inherit; text-decoration:underline; cursor:pointer; }
+    body.has-quota-banner .edit-banner,
+    body.has-quota-banner .header { margin-top:44px; }
+
     /* ── LOADING OVERLAY ── */
     #loadingOverlay { position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center; transition:opacity 0.25s ease; }
     #loadingOverlay.hidden { opacity:0; pointer-events:none; }
@@ -353,6 +361,7 @@
 <body>
 
 <div id="loadingOverlay"><div class="loading-spinner"></div></div>
+<div id="quotaBanner"></div>
 <div id="savingIndicator"><div class="saving-dot"></div><span id="savingText">Ukládám…</span></div>
 
 <div class="edit-banner" id="editBanner">
@@ -425,7 +434,7 @@
 // ═══════════════════════════════════════════════════════
 //  KONFIGURACE — vyplňte po nasazení Apps Scriptu
 // ═══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJz27sYX4LYYge1nhamElFnK9T8pIIrz3BMwTeS3yfclwpAlQiel5y_NFz7kVnflxQLg/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5W38f6g_ii8adzjwaJJi3LeI-lw08oPfUCPf4MB48_PyokGr5mxeICxqMb4gQbUpGnQ/exec";
 // Příklad: "https://script.google.com/macros/s/AKfycby.../exec"
 
 // ── Polling interval pro návštěvníky (ms) ─────────────
@@ -466,6 +475,7 @@ let countdownTarget = null;
 const changeHistory = [];
 
 let _pollTimer     = null;
+let quotaExceeded  = false;   // true = denní limit Apps Scriptu překročen, zápisy zakázány
 
 // ═══════════════════════════════════════════════════════
 //  SAVING INDICATOR
@@ -494,9 +504,52 @@ function showSaveError(msg) {
   const tx = document.getElementById('savingText');
   if (!el) return;
   el.classList.add('error');
-  if (tx) tx.textContent = '✗ ' + (msg || 'Chyba uložení');
+  if (msg === 'QUOTA_EXCEEDED') {
+    if (tx) tx.textContent = '⛔ Limit překročen — neuloženo';
+  } else {
+    if (tx) tx.textContent = '✗ ' + (msg || 'Chyba uložení');
+  }
   if (_savingTimer) clearTimeout(_savingTimer);
   _savingTimer = setTimeout(() => el.classList.remove('visible'), 4000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  QUOTA MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function renderQuotaBanner() {
+  const el = document.getElementById('quotaBanner');
+  if (!el) return;
+  if (!isAdmin) { el.className = ''; el.innerHTML = ''; document.body.classList.remove('has-quota-banner'); return; }
+  if (quotaExceeded) {
+    el.className = 'exceeded';
+    el.innerHTML = '⛔ Denní limit volání Apps Scriptu byl překročen — změny se nyní neukládají do Google Sheets. Data zůstávají v paměti do obnovení stránky.';
+    document.body.classList.add('has-quota-banner');
+  } else if (callStats && callStats.quotaWarning) {
+    const pct = Math.round(callStats.today / callStats.limit * 100);
+    el.className = 'warning';
+    el.innerHTML = `⚠️ Pozor: využito ${pct} % denního limitu volání Apps Scriptu (${callStats.today} / ${callStats.limit}). Při překročení se změny přestanou ukládat.`;
+    document.body.classList.add('has-quota-banner');
+  } else {
+    el.className = '';
+    el.innerHTML = '';
+    document.body.classList.remove('has-quota-banner');
+  }
+}
+
+// Zpracuje quota info z jakékoli API odpovědi
+function handleQuotaResponse(json) {
+  if (json.quotaExceeded) {
+    quotaExceeded = true;
+    if (json.callStats) callStats = json.callStats;
+    renderQuotaBanner();
+    renderAdminBar();
+    return true; // volající ví, že odpověď je chybová
+  }
+  if (json.callStats) {
+    callStats = json.callStats;
+    renderQuotaBanner();
+  }
+  return false;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -516,7 +569,13 @@ async function apiFetch(asAdmin = false) {
 
 // "POST" přes GET+payload — obchází CORS preflight (nutné pro file:// origin)
 async function apiPost(body) {
-  const action  = body.action;
+  const action = body.action;
+
+  // Při překročeném limitu zápisy lokálně přeskočíme — data zůstanou v paměti
+  if (quotaExceeded) {
+    throw new Error('QUOTA_EXCEEDED');
+  }
+
   // saveData posílá velké množství dat — použijeme POST (GET má limit URL délky)
   if (action === 'saveData') {
     const res = await fetch(APPS_SCRIPT_URL, {
@@ -526,7 +585,14 @@ async function apiPost(body) {
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
+    if (json.error === 'QUOTA_EXCEEDED' || json.quotaExceeded) {
+      quotaExceeded = true;
+      if (json.callStats) callStats = json.callStats;
+      renderQuotaBanner(); renderAdminBar();
+      throw new Error('QUOTA_EXCEEDED');
+    }
     if (!json.ok) throw new Error(json.error || 'API chyba');
+    handleQuotaResponse(json);
     return json;
   }
   // Ostatní akce jsou krátké — GET stačí
@@ -538,7 +604,14 @@ async function apiPost(body) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('HTTP ' + res.status);
   const json = await res.json();
+  if (json.error === 'QUOTA_EXCEEDED' || json.quotaExceeded) {
+    quotaExceeded = true;
+    if (json.callStats) callStats = json.callStats;
+    renderQuotaBanner(); renderAdminBar();
+    throw new Error('QUOTA_EXCEEDED');
+  }
   if (!json.ok) throw new Error(json.error || 'API chyba');
+  handleQuotaResponse(json);
   return json;
 }
 
@@ -637,6 +710,7 @@ async function loadData(forAdmin = false) {
       changeHistory.length = 0;
       changeHistory.push(...json.history);
     }
+    handleQuotaResponse(json);
   } catch(e) {
     console.error('loadData:', e);
     // Při chybě načtení zobraz výchozí data
@@ -692,7 +766,9 @@ async function login() {
       changeHistory.push(...json.history);
     }
     if (json.callStats) callStats = json.callStats;
+    handleQuotaResponse(json);
     renderAdminBar();
+    renderQuotaBanner();
     renderAll();
     startPolling();
   } catch(e) {
@@ -707,10 +783,12 @@ async function login() {
 function logout() {
   isAdmin = false;
   adminPassword = null;
+  quotaExceeded = false;
   sessionStorage.removeItem('adminPwd');
   document.body.classList.remove('edit-mode', 'admin-mode');
   stopPolling();
   renderAdminBar();
+  renderQuotaBanner();
   loadData(false).then(() => startPolling());
 }
 
@@ -993,9 +1071,9 @@ function renderStartlist() {
   let cg = table.querySelector('colgroup');
   if (!cg) { cg = document.createElement('colgroup'); table.prepend(cg); }
   if (editMode) {
-    cg.innerHTML = `<col style="width:28px"><col style="width:55px"><col><col style="width:110px"><col style="width:145px"><col style="width:145px"><col style="width:90px"><col style="width:135px"><col style="width:70px">`;
+    cg.innerHTML = `<col style="width:28px"><col style="width:55px"><col><col style="width:80px"><col style="width:145px"><col style="width:145px"><col style="width:90px"><col style="width:135px"><col style="width:70px">`;
   } else {
-    cg.innerHTML = `<col style="width:55px"><col><col style="width:110px"><col style="width:145px"><col style="width:145px"><col style="width:90px"><col style="width:135px"><col style="width:70px">`;
+    cg.innerHTML = `<col style="width:55px"><col><col style="width:80px"><col style="width:145px"><col style="width:145px"><col style="width:90px"><col style="width:135px"><col style="width:70px">`;
   }
   document.getElementById('actionColHead').textContent = isAdmin ? 'Akce' : '';
   const thead = table.querySelector('thead tr');
@@ -1380,7 +1458,8 @@ function renderAdminBar() {
     const ph=phaseLabels[phase]||phaseLabels.hidden;
     bar.innerHTML=`
       <span class="admin-on">🔓 Admin</span>
-      ${callStats ? `<span style="font-size:11px;color:var(--sub);" title="Volání Apps Scriptu">📊 dnes: ${callStats.today} / včera: ${callStats.yesterday}</span>` : ''}
+      ${callStats ? `<span style="font-size:11px;color:${callStats.quotaExceeded?'var(--red)':callStats.quotaWarning?'#92600a':'var(--sub)'};" title="Denní limit: ${callStats.limit || '?'} volání">📊 dnes: ${callStats.today}${callStats.limit?' / '+callStats.limit:''}</span>` : ''}
+      ${quotaExceeded ? `<span style="font-size:11px;font-weight:700;color:var(--red);">⛔ LIMIT PŘEKROČEN</span>` : ''}
       <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')">${ph.icon} ${ph.label}</button>
       <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">${editMode?'✏️ Editace ZAP':'✏️ Editovat data'}</button>
       ${editMode?`<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>`:''}
@@ -1500,6 +1579,7 @@ async function exportXLSX() {
         if (json.history) { changeHistory.length = 0; changeHistory.push(...json.history); }
         if (json.callStats) callStats = json.callStats;
         renderAdminBar();
+        renderQuotaBanner();
         renderAll();
         hideOverlay();
         startPolling();
