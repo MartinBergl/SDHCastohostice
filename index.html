@@ -295,6 +295,20 @@
       .phase-banner { margin:16px 0; padding:20px 16px; }
     }
 
+    /* ── NOTICE BANNER ── */
+    #noticeBanner { display:none; background:#f0f6ff; border-bottom:2px solid #93c5fd; padding:10px 48px; text-align:center; font-size:13px; color:#1e3a5f; font-weight:500; line-height:1.5; }
+    #noticeBanner.visible { display:block; }
+    .notice-admin-bar { display:none; padding:8px 48px; background:#f8faff; border-bottom:1px solid #dbeafe; align-items:center; gap:8px; flex-wrap:wrap; }
+    body.admin-mode .notice-admin-bar { display:flex; }
+    .notice-input { font-family:'DM Sans',sans-serif; font-size:13px; background:#fff; border:1px solid #93c5fd; color:var(--text); padding:6px 12px; border-radius:6px; outline:none; flex:1; min-width:200px; max-width:480px; transition:border-color .18s; }
+    .notice-input:focus { border-color:#3b82f6; }
+    .notice-input::placeholder { color:var(--muted); }
+    .notice-label { font-size:12px; font-weight:600; color:#3b6fa0; white-space:nowrap; }
+    @media (max-width:700px) {
+      #noticeBanner { padding:10px 16px; }
+      .notice-admin-bar { padding:8px 16px; }
+    }
+
     /* ── QUOTA BANNER ── */
     #quotaBanner { display:none; position:fixed; top:0; left:0; right:0; z-index:8000; padding:10px 24px; font-size:13px; font-weight:600; text-align:center; }
     #quotaBanner.warning  { background:#fffbeb; color:#92600a; border-bottom:2px solid #fcd34d; display:block; }
@@ -368,6 +382,16 @@
   ✏️ Editační režim — klikni na libovolné pole a uprav hodnotu. Změny se ukládají automaticky.
 </div>
 
+<div id="noticeBanner"></div>
+<div class="notice-admin-bar">
+  <span class="notice-label">📢 Zpráva návštěvníkům:</span>
+  <input type="text" id="noticeInput" class="notice-input" maxlength="200"
+    placeholder="Krátká informace pro návštěvníky (max. 200 znaků)…"
+    oninput="onNoticeInput()" />
+  <button class="admin-btn" id="noticeSaveBtn" onclick="saveNotice()" style="display:none">Zveřejnit</button>
+  <button class="admin-btn logout" id="noticeClearBtn" onclick="clearNotice()" style="display:none">Skrýt zprávu</button>
+</div>
+
 <header class="header">
   <img
     src="https://github.com/MartinBergl/SDHCastohostice/blob/main/logo_nadpis.jpg?raw=true"
@@ -434,7 +458,7 @@
 // ═══════════════════════════════════════════════════════
 //  KONFIGURACE — vyplňte po nasazení Apps Scriptu
 // ═══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5W38f6g_ii8adzjwaJJi3LeI-lw08oPfUCPf4MB48_PyokGr5mxeICxqMb4gQbUpGnQ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxK9xvBjl8pyMLyUVOo8G4TSQ4R9Lc5kOZM9keNGN01rtpz-fX21DZR9aTFWmbZ24Opg/exec";
 // Příklad: "https://script.google.com/macros/s/AKfycby.../exec"
 
 // ── Polling interval pro návštěvníky (ms) ─────────────
@@ -476,6 +500,7 @@ const changeHistory = [];
 
 let _pollTimer     = null;
 let quotaExceeded  = false;   // true = denní limit Apps Scriptu překročen, zápisy zakázány
+let noticeText     = '';      // krátká zpráva admina zobrazená návštěvníkům pod hlavičkou
 
 // ═══════════════════════════════════════════════════════
 //  SAVING INDICATOR
@@ -690,6 +715,56 @@ function saveHistory() {
   }, 800);
 }
 
+// ── Notice save ────────────────────────────────────────
+async function saveNotice() {
+  const val = document.getElementById('noticeInput')?.value.trim() || '';
+  showSaving();
+  try {
+    await apiPost({ action: 'saveNotice', notice: val });
+    noticeText = val;
+    renderNoticeBanner();
+    showSaved();
+  } catch(e) { showSaveError(e.message); }
+}
+
+async function clearNotice() {
+  showSaving();
+  try {
+    await apiPost({ action: 'saveNotice', notice: '' });
+    noticeText = '';
+    const inp = document.getElementById('noticeInput');
+    if (inp) inp.value = '';
+    renderNoticeBanner();
+    showSaved();
+  } catch(e) { showSaveError(e.message); }
+}
+
+function onNoticeInput() {
+  const val = document.getElementById('noticeInput')?.value.trim() || '';
+  const saveBtn  = document.getElementById('noticeSaveBtn');
+  const clearBtn = document.getElementById('noticeClearBtn');
+  if (saveBtn)  saveBtn.style.display  = val ? '' : 'none';
+  if (clearBtn) clearBtn.style.display = noticeText ? '' : 'none';
+}
+
+function renderNoticeBanner() {
+  const banner = document.getElementById('noticeBanner');
+  const inp    = document.getElementById('noticeInput');
+  const saveBtn  = document.getElementById('noticeSaveBtn');
+  const clearBtn = document.getElementById('noticeClearBtn');
+  if (!banner) return;
+  if (noticeText) {
+    banner.textContent = '📢 ' + noticeText;
+    banner.classList.add('visible');
+  } else {
+    banner.textContent = '';
+    banner.classList.remove('visible');
+  }
+  if (inp && document.activeElement !== inp) inp.value = noticeText;
+  if (saveBtn)  saveBtn.style.display  = 'none';
+  if (clearBtn) clearBtn.style.display = noticeText ? '' : 'none';
+}
+
 // ═══════════════════════════════════════════════════════
 //  NAČTENÍ DAT
 // ═══════════════════════════════════════════════════════
@@ -706,6 +781,7 @@ async function loadData(forAdmin = false) {
     doneSet = new Set((json.done || []).map(Number));
     phase = json.phase || 'hidden';
     countdownTarget = json.countdown || null;
+    noticeText = json.notice || '';
     if (forAdmin && json.history) {
       changeHistory.length = 0;
       changeHistory.push(...json.history);
@@ -722,6 +798,7 @@ async function loadData(forAdmin = false) {
 
 function renderAll() {
   renderPhaseBanner();
+  renderNoticeBanner();
   renderStartlistSection();
   renderResults();
   renderStartlist();
@@ -761,6 +838,7 @@ async function login() {
     doneSet = new Set((json.done || []).map(Number));
     phase = json.phase || 'hidden';
     countdownTarget = json.countdown || null;
+    noticeText = json.notice || '';
     if (json.history) {
       changeHistory.length = 0;
       changeHistory.push(...json.history);
@@ -1576,6 +1654,7 @@ async function exportXLSX() {
         doneSet = new Set((json.done || []).map(Number));
         phase = json.phase || 'hidden';
         countdownTarget = json.countdown || null;
+        noticeText = json.notice || '';
         if (json.history) { changeHistory.length = 0; changeHistory.push(...json.history); }
         if (json.callStats) callStats = json.callStats;
         renderAdminBar();
@@ -1594,6 +1673,9 @@ async function exportXLSX() {
 })();
 
 // Globální zpřístupnění funkcí
+window.saveNotice        = saveNotice;
+window.clearNotice       = clearNotice;
+window.onNoticeInput     = onNoticeInput;
 window.toggleDone        = toggleDone;
 window.setPhase          = setPhase;
 window.toggleCdtAccordion = toggleCdtAccordion;
