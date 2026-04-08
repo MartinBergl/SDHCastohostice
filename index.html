@@ -298,7 +298,7 @@
     /* ── NOTICE BANNER ── */
     #noticeBanner { display:none; background:#f0f6ff; border-bottom:2px solid #93c5fd; padding:10px 48px; text-align:center; font-size:13px; color:#1e3a5f; font-weight:500; line-height:1.5; }
     #noticeBanner.visible { display:block; }
-    .notice-admin-bar { display:none; padding:8px 48px; background:#f8faff; border-bottom:1px solid #dbeafe; align-items:center; gap:8px; flex-wrap:wrap; }
+    .notice-admin-bar { display:none; padding:8px 48px; background:#f8faff; border-bottom:1px solid #dbeafe; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; }
     body.admin-mode .notice-admin-bar { display:flex; }
     .notice-input { font-family:'DM Sans',sans-serif; font-size:13px; background:#fff; border:1px solid #93c5fd; color:var(--text); padding:6px 12px; border-radius:6px; outline:none; flex:1; min-width:200px; max-width:480px; transition:border-color .18s; }
     .notice-input:focus { border-color:#3b82f6; }
@@ -458,7 +458,7 @@
 // ═══════════════════════════════════════════════════════
 //  KONFIGURACE — vyplňte po nasazení Apps Scriptu
 // ═══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgizugAL12ivR2wogpaEr1wXxDffTLdPXA36-Hd5oY_e7kzXWFjl6jeY3lsx2xfljwBg/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyP6wYY2CJgiUdIYd_TvTDPfHsmJcRo6RdpSDMdvgduiK-zUiRIq-a1RCn-WuG4zJd7/exec";
 // Příklad: "https://script.google.com/macros/s/AKfycby.../exec"
 
 // ── Polling interval pro návštěvníky (ms) ─────────────
@@ -1536,7 +1536,7 @@ function renderAdminBar() {
     const ph=phaseLabels[phase]||phaseLabels.hidden;
     bar.innerHTML=`
       <span class="admin-on">🔓 Admin</span>
-      ${callStats ? `<span style="font-size:11px;color:${callStats.quotaExceeded?'var(--red)':callStats.quotaWarning?'#92600a':'var(--sub)'};" title="Denní limit: ${callStats.limit || '?'} volání">📊 dnes: ${callStats.today}${callStats.limit?' / '+callStats.limit:''}</span>` : ''}
+      ${callStats ? `<span style="font-size:11px;color:${callStats.quotaExceeded?'var(--red)':callStats.quotaWarning?'#92600a':'var(--sub)'};" title="Celková volání Apps Scriptu / skutečná volání Google Sheets">📊 volání: ${callStats.today}${callStats.limit?' / '+callStats.limit:''} <span style="color:var(--muted)">|</span> Sheets: ${callStats.sheetCallsToday ?? '?'}</span>` : ''}
       ${quotaExceeded ? `<span style="font-size:11px;font-weight:700;color:var(--red);">⛔ LIMIT PŘEKROČEN</span>` : ''}
       <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')">${ph.icon} ${ph.label}</button>
       <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">${editMode?'✏️ Editace ZAP':'✏️ Editovat data'}</button>
