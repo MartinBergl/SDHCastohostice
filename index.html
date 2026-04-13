@@ -144,6 +144,41 @@
     .conn-badge.online  { color:#16a34a; background:#f0fdf4; border-color:#86efac; }
     .conn-badge.offline { color:#fff;    background:var(--red); border-color:#b83020; animation:connPulse 1s ease-in-out infinite; }
     @keyframes connPulse { 0%,100%{ opacity:1; } 50%{ opacity:0.7; } }
+
+    /* Počítadlo návštěvníků */
+    .presence-badge { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:5px 10px; border-radius:6px; border:1px solid #93c5fd; background:#eff6ff; color:#1d6fba; white-space:nowrap; }
+
+    /* Stats panel */
+    .stats-panel {
+      margin: 0 48px 32px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      overflow: hidden;
+      display: none;
+    }
+    .stats-panel.visible { display: block; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .stats-cell {
+      padding: 16px 20px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-cell:nth-child(2n) { border-right: none; }
+    .stats-cell:nth-last-child(-n+2) { border-bottom: none; }
+    .stats-label { font-size: 11px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .stats-value { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 700; color: #1d6fba; line-height: 1; }
+    .stats-value.peak { color: var(--red); }
+    .stats-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    @media (max-width:700px) {
+      .stats-panel { margin-left: 0; margin-right: 0; border-radius: 0; border-left: none; border-right: none; }
+      .stats-value { font-size: 22px; }
+    }
     .admin-on { font-size:12px; font-weight:600; color:#16a34a; }
     .admin-hint { font-size:12px; color:var(--red); }
 
@@ -743,6 +778,35 @@
 
 <div class="history-panel" id="annPanel" style="display:none"></div>
 
+<div class="stats-panel" id="statsPanel">
+  <div class="history-header" style="cursor:default">
+    <span class="history-title">📊 Návštěvnost</span>
+    <span style="font-size:11px;color:var(--muted)" id="statsTodayDate"></span>
+  </div>
+  <div class="stats-grid">
+    <div class="stats-cell">
+      <div class="stats-label">Právě sleduje</div>
+      <div class="stats-value" id="statsNow">—</div>
+      <div class="stats-sub">připojených návštěvníků</div>
+    </div>
+    <div class="stats-cell">
+      <div class="stats-label">Vrchol dnes</div>
+      <div class="stats-value peak" id="statsPeakToday">—</div>
+      <div class="stats-sub">nejvyšší počet současně</div>
+    </div>
+    <div class="stats-cell">
+      <div class="stats-label">Vrchol včera</div>
+      <div class="stats-value peak" id="statsPeakYesterday" style="color:var(--muted)">—</div>
+      <div class="stats-sub" id="statsYesterdayDate"></div>
+    </div>
+    <div class="stats-cell">
+      <div class="stats-label">Celkem dní se záznamy</div>
+      <div class="stats-value" id="statsTotalDays" style="color:var(--sub)">—</div>
+      <div class="stats-sub">dní s návštěvností</div>
+    </div>
+  </div>
+</div>
+
 <div style="background:var(--surface); border-top:1px solid var(--border); padding:24px 48px 16px; text-align:center;">
   <img
     src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/a4d0c821effd3237aff776bf97df8b1a0591b993/sponzori_logo.jpg"
@@ -760,7 +824,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, update, onValue, get }
+import { getDatabase, ref, set, update, onValue, get, onDisconnect, push, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1138,6 +1202,8 @@ let _visitorFirstLoad = true;
 
 async function loadFromFirebase() {
   _visitorFirstLoad = true;
+  // Zaregistruj přítomnost návštěvníka
+  initPresence();
 
   visitorDataUnsub = onValue(ref(db, 'data'), snap => {
     if (snap.exists()) {
@@ -1204,13 +1270,18 @@ onAuthStateChanged(auth, user => {
     if (adminAnnUnsub)   { adminAnnUnsub();   adminAnnUnsub   = null; }
     renderAdminBar();
     renderHistory();
+    renderStatsPanel({});
     // Spusť visitor listenery
     loadFromFirebase();
+    // Zastav počítadlo návštěvníků
+    stopPresenceCounter();
   } else {
     document.body.classList.add('admin-mode');
     // Přihlášení admina: zruš visitor listenery
     unsubVisitors();
     updateLiveIndicator();
+    // Spusť počítadlo návštěvníků
+    initPresenceCounter();
 
     // Při startu: pokud je fronta neprázdná a jsme online, synchronizuj
     // (fronta mohla vzniknout při předchozím výpadku a přežít reload stránky)
@@ -1981,7 +2052,121 @@ function toggleDone(startNum) {
   renderStartlist();
 }
 
-// ── STAV PŘIPOJENÍ ────────────────────────────────────
+// ── PRESENCE SYSTÉM ──────────────────────────────────
+// Sleduje počet aktuálně připojených návštěvníků.
+// Každý návštěvník zapíše svůj záznam do presence/ a nastaví
+// onDisconnect() — Firebase ho automaticky smaže při odpojení.
+let _presenceRef  = null;
+let _presenceUnsub = null;
+let _statsUnsub    = null;
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function yesterdayKey() {
+  const d = new Date(Date.now() - 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function fmtDateCZ(key) {
+  const [y, m, d] = key.split('-');
+  return `${parseInt(d)}. ${parseInt(m)}. ${y}`;
+}
+
+async function initPresence() {
+  // Spustí se pro každého návštěvníka (ne admina)
+  try {
+    const connRef = ref(db, '.info/connected');
+    onValue(connRef, async snap => {
+      if (snap.val() !== true) return;
+      // Vytvoř unikátní záznam v presence/
+      _presenceRef = push(ref(db, 'presence'));
+      // Při odpojení Firebase server automaticky smaže záznam
+      await onDisconnect(_presenceRef).remove();
+      // Zapiš záznam
+      await set(_presenceRef, { t: Date.now() });
+    });
+  } catch(e) {
+    console.error('Presence init error:', e);
+  }
+}
+
+function initPresenceCounter() {
+  // Spustí se jen pro admina — sleduje počet připojených a aktualizuje peak
+  if (_presenceUnsub) { _presenceUnsub(); _presenceUnsub = null; }
+
+  _presenceUnsub = onValue(ref(db, 'presence'), snap => {
+    const count = snap.exists() ? Object.keys(snap.val()).length : 0;
+
+    // Aktualizuj badge v admin baru
+    const el = document.getElementById('presenceCount');
+    if (el) el.textContent = count;
+
+    // Aktualizuj stats panel
+    const statsNow = document.getElementById('statsNow');
+    if (statsNow) statsNow.textContent = count;
+
+    // Ulož peak dne pokud je překročen
+    const key = todayKey();
+    get(ref(db, `stats/${key}/peak`)).then(peakSnap => {
+      const currentPeak = peakSnap.exists() ? peakSnap.val() : 0;
+      if (count > currentPeak) {
+        set(ref(db, `stats/${key}/peak`), count)
+          .catch(e => console.error('Stats peak save error:', e));
+      }
+    }).catch(e => console.error('Stats peak read error:', e));
+  });
+
+  // Načti stats z Firebase
+  loadStats();
+
+  // Stats listener — živě aktualizuje peak dnes
+  if (_statsUnsub) { _statsUnsub(); _statsUnsub = null; }
+  _statsUnsub = onValue(ref(db, 'stats'), snap => {
+    renderStatsPanel(snap.exists() ? snap.val() : {});
+  });
+}
+
+function loadStats() {
+  get(ref(db, 'stats')).then(snap => {
+    renderStatsPanel(snap.exists() ? snap.val() : {});
+  }).catch(e => console.error('Stats load error:', e));
+}
+
+function renderStatsPanel(stats) {
+  const panel = document.getElementById('statsPanel');
+  if (!panel) return;
+  panel.classList.toggle('visible', isAdmin);
+  if (!isAdmin) return;
+
+  const today     = todayKey();
+  const yesterday = yesterdayKey();
+
+  const peakToday     = stats[today]?.peak ?? '—';
+  const peakYesterday = stats[yesterday]?.peak ?? '—';
+  const totalDays     = Object.keys(stats).length;
+
+  const elPeakToday     = document.getElementById('statsPeakToday');
+  const elPeakYesterday = document.getElementById('statsPeakYesterday');
+  const elTotalDays     = document.getElementById('statsTotalDays');
+  const elTodayDate     = document.getElementById('statsTodayDate');
+  const elYesterdayDate = document.getElementById('statsYesterdayDate');
+
+  if (elPeakToday)     elPeakToday.textContent     = peakToday;
+  if (elPeakYesterday) elPeakYesterday.textContent  = peakYesterday;
+  if (elTotalDays)     elTotalDays.textContent      = totalDays || '—';
+  if (elTodayDate)     elTodayDate.textContent      = fmtDateCZ(today);
+  if (elYesterdayDate) elYesterdayDate.textContent  = peakYesterday !== '—' ? fmtDateCZ(yesterday) : 'žádná data';
+}
+
+function stopPresenceCounter() {
+  if (_presenceUnsub) { _presenceUnsub(); _presenceUnsub = null; }
+  if (_statsUnsub)    { _statsUnsub();    _statsUnsub    = null; }
+  const panel = document.getElementById('statsPanel');
+  if (panel) panel.classList.remove('visible');
+}
 let isConnected = true;
 
 // ── OFFLINE FRONTA ────────────────────────────────────
@@ -2099,6 +2284,7 @@ function renderAdminBar() {
     bar.innerHTML = `
       <span class="admin-on">🔓 ${email}</span>
       ${connBadge}
+      <span class="presence-badge">👥 <span id="presenceCount">…</span></span>
       <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')" title="Přepnout viditelnost pro návštěvníky">
         ${ph.icon} ${ph.label}
       </button>
@@ -2577,6 +2763,7 @@ window.publishAnn      = publishAnn;
 window.clearAnn        = clearAnn;
 window.updateLiveIndicator = updateLiveIndicator;
 window.closeOfflineModal   = closeOfflineModal;
+window.renderStatsPanel    = renderStatsPanel;
 window.openImportModal     = openImportModal;
 window.closeImportModal    = closeImportModal;
 window.handleImportFile    = handleImportFile;
