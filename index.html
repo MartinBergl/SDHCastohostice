@@ -170,8 +170,6 @@
 
     .del-btn { font-size:16px; background:none; border:none; cursor:pointer; color:var(--muted); padding:2px 6px; border-radius:4px; line-height:1; transition:all .15s; }
     .del-btn:hover { color:var(--red); background:var(--red-soft); }
-    .reset-btn { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; background:none; border:1px solid var(--border); border-radius:4px; color:var(--muted); cursor:pointer; padding:2px 8px; line-height:1.4; transition:all .15s; white-space:nowrap; }
-    .reset-btn:hover { color:#b45309; border-color:#fcd34d; background:#fffbeb; }
 
     .order-btn { font-size:14px; font-weight:600; background:none; border:1px solid var(--border); border-radius:4px; color:var(--sub); cursor:pointer; padding:1px 7px; line-height:1.4; transition:all .15s; }
     .order-btn:hover:not(:disabled) { background:var(--edit-bg); border-color:var(--edit-border); color:var(--text); }
@@ -374,20 +372,128 @@
       border-top: 3px solid var(--gold) !important;
     }
 
+    /* ── POZVÁNKA (scéna skryto) ── */
+
+    /* Červený pruh nahoře + odznak */
+    .phase-banner::before {
+      content: '🔥';
+      display: block;
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .inv-header { text-align: center; margin-bottom: 28px; }
+    .inv-org  { font-size: 13px; color: #8a8580; margin-bottom: 3px; letter-spacing: .3px; }
+    .inv-sub  { font-size: 14px; color: #8a8580; margin-bottom: 16px; }
+    .inv-divider {
+      width: 48px; height: 3px;
+      background: var(--red);
+      border-radius: 99px;
+      margin: 14px auto 18px;
+    }
+    .inv-title {
+      font-size: clamp(20px, 3.5vw, 28px);
+      font-weight: 800;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.25;
+    }
+    .inv-title span { color: var(--red); }
+
+    /* Info karty */
+    .inv-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0 auto 24px;
+      max-width: 560px;
+    }
+    .inv-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      text-align: center;
+    }
+    .inv-card-icon { font-size: 20px; margin-bottom: 5px; }
+    .inv-card-label { font-size: 10px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .inv-card-value { font-size: 13px; font-weight: 600; color: #1a1916; line-height: 1.4; }
+    /* Tabulka */
+    .inv-table { margin: 0 auto 24px; max-width: 520px; }
+    .inv-row {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 8px 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: start;
+      text-align: left;
+    }
+    .inv-row:last-child { border-bottom: none; }
+    .inv-label { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .inv-value { color: #8a8580; line-height: 1.7; }
+    .inv-value a { color: var(--red); text-decoration: none; }
+    .inv-value a:hover { text-decoration: underline; }
+
+    /* Poznámky */
+    .inv-notes {
+      text-align: center;
+      margin: 0 auto 28px;
+      max-width: 500px;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .inv-notes p { font-size: 13px; color: #8a8580; line-height: 1.6; }
+    .inv-notes a { color: var(--red); text-decoration: none; }
+    .inv-notes a:hover { text-decoration: underline; }
+
+    /* Odpočet */
+    .inv-countdown-wrap {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 2px solid var(--border);
+      margin-top: 8px;
+    }
+    .inv-countdown-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .inv-cards { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .inv-card { padding: 10px 8px; }
+      .inv-card-value { font-size: 12px; }
+      .inv-row { grid-template-columns: 1fr; gap: 3px; padding: 10px 0; }
+      .inv-label { color: var(--sub); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
+      .inv-value { font-size: 14px; }
+      .inv-title { font-size: clamp(17px, 5vw, 22px); letter-spacing: .5px; }
+      .inv-org, .inv-sub { font-size: 13px; }
+      .inv-notes { padding: 12px 14px; }
+      .inv-notes p { font-size: 13px; }
+    }
+
+
+
     /* ── VIDITELNOST (fáze soutěže) ── */
     .phase-banner {
-      margin: 32px 48px;
+      margin: 32px auto;
       padding: 28px 32px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       text-align: center;
+      max-width: 680px;
     }
-    .phase-banner-icon { font-size: 40px; margin-bottom: 12px; }
-    .phase-banner h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-    .phase-banner p  { font-size: 14px; color: var(--sub); line-height: 1.6; }
-
-    /* Odpočet */
     .countdown-wrap { margin-top: 20px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
     .countdown-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; }
     .countdown-num  {
@@ -614,8 +720,7 @@
       .ann-banner { padding:12px 16px; font-size:14px; }
       .offline-box { padding: 24px 20px; }
       .offline-title { font-size: 18px; }
-      .phase-banner { margin: 16px 0; padding: 20px 16px; }
-      .history-panel { margin-left:0; margin-right:0; border-radius:0; border-left:none; border-right:none; }
+      .phase-banner { margin: 16px 0; padding: 20px 16px; }      .history-panel { margin-left:0; margin-right:0; border-radius:0; border-left:none; border-right:none; }
       .header, .content, .startlist-section, .edit-banner, .admin-footer {
         padding-left:16px; padding-right:16px;
       }
@@ -718,12 +823,12 @@
         <th id="dragColHead" style="display:none;width:28px;padding:0"></th>
         <th class="c">St. č.</th>
         <th>Tým</th>
-        <th>Kategorie</th>
+        <th class="c">Kategorie</th>
         <th class="r">Levý terč</th>
         <th class="r">Pravý terč</th>
         <th class="c">Čas zápisu</th>
         <th class="c">Stav</th>
-        <th id="actionColHead"></th>
+        <th id="actionColHead" class="c"></th>
       </tr>
     </thead>
     <tbody id="startlistBody"></tbody>
@@ -1055,9 +1160,61 @@ function renderPhaseBanner() {
 
   // Návštěvník
   el.innerHTML = `<div class="phase-banner">
-    <h2>Soutěž zatím nezačala</h2>
-    <p>Startovní listina bude zveřejněna před zahájením soutěže dle pořadí přihlášek na FireSportu.</p>
-    <div id="countdownDisplay"></div>
+    <div class="inv-header">
+      <p class="inv-org">SDH Častohostice ve spolupráci s Obecním úřadem</p>
+      <p class="inv-sub">Vás zve na soutěž zařazenou do okresní ligy mladých hasičů</p>
+      <h1 class="inv-title">O pohár starostky<br>obce <span>Častohostice</span></h1>
+      <div class="inv-divider"></div>
+    </div>
+
+    <div class="inv-cards">
+      <div class="inv-card">
+        <div class="inv-card-icon">📅</div>
+        <div class="inv-card-label">Termín</div>
+        <div class="inv-card-value">9. května 2026</div>
+      </div>
+      <div class="inv-card">
+        <div class="inv-card-icon">⏰</div>
+        <div class="inv-card-label">Zahájení</div>
+        <div class="inv-card-value">9:15 hod.</div>
+      </div>
+      <div class="inv-card">
+        <div class="inv-card-icon">💰</div>
+        <div class="inv-card-label">Startovné</div>
+        <div class="inv-card-value">200,- / družstvo</div>
+      </div>
+    </div>
+
+    <div class="inv-table">
+      <div class="inv-row">
+        <span class="inv-label">Disciplína:</span>
+        <span class="inv-value">požární útok mladších a starších žáků</span>
+      </div>
+      <div class="inv-row">
+        <span class="inv-label">Program:</span>
+        <span class="inv-value">
+          8:30 – 9:00 hod. příjezd a prezentace<br>
+          9:00 hod. nástup<br>
+          9:15 hod. zahájení soutěže
+        </span>
+      </div>
+      <div class="inv-row">
+        <span class="inv-label">Rezervace:</span>
+        <span class="inv-value">Pořadí dle rezervace na <a href="https://www.firesport.eu" target="_blank" rel="noopener">www.firesport.eu</a>, dále podle příjezdu</span>
+      </div>
+    </div>
+
+    <div class="inv-notes">
+      <p>Nutno vyplnit přihlášku na <a href="https://www.dh-vysocina.cz" target="_blank" rel="noopener">www.dh-vysocina.cz</a> a odevzdat ji při prezentaci spolu s průkazy</p>
+      <p>Občerstvení zajištěno po celou dobu soutěže</p>
+      <p>Informace: <strong>603 531 914</strong> – Vladimír Nesiba</p>
+      <p>Na Vaši účast se těší SDH Častohostice a Obecní úřad Častohostice</p>
+    </div>
+
+    <div class="inv-countdown-wrap">
+      <div class="inv-countdown-label">⏱ Do začátku soutěže zbývá ⏱</div>
+      <div id="countdownDisplay"></div>
+    </div>
   </div>`;
 
   const cdEl = document.getElementById('countdownDisplay');
@@ -1542,13 +1699,11 @@ function renderStartlist() {
         ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</td>`
         : `<td class="tcell">${timeDisplay(d.cas2)}</td>`;
 
-    const hasTime = d.cas1 !== null || d.cas2 !== null;
     const actionCell = isAdmin ? `<td style="text-align:right;white-space:nowrap">
         ${editMode ? `
           <button class="order-btn" title="Posunout nahoru" onclick="moveTeam(${d.start}, -1)" ${i===0?'disabled':''}>↑</button>
           <button class="order-btn" title="Posunout dolů" onclick="moveTeam(${d.start}, 1)" ${i===sorted.length-1?'disabled':''}>↓</button>
         ` : ''}
-        ${hasTime ? `<button class="reset-btn" title="Resetovat časy" onclick="resetTeamTimes(${d.start})">↺ Reset</button>` : ''}
         <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
         ${editMode ? `<button class="del-btn" title="Odstranit tým" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       </td>` : '';
@@ -1606,7 +1761,6 @@ function renderStartlist() {
         <button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button>
         <button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>
       ` : ''}
-      ${(d.cas1 !== null || d.cas2 !== null) ? `<button class="reset-btn" onclick="resetTeamTimes(${d.start})">↺ Reset</button>` : ''}
       <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
       ${editMode ? `<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       ${d.zapisCas ? `<span class="sl-zapis">${d.zapisCas}</span>` : ''}
@@ -1784,6 +1938,7 @@ function openQuickTime(startNum) {
     </div>
     <div class="qtp-btns">
       <button class="qtp-cancel" onclick="closeQuickTime()">Zrušit</button>
+      ${(row.cas1 !== null || row.cas2 !== null) ? `<button class="qtp-cancel" style="color:#b45309;border-color:#fcd34d;background:#fffbeb" onclick="resetTeamTimes(${startNum});closeQuickTime()">↺ Reset</button>` : ''}
       <button class="qtp-save" onclick="saveQuickTime(${startNum})">Uložit</button>
     </div>`;
   popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)';
