@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SDH-Častohostice</title>
-  <link rel="icon" type="image/png" href="https://github.com/MartinBergl/SDHCastohostice/blob/main/favicon.png?raw=true" />
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -170,6 +170,8 @@
 
     .del-btn { font-size:16px; background:none; border:none; cursor:pointer; color:var(--muted); padding:2px 6px; border-radius:4px; line-height:1; transition:all .15s; }
     .del-btn:hover { color:var(--red); background:var(--red-soft); }
+    .reset-btn { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; background:none; border:1px solid var(--border); border-radius:4px; color:var(--muted); cursor:pointer; padding:2px 8px; line-height:1.4; transition:all .15s; white-space:nowrap; }
+    .reset-btn:hover { color:#b45309; border-color:#fcd34d; background:#fffbeb; }
 
     .order-btn { font-size:14px; font-weight:600; background:none; border:1px solid var(--border); border-radius:4px; color:var(--sub); cursor:pointer; padding:1px 7px; line-height:1.4; transition:all .15s; }
     .order-btn:hover:not(:disabled) { background:var(--edit-bg); border-color:var(--edit-border); color:var(--text); }
@@ -690,7 +692,7 @@
 
 <header class="header">
   <img
-    src="https://github.com/MartinBergl/SDHCastohostice/blob/main/logo_nadpis.jpg?raw=true"
+    src="logo_nadpis.jpg"
     alt="Dětské závody SDH Častohostice"
     style="max-width:90%; width:auto; height:auto; display:block; margin:0 auto;"
   />
@@ -748,7 +750,7 @@
 
 <div style="background:var(--surface); border-top:1px solid var(--border); padding:24px 48px 16px; text-align:center;">
   <img
-    src="https://raw.githubusercontent.com/MartinBergl/SDHCastohostice/a4d0c821effd3237aff776bf97df8b1a0591b993/sponzori_logo.jpg"
+    src="sponzori_logo.jpg"
     alt="Sponzoři"
     style="max-width:90%; width:auto; height:auto;"
     class="sponzori-img"
@@ -975,6 +977,10 @@ function renderCountdownDisplay(el) {
 }
 
 function setPhase(newPhase) {
+  // Potvrzení před zveřejněním výsledků návštěvníkům
+  if (newPhase === 'results' && phase === 'hidden') {
+    if (!confirm('Opravdu zveřejnit výsledky a startovní listinu pro návštěvníky?')) return;
+  }
   phase = newPhase;
   savePhase();
   renderPhaseBanner();
@@ -1209,6 +1215,8 @@ onAuthStateChanged(auth, user => {
     if (adminAnnUnsub)   { adminAnnUnsub();   adminAnnUnsub   = null; }
     renderAdminBar();
     renderHistory();
+    // Zastav auto-logout timer
+    stopAutoLogout();
     // Spusť visitor listenery
     loadFromFirebase();
     // Zastav počítadlo návštěvníků
@@ -1218,6 +1226,8 @@ onAuthStateChanged(auth, user => {
     // Přihlášení admina: zruš visitor listenery
     unsubVisitors();
     updateLiveIndicator();
+    // Spusť auto-logout timer
+    resetAutoLogout();
     // Spusť počítadlo návštěvníků
     initPresenceCounter();
 
@@ -1532,11 +1542,13 @@ function renderStartlist() {
         ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</td>`
         : `<td class="tcell">${timeDisplay(d.cas2)}</td>`;
 
+    const hasTime = d.cas1 !== null || d.cas2 !== null;
     const actionCell = isAdmin ? `<td style="text-align:right;white-space:nowrap">
         ${editMode ? `
           <button class="order-btn" title="Posunout nahoru" onclick="moveTeam(${d.start}, -1)" ${i===0?'disabled':''}>↑</button>
           <button class="order-btn" title="Posunout dolů" onclick="moveTeam(${d.start}, 1)" ${i===sorted.length-1?'disabled':''}>↓</button>
         ` : ''}
+        ${hasTime ? `<button class="reset-btn" title="Resetovat časy" onclick="resetTeamTimes(${d.start})">↺ Reset</button>` : ''}
         <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
         ${editMode ? `<button class="del-btn" title="Odstranit tým" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       </td>` : '';
@@ -1594,6 +1606,7 @@ function renderStartlist() {
         <button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button>
         <button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>
       ` : ''}
+      ${(d.cas1 !== null || d.cas2 !== null) ? `<button class="reset-btn" onclick="resetTeamTimes(${d.start})">↺ Reset</button>` : ''}
       <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
       ${editMode ? `<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       ${d.zapisCas ? `<span class="sl-zapis">${d.zapisCas}</span>` : ''}
@@ -1939,6 +1952,20 @@ function saveTimeField(el) {
   }
 }
 
+function resetTeamTimes(startNum) {
+  const row = data.find(d => d.start === startNum);
+  if (!row) return;
+  if (!confirm(`Opravdu resetovat časy týmu „${row.team}"?`)) return;
+  const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
+  row.cas1 = null;
+  row.cas2 = null;
+  row.zapisCas = null;
+  addHistory(row, prev, null, null);
+  saveTeamPatch(startNum);
+  renderResults();
+  renderStartlist();
+}
+
 function deleteTeam(startNum) {
   if (!confirm('Opravdu odstranit tento tým?')) return;
   data = data.filter(d => d.start !== startNum);
@@ -2019,6 +2046,32 @@ function initPresenceCounter() {
 function stopPresenceCounter() {
   if (_presenceUnsub) { _presenceUnsub(); _presenceUnsub = null; }
 }
+// ── AUTOMATICKÉ ODHLÁŠENÍ PO NEČINNOSTI ──────────────
+// Admin je odhlášen po 2 hodinách bez jakékoliv aktivity.
+const AUTO_LOGOUT_MS = 2 * 60 * 60 * 1000; // 2 hodiny
+let _autoLogoutTimer = null;
+
+function resetAutoLogout() {
+  if (!isAdmin) return;
+  if (_autoLogoutTimer) clearTimeout(_autoLogoutTimer);
+  _autoLogoutTimer = setTimeout(() => {
+    if (isAdmin) {
+      alert('Byli jste automaticky odhlášeni z důvodu nečinnosti (2 hodiny).');
+      signOut(auth);
+    }
+  }, AUTO_LOGOUT_MS);
+}
+
+function stopAutoLogout() {
+  if (_autoLogoutTimer) { clearTimeout(_autoLogoutTimer); _autoLogoutTimer = null; }
+}
+
+// Sleduj aktivitu admina — reset timeru při jakékoliv interakci
+['click', 'keydown', 'touchstart'].forEach(evt => {
+  document.addEventListener(evt, () => { if (isAdmin) resetAutoLogout(); }, { passive: true });
+});
+
+// ── STAV PŘIPOJENÍ ────────────────────────────────────
 let isConnected = true;
 
 // ── OFFLINE FRONTA ────────────────────────────────────
@@ -2596,6 +2649,7 @@ window.saveField     = saveField;
 window.saveSelectField = saveSelectField;
 window.saveTimeField = saveTimeField;
 window.deleteTeam    = deleteTeam;
+window.resetTeamTimes = resetTeamTimes;
 window.addTeam       = addTeam;
 window.moveTeam      = moveTeam;
 window.toggleEditMode = toggleEditMode;
