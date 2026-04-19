@@ -1,2 +1,2 @@
 # SDH Castohostice
-Startovací a výsledková listina
+Startovní a výsledková listina
