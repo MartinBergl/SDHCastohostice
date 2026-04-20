@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archiv výsledků — SDH Částohostice</title>
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red:      #d63b2a;
+      --red-soft: #fdf1f0;
+      --bg:       #f7f6f4;
+      --surface:  #ffffff;
+      --border:   #e8e5e1;
+      --text:     #1a1916;
+      --sub:      #8a8580;
+      --muted:    #c4c0bb;
+      --gold:     #c8950a;
+      --silver:   #7a8490;
+      --bronze:   #a06830;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+
+    /* HEADER */
+    .header { background:var(--surface); border-bottom:1px solid var(--border); padding:24px 32px; }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header-logo-img { height: 110px; width: auto; flex-shrink: 0; }
+    .header-text { text-align: center; flex: 1; }
+    .header-title { font-size: clamp(24px, 3.5vw, 40px); font-weight: 800; color: #1a237e; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 8px; }
+    .header-subtitle { font-size: clamp(14px, 2vw, 20px); font-weight: 700; color: #1a1916; line-height: 1.3; margin-bottom: 4px; }
+    .header-date { font-size: clamp(14px, 2vw, 20px); font-weight: 700; color: #1a1916; line-height: 1.3; }
+
+    /* ARCHIV BADGE */
+    .archiv-banner {
+      background: #fffbeb;
+      border-bottom: 2px solid #fcd34d;
+      padding: 10px 48px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #92620a;
+    }
+
+    /* CONTENT */
+    .content { padding: 0 48px; }
+
+    .category-block { margin-bottom: 40px; opacity:0; transform:translateY(16px); animation:fadeUp 0.4s ease forwards; }
+    .category-block:nth-child(1){animation-delay:.04s}
+    .category-block:nth-child(2){animation-delay:.12s}
+    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+    .cat-label { display:flex; align-items:center; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
+    .cat-name { font-size:22px; font-weight:700; color:var(--text); }
+    .cat-pill { font-size:11px; font-weight:500; color:var(--sub); background:var(--bg); border:1px solid var(--border); padding:2px 8px; border-radius:99px; }
+
+    table { width:100%; border-collapse:collapse; }
+    thead th { font-size:11px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--text); padding:10px 14px; text-align:left; background:var(--surface); border-bottom:1px solid var(--border); }
+    thead th.r { text-align:right; }
+    thead th.c { text-align:center; }
+
+    tbody tr { border-bottom:1px solid var(--border); background:var(--surface); }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:var(--red-soft); }
+    tbody tr.rank-1 { background:#fffbf0; }
+    tbody tr.rank-2 { background:#f8f9fa; }
+    tbody tr.rank-3 { background:#fdf7f2; }
+
+    td { padding:13px 14px; font-size:14px; vertical-align:middle; }
+
+    .rank { font-size:15px; font-weight:700; color:var(--sub); text-align:center; }
+    .rank.g { color:var(--gold); font-size:20px; }
+    .rank.s { color:var(--silver); font-size:18px; }
+    .rank.b { color:var(--bronze); font-size:18px; }
+
+    .snum { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); }
+    .tname { font-size:14px; font-weight:500; color:var(--text); }
+    .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
+    .tcell.best { color:var(--text); font-weight:500; }
+    .tcell.empty { color:var(--muted); font-size:12px; }
+    .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; text-align:right; color:var(--red); white-space:nowrap; }
+    .best-col.empty { color:var(--muted); font-size:12px; font-weight:400; }
+    .dsq-tag { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; padding:2px 6px; border-radius:4px; }
+    .np-tag  { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#b45309; background:#fffbeb; border:1px solid #fcd34d; padding:2px 6px; border-radius:4px; }
+    .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; }
+    .cb-ml { background:#eff6ff; color:#3b82f6; }
+    .cb-st { background:#fdf1f0; color:#d63b2a; }
+
+    /* STARTOVNÍ LISTINA */
+    .startlist-section { margin:0 48px 60px; padding-top:32px; border-top:1px solid var(--border); }
+    .startlist-header { padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
+    .startlist-title { font-size:22px; font-weight:700; color:var(--text); }
+    .done-tag { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#16a34a; background:#f0fdf4; border:1px solid #86efac; padding:2px 7px; border-radius:4px; }
+
+    /* MOBILE */
+    .result-cards { display:none; }
+    .result-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
+    .result-card.rank-1 { background:#fffbf0; border-color:#f0d060; }
+    .result-card.rank-2 { background:#f8f9fa; }
+    .result-card.rank-3 { background:#fdf7f2; border-color:#e8c8a8; }
+    .rc-rank { font-size:22px; min-width:36px; text-align:center; flex-shrink:0; }
+    .rc-rank.num { font-size:15px; font-weight:700; color:var(--sub); }
+    .rc-body { flex:1; min-width:0; }
+    .rc-team { font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .rc-snum { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:2px; }
+    .rc-times { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
+    .rc-best { font-family:'DM Mono',monospace; font-size:16px; font-weight:700; color:var(--red); }
+    .rc-best.empty { color:var(--muted); font-size:13px; font-weight:400; }
+    .rc-sub-times { font-family:'DM Mono',monospace; font-size:11px; color:var(--sub); }
+
+    /* LOADING / ERROR */
+    .state-box { text-align:center; padding:60px 24px; }
+    .state-box h2 { font-size:20px; font-weight:700; color:var(--text); margin-bottom:8px; }
+    .state-box p { font-size:14px; color:var(--sub); }
+    .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* FOOTER */
+    footer { background:var(--surface); border-top:1px solid var(--border); padding:16px 48px; text-align:center; font-size:12px; color:var(--muted); }
+
+    @media (max-width:700px) {
+      .header { padding:16px; }
+      .header-inner { gap:12px; }
+      .header-logo-img { height:64px; }
+      .content, .startlist-section { padding-left:16px; padding-right:16px; }
+      .startlist-section { margin-left:0; margin-right:0; }
+      .archiv-banner { padding:10px 16px; }
+      .results-table { display:none; }
+      .result-cards { display:block; }
+      footer { padding:16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <img src="images/logo_nadpis_1.jpg" alt="Znak SDH Částohostice" class="header-logo-img" />
+    <div class="header-text">
+      <div class="header-title">SDH Částohostice</div>
+      <div class="header-subtitle" id="headerSubtitle">Archiv výsledků</div>
+      <div class="header-date" id="headerDate"></div>
+    </div>
+    <img src="images/logo_nadpis_2.jpg" alt="Znak okresu" class="header-logo-img" />
+  </div>
+</header>
+
+<div class="archiv-banner" id="archivBanner">
+  📁 Archivní výsledky — pouze pro čtení
+</div>
+
+<div id="mainContent">
+  <div class="state-box">
+    <div class="spinner"></div>
+    <h2>Načítám výsledky…</h2>
+    <p>Chvíli strpení</p>
+  </div>
+</div>
+
+<footer>Copyright &copy; 2026 Martin Bergl</footer>
+
+<script>
+// Načti název JSON souboru z URL parametru ?soubor=vysledky-2026.json
+const params   = new URLSearchParams(window.location.search);
+const soubor   = params.get('soubor');
+const mainEl   = document.getElementById('mainContent');
+
+const CATEGORIES = ['Mladší děti', 'Starší děti'];
+const BADGE = { 'Mladší děti': 'cb-ml', 'Starší děti': 'cb-st' };
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function bestTime(d) {
+  const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
+  if (nums.length === 2) return Math.max(...nums);
+  if (nums.length === 1) return nums[0];
+  return null;
+}
+
+function renderTimeCell(val, isBest) {
+  if (val === null || val === undefined) return `<td class="tcell empty">—</td>`;
+  if (val === 'DSQ') return `<td class="tcell" style="text-align:right"><span class="dsq-tag">DSQ</span></td>`;
+  if (val === 'NP')  return `<td class="tcell" style="text-align:right"><span class="np-tag">NP</span></td>`;
+  return `<td class="tcell${isBest?' best':''}">${val.toFixed(2)}&thinsp;s</td>`;
+}
+
+function fmtTime(val) {
+  if (val===null||val===undefined) return '<span style="color:var(--muted)">—</span>';
+  if (val==='DSQ') return '<span class="dsq-tag">DSQ</span>';
+  if (val==='NP')  return '<span class="np-tag">NP</span>';
+  return val.toFixed(2)+'s';
+}
+
+function render(json) {
+  const data    = json.data || [];
+  const doneSet = new Set(Object.keys(json.done || {}).map(Number));
+  const meta    = json.meta || {};
+
+  // Aktualizuj hlavičku
+  if (meta.event)  document.getElementById('headerSubtitle').textContent = meta.event;
+  if (meta.date)   document.getElementById('headerDate').textContent = meta.date;
+  if (meta.exportDate) {
+    const d = new Date(meta.exportDate);
+    document.getElementById('archivBanner').textContent =
+      `📁 Archivní výsledky — export ${d.toLocaleDateString('cs-CZ')} v ${d.toLocaleTimeString('cs-CZ', {hour:'2-digit',minute:'2-digit'})}`;
+  }
+
+  let html = '<div class="content">';
+
+  // Výsledkové tabulky
+  CATEGORIES.forEach(cat => {
+    let rows = data.filter(d => d.kategorie === cat && (d.cas1 !== null || d.cas2 !== null));
+    if (!rows.length) return;
+
+    rows = [...rows].sort((a, b) => {
+      const ta = bestTime(a), tb = bestTime(b);
+      if (ta===null && tb===null) return 0;
+      if (ta===null) return 1;
+      if (tb===null) return -1;
+      return ta - tb;
+    });
+
+    const rowsHtml = rows.map((d, i) => {
+      const bt = bestTime(d);
+      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':(i+1)+'.';
+      const rankCls = i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':'';
+      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
+      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
+      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
+      const bestHtml = bt!==null ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>` : `<td class="best-col empty">—</td>`;
+      return `<tr class="${rc}">
+        <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
+        <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
+        <td><div class="tname">${esc(d.team)}</div></td>
+        ${renderTimeCell(d.cas1, c1worst)}
+        ${renderTimeCell(d.cas2, c2worst)}
+        ${bestHtml}
+      </tr>`;
+    }).join('');
+
+    const cardsHtml = rows.map((d, i) => {
+      const bt = bestTime(d);
+      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const isNum = !['🥇','🥈','🥉'].includes(rankTxt);
+      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
+      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
+      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
+      return `<div class="result-card ${rc}">
+        <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
+        <div class="rc-body">
+          <div class="rc-team">${esc(d.team)}</div>
+          <div class="rc-snum">St. č. ${d.start}</div>
+        </div>
+        <div class="rc-times">
+          ${bt!==null ? `<div class="rc-best">${bt.toFixed(2)}&thinsp;s</div>` : `<div class="rc-best empty">—</div>`}
+          <div class="rc-sub-times">
+            <span class="${c1worst?'':'worst'}">${fmtTime(d.cas1)}</span>
+            <span style="color:var(--muted)"> / </span>
+            <span class="${c2worst?'':'worst'}">${fmtTime(d.cas2)}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const n = rows.length;
+    html += `<div class="category-block">
+      <div class="cat-label">
+        <span class="cat-name">${esc(cat)}</span>
+        <span class="cat-pill">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
+      </div>
+      <table class="results-table">
+        <colgroup>
+          <col style="width:50px"><col style="width:60px"><col>
+          <col style="width:155px"><col style="width:155px"><col style="width:165px">
+        </colgroup>
+        <thead><tr>
+          <th class="c">Poř.</th><th class="c">St. č.</th><th>Tým</th>
+          <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <div class="result-cards">${cardsHtml}</div>
+    </div>`;
+  });
+
+  html += '</div>';
+
+  // Startovní listina
+  const sorted = [...data].sort((a, b) => a.start - b.start);
+  const slRows = sorted.map(d => {
+    const isDone = doneSet.has(d.start);
+    const timeVal = v => v===null||v===undefined ? '—' : v==='DSQ' ? 'DSQ' : v==='NP' ? 'NP' : v.toFixed(2)+' s';
+    return `<tr>
+      <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
+      <td><div class="tname">${esc(d.team)}</div></td>
+      <td><span class="cbadge ${BADGE[d.kategorie]||''}">${esc(d.kategorie)}</span></td>
+      <td class="tcell">${timeVal(d.cas1)}</td>
+      <td class="tcell">${timeVal(d.cas2)}</td>
+      <td style="text-align:center">${isDone ? '<span class="done-tag">✓ Odběhnuto</span>' : ''}</td>
+    </tr>`;
+  }).join('');
+
+  html += `<div class="startlist-section">
+    <div class="startlist-header"><span class="startlist-title">Startovní listina</span></div>
+    <table>
+      <colgroup>
+        <col style="width:55px"><col><col style="width:110px">
+        <col style="width:145px"><col style="width:145px"><col style="width:120px">
+      </colgroup>
+      <thead><tr>
+        <th class="c">St. č.</th><th>Tým</th><th class="c">Kategorie</th>
+        <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="c">Stav</th>
+      </tr></thead>
+      <tbody>${slRows}</tbody>
+    </table>
+  </div>`;
+
+  mainEl.innerHTML = html;
+}
+
+// Načti JSON
+if (!soubor) {
+  mainEl.innerHTML = `<div class="state-box">
+    <h2>Chybí název souboru</h2>
+    <p>Použij URL parametr <code>?soubor=vysledky-2026.json</code></p>
+  </div>`;
+} else {
+  fetch(soubor)
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(json => render(json))
+    .catch(err => {
+      mainEl.innerHTML = `<div class="state-box">
+        <h2>Soubor se nepodařilo načíst</h2>
+        <p>Zkontroluj že soubor <strong>${esc(soubor)}</strong> existuje ve stejné složce jako tato stránka.</p>
+        <p style="margin-top:8px;font-size:12px;color:var(--muted)">${esc(err.message)}</p>
+      </div>`;
+    });
+}
+</script>
+</body>
+</html>
