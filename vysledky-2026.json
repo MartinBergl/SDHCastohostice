@@ -1,0 +1,316 @@
+{
+  "meta": {
+    "exportDate": "2026-04-20T17:01:11.368Z",
+    "event": "O pohár starostky obce Častohostice",
+    "date": "9. května 2026"
+  },
+  "data": [
+    {
+      "cas1": 19.55,
+      "cas2": 17.54,
+      "kategorie": "Starší děti",
+      "start": 1,
+      "team": "Čechtín A",
+      "zapisCas": "10:13"
+    },
+    {
+      "cas1": 19.6,
+      "cas2": 22.44,
+      "kategorie": "Starší děti",
+      "start": 2,
+      "team": "Svatoslav",
+      "zapisCas": "07:51"
+    },
+    {
+      "cas1": 17.9,
+      "cas2": 32.11,
+      "kategorie": "Starší děti",
+      "start": 3,
+      "team": "Trnava A",
+      "zapisCas": "07:56"
+    },
+    {
+      "cas1": 31.11,
+      "cas2": 19.87,
+      "kategorie": "Starší děti",
+      "start": 4,
+      "team": "Číhalín A",
+      "zapisCas": "10:12"
+    },
+    {
+      "cas1": 14.66,
+      "cas2": 23.41,
+      "kategorie": "Starší děti",
+      "start": 5,
+      "team": "Výčapy B",
+      "zapisCas": "19:32"
+    },
+    {
+      "cas1": 47.96,
+      "cas2": 41.34,
+      "kategorie": "Starší děti",
+      "start": 6,
+      "team": "Trnava B",
+      "zapisCas": "10:42"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 7,
+      "team": "Šebkovice A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 8,
+      "team": "Trnava C"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 9,
+      "team": "Lipník A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 10,
+      "team": "Litovany A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 11,
+      "team": "Kojetice A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 12,
+      "team": "Předín A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 13,
+      "team": "Výčapy A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 14,
+      "team": "Okříšky A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 15,
+      "team": "Bítovánky"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 16,
+      "team": "Okříšky B"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 17,
+      "team": "Čechtín B"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 18,
+      "team": "Vladislav"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 19,
+      "team": "Markvartice"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 20,
+      "team": "Domamil A"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 21,
+      "team": "Dalešice"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 22,
+      "team": "Lipník B"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 23,
+      "team": "Štěměchy"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 24,
+      "team": "Častohostice"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 25,
+      "team": "Šebkovice B"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 26,
+      "team": "Kněžice"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 27,
+      "team": "Petrovice"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 28,
+      "team": "Předín B - mimo soutěž"
+    },
+    {
+      "kategorie": "Starší děti",
+      "start": 29,
+      "team": "Číhalín B"
+    },
+    {
+      "cas1": 19.22,
+      "cas2": 17.35,
+      "kategorie": "Mladší děti",
+      "start": 30,
+      "team": "Trnava A",
+      "zapisCas": "07:55"
+    },
+    {
+      "cas1": 31.33,
+      "cas2": 24.61,
+      "kategorie": "Mladší děti",
+      "start": 31,
+      "team": "Předín A",
+      "zapisCas": "07:56"
+    },
+    {
+      "cas1": 14.77,
+      "cas2": 22.4,
+      "kategorie": "Mladší děti",
+      "start": 32,
+      "team": "Výčapy",
+      "zapisCas": "07:56"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 33,
+      "team": "Trnava B"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 34,
+      "team": "Markvartice A"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 35,
+      "team": "Svatoslav"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 36,
+      "team": "Bítovánky A"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 37,
+      "team": "Trnava C"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 38,
+      "team": "Bítovánky B"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 39,
+      "team": "Předín B"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 40,
+      "team": "Litovany"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 41,
+      "team": "Číhalín"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 42,
+      "team": "Budíkovice B"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 43,
+      "team": "Štěměchy"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 44,
+      "team": "Šebkovice A"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 45,
+      "team": "Slavice"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 46,
+      "team": "Kojetice"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 47,
+      "team": "Okříšky"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 48,
+      "team": "Častohostice"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 49,
+      "team": "Stařeč A"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 50,
+      "team": "Markvartice B"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 51,
+      "team": "Rokytnice nad Rokytnou"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 52,
+      "team": "Budíkovice A"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 53,
+      "team": "Lipník"
+    },
+    {
+      "kategorie": "Mladší děti",
+      "start": 54,
+      "team": "Vladislav A"
+    }
+  ],
+  "done": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "NaN": true
+  },
+  "phase": "hidden"
+}
