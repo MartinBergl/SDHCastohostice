@@ -88,7 +88,7 @@
 
     .startlist-table thead th {
       position: sticky;
-      top: 0;
+      top: 55px;
       z-index: 10;
       box-shadow: 0 1px 0 var(--border);
     }
@@ -154,7 +154,7 @@
     /* ── STARTOVNÍ LISTINA ── */
     .startlist-section { margin:0 48px 60px; padding-top:32px; border-top:1px solid var(--border); }
 
-    .startlist-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; padding:18px 0 14px; border-bottom:2px solid var(--border); }
+    .startlist-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:0; flex-wrap:wrap; padding:18px 0 14px; border-bottom:2px solid var(--border); position:sticky; top:0; z-index:11; background:var(--bg); }
     .startlist-title { font-size:22px; font-weight:700; letter-spacing:-0.3px; text-transform:none; color:var(--text); }
 
     /* Admin bar */
@@ -826,7 +826,7 @@
       .startlist-table { display:none; }
       .startlist-cards { display:block; }
       .startlist-title { font-size:18px; }
-      .startlist-header { padding:14px 0 10px; margin-bottom:12px; }
+      .startlist-header { padding:14px 0 10px; margin-bottom:12px; position:static; }
       .admin-bar { justify-content:center; width:100%; }
       .admin-input { width:140px; }
       .edit-banner { padding:8px 16px; font-size:11px; }
@@ -2466,6 +2466,7 @@ function renderAdminBar() {
       </button>
       ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>` : ''}
       <button class="admin-btn export" onclick="exportXLSX()" title="Stáhnout výsledky jako Excel (.xlsx)">⬇ Export Excel</button>
+      <button class="admin-btn export" onclick="exportJSON()" title="Stáhnout data jako JSON pro archiv">⬇ Export JSON</button>
       <button class="admin-btn export" onclick="openImportModal()" title="Importovat startovní listinu z Excel">⬆ Import listiny</button>
       <button class="admin-btn logout" onclick="logout()">Odhlásit</button>
     `;
@@ -2692,6 +2693,32 @@ function toggleAnnAccordion() {
   const isOpen = body.classList.toggle('open');
   if (icon) icon.textContent = isOpen ? '▲ skrýt' : '▼ upravit';
   if (isOpen) setTimeout(() => document.getElementById('annInput')?.focus(), 50);
+}
+
+// ── EXPORT JSON (archiv) ──────────────────────────────
+function exportJSON() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const datestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+
+  const exportData = {
+    meta: {
+      exportDate: now.toISOString(),
+      event: 'O pohár starostky obce Častohostice',
+      date: '9. května 2026'
+    },
+    data,
+    done: Object.fromEntries([...doneSet].map(id => [String(id), true])),
+    phase
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `vysledky-castohostice_${datestamp}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function toggleAnnPanel() {
@@ -2924,6 +2951,7 @@ window.toggleEditMode = toggleEditMode;
 window.login         = login;
 window.logout        = logout;
 window.exportXLSX    = exportXLSX;
+window.exportJSON    = exportJSON;
 window.openQuickTime = openQuickTime;
 window.closeQuickTime = closeQuickTime;
 window.saveQuickTime = saveQuickTime;
