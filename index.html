@@ -211,6 +211,7 @@
     .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:default; }
     .cb-ml { background:#eff6ff; color:#3b82f6; }
     .cb-st { background:#fdf1f0; color:#d63b2a; }
+    .cb-nz { background:#f5f5f4; color:#78716c; }
 
     /* ── INLINE EDITING ── */
     .editable { cursor:text; border-radius:3px; transition:background .12s; }
@@ -489,7 +490,7 @@
       letter-spacing: 1px;
       line-height: 1.25;
     }
-    .inv-title span { color: var(--red); }
+    .inv-title span { color: var(--text); }
 
     /* Info karty */
     .inv-cards {
@@ -1023,8 +1024,8 @@ const DEFAULT_DATA = [
   { start:12, team:"SDH Poděbrady B",   kategorie:"Starší děti", cas1:null, cas2:null },
 ];
 
-const CATEGORIES = ["Mladší děti","Starší děti"];
-const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st" };
+const CATEGORIES = ["Mladší děti","Starší děti","Nezařazeno"];
+const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Nezařazeno":"cb-nz" };
 
 // ── STAV ─────────────────────────────────────────────
 let isAdmin = false;
@@ -1276,7 +1277,7 @@ function renderPhaseBanner() {
     <div class="inv-header">
       <p class="inv-org">SDH Častohostice ve spolupráci s Obecním úřadem</p>
       <p class="inv-sub">Vás zve na soutěž zařazenou do okresní ligy mladých hasičů</p>
-      <h1 class="inv-title">O pohár starostky<br>obce Častohostice</h1>
+      <h1 class="inv-title">O pohár starostky<br>obce <span>Častohostice</span></h1>
     </div>
 
     <div class="inv-cards">
@@ -1312,7 +1313,7 @@ function renderPhaseBanner() {
       </div>
       <div class="inv-row">
         <span class="inv-label">Rezervace:</span>
-        <span class="inv-value">Pořadí dle rezervace na <a href="https://www.firesport.eu" target="_blank" rel="noopener">www.firesport.eu</a>, dále podle příjezdu</span>
+        <span class="inv-value">Pořadí dle rezervace na <a href="https://www.firesport.eu/soutez-asastohostice-15792.html" target="_blank" rel="noopener">www.firesport.eu</a>, dále podle příjezdu</span>
       </div>
     </div>
 
@@ -2813,12 +2814,16 @@ function handleImportFile(file) {
         const start = parseInt(row[keyStart]);
         const team  = String(row[keyTeam] ?? '').trim();
         const kat   = String(row[keyCat]  ?? '').trim();
+        const finalKat = CATEGORIES.includes(kat) ? kat : 'Nezařazeno';
 
         if (isNaN(start) || start < 1) { errors.push(`Řádek ${i+2}: neplatné startovní číslo "${row[keyStart]}"`); return; }
         if (!team) { errors.push(`Řádek ${i+2}: prázdný název týmu`); return; }
-        if (!CATEGORIES.includes(kat)) { errors.push(`Řádek ${i+2}: neznámá kategorie "${kat}" (povoleno: ${CATEGORIES.join(', ')})`); return; }
+        if (kat && !CATEGORIES.includes(kat)) {
+          // Neblokuj import, jen upozorni
+          errors.push(`Řádek ${i+2}: neznámá kategorie "${kat}" — přiřazeno jako Nezařazeno`);
+        }
 
-        parsed.push({ start, team, kategorie: kat, cas1: null, cas2: null });
+        parsed.push({ start, team, kategorie: finalKat, cas1: null, cas2: null });
       });
 
       // Kontrola duplicitních startovních čísel v importu
@@ -2828,15 +2833,14 @@ function handleImportFile(file) {
         errors.push(`Duplicitní startovní čísla v souboru: ${[...new Set(dupes)].join(', ')}`);
       }
 
-      document.getElementById('importError').classList.remove('visible');
+      const fatalErrors = errors.filter(e => !e.includes('přiřazeno jako Nezařazeno'));
+      const warnings    = errors.filter(e =>  e.includes('přiřazeno jako Nezařazeno'));
 
-      // Zobraz náhled
-      const okRows  = parsed.filter((_, i) => !errors.length);
-      const allRows = parsed;
+      document.getElementById('importError').classList.remove('visible');
 
       const previewHtml = `<table>
         <thead><tr><th>St. č.</th><th>Tým</th><th>Kategorie</th></tr></thead>
-        <tbody>${allRows.map(d => `<tr>
+        <tbody>${parsed.map(d => `<tr>
           <td>${d.start}</td>
           <td>${esc(d.team)}</td>
           <td>${esc(d.kategorie)}</td>
@@ -2846,11 +2850,20 @@ function handleImportFile(file) {
       document.getElementById('importPreview').innerHTML = previewHtml;
       document.getElementById('importPreviewWrap').style.display = '';
 
-      if (errors.length) {
-        showImportError(errors.join('<br>'));
+      if (fatalErrors.length) {
+        showImportError(fatalErrors.join('<br>'));
         document.getElementById('importConfirmBtn').disabled = true;
         _importData = null;
         return;
+      }
+
+      if (warnings.length) {
+        const el = document.getElementById('importError');
+        el.innerHTML = '⚠️ ' + warnings.join('<br>');
+        el.style.background = '#fffbeb';
+        el.style.borderColor = '#fcd34d';
+        el.style.color = '#92620a';
+        el.classList.add('visible');
       }
 
       document.getElementById('importStats').innerHTML =
