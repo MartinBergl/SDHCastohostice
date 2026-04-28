@@ -76,7 +76,7 @@
     .category-block:nth-child(2){animation-delay:.12s}
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
-    .cat-label { display:flex; align-items:center; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
+    .cat-label { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
     .cat-name { font-size:22px; font-weight:700; letter-spacing:-0.3px; text-transform:none; color:var(--text); }
     .cat-pill { font-size:11px; font-weight:500; color:var(--sub); background:var(--bg); border:1px solid var(--border); padding:2px 8px; border-radius:99px; }
 
@@ -912,6 +912,7 @@
 <div class="startlist-section">
   <div class="startlist-header">
     <span class="startlist-title">Startovní listina</span>
+    <div id="startlistCounts" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
   </div>
   <table class="startlist-table" id="startlistTable">
     <thead>
@@ -1700,7 +1701,7 @@ function renderResults() {
     block.innerHTML = `
       <div class="cat-label">
         <span class="cat-name">${esc(cat)}</span>
-        <span class="cat-pill">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
+        <span class="cbadge ${BADGE[cat] || 'cb-nz'}" style="font-size:12px">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
       </div>
       <table class="results-table">
         <colgroup>
@@ -1779,6 +1780,18 @@ function renderStartlist() {
       <col style="width:145px">
       <col style="width:90px">
       <col style="width:135px">`;
+  }
+
+  // Počítadla kategorií v hlavičce
+  const countsEl = document.getElementById('startlistCounts');
+  if (countsEl) {
+    const counts = {};
+    data.forEach(d => { counts[d.kategorie] = (counts[d.kategorie] || 0) + 1; });
+    countsEl.innerHTML = Object.entries(counts)
+      .filter(([kat]) => kat !== 'Nezařazeno')
+      .sort((a, b) => CATEGORIES.indexOf(a[0]) - CATEGORIES.indexOf(b[0]))
+      .map(([kat, n]) => `<span class="cbadge ${BADGE[kat] || 'cb-nz'}" style="font-size:12px">${esc(kat)}: ${n}</span>`)
+      .join('');
   }
 
   tbody.innerHTML = sorted.map((d, i) => {
