@@ -471,13 +471,9 @@
 
     /* ── POZVÁNKA (scéna skryto) ── */
 
-    /* Červený pruh nahoře + odznak */
-    .phase-banner::before {
-      content: '🔥';
-      display: block;
-      font-size: 36px;
-      margin-bottom: 12px;
-    }
+    /* Obrázek nahoře v pozvánce */
+    .phase-banner::before { display: none; }
+    .inv-top-img { display: block; width: 200px; height: auto; margin: 0 auto 12px; }
 
     .inv-header { text-align: center; margin-bottom: 16px; }
     .inv-org  { font-size: 13px; color: #8a8580; margin-bottom: 3px; letter-spacing: .3px; }
@@ -1275,6 +1271,7 @@ function renderPhaseBanner() {
 
   // Návštěvník
   el.innerHTML = `<div class="phase-banner">
+    <img src="images/zabka.png" alt="" class="inv-top-img" />
     <div class="inv-header">
       <p class="inv-org">SDH Častohostice ve spolupráci s Obecním úřadem</p>
       <p class="inv-sub">Vás zve na soutěž zařazenou do okresní ligy mladých hasičů</p>
@@ -1283,17 +1280,17 @@ function renderPhaseBanner() {
 
     <div class="inv-cards">
       <div class="inv-card">
-        <div class="inv-card-icon">📅</div>
+        <div class="inv-card-icon"><img src="images/termin.png" alt="Termín" style="width:50px;height:50px;object-fit:contain;" /></div>
         <div class="inv-card-label">Termín</div>
         <div class="inv-card-value">9. května 2026</div>
       </div>
       <div class="inv-card">
-        <div class="inv-card-icon">⏰</div>
+        <div class="inv-card-icon"><img src="images/zahajeni.png" alt="Zahájení" style="width:50px;height:50px;object-fit:contain;" /></div>
         <div class="inv-card-label">Zahájení</div>
         <div class="inv-card-value">9:15 hod.</div>
       </div>
       <div class="inv-card">
-        <div class="inv-card-icon">💰</div>
+        <div class="inv-card-icon"><img src="images/startovne.png" alt="Startovné" style="width:50px;height:50px;object-fit:contain;" /></div>
         <div class="inv-card-label">Startovné</div>
         <div class="inv-card-value">200,- / družstvo</div>
       </div>
