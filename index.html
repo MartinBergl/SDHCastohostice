@@ -709,6 +709,32 @@
     .offline-close:hover { background: #b83020; }
 
     /* Reconnect toast */
+    /* ── SCROLL TO TOP (jen mobil) ── */
+    #scrollTopBtn {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      z-index: 999;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      font-size: 26px;
+      line-height: 1;
+      padding-bottom: 2px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+      transition: opacity .2s, transform .2s;
+      align-items: center;
+      justify-content: center;
+    }
+    #scrollTopBtn.visible { display: flex; }
+    #scrollTopBtn:hover { transform: translateY(-2px); }
+    @media (min-width: 701px) { #scrollTopBtn { display: none !important; } }
+
     #reconnectToast {
       display: none;
       position: fixed;
@@ -849,6 +875,8 @@
 
 <!-- Toast při obnovení připojení -->
 <div id="reconnectToast">✅ Připojení obnoveno — synchronizuji data…</div>
+
+<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Zpět nahoru">↑</button>
 
 <!-- Import modal -->
 <div id="importModal">
@@ -2988,6 +3016,12 @@ window.publishAnn      = publishAnn;
 window.clearAnn        = clearAnn;
 window.updateLiveIndicator = updateLiveIndicator;
 window.closeOfflineModal   = closeOfflineModal;
+
+// ── SCROLL TO TOP ─────────────────────────────────────
+const _scrollBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', () => {
+  if (_scrollBtn) _scrollBtn.classList.toggle('visible', window.scrollY > 300);
+}, { passive: true });
 window.openImportModal     = openImportModal;
 window.closeImportModal    = closeImportModal;
 window.handleImportFile    = handleImportFile;
