@@ -94,6 +94,8 @@
     }
 
     tbody tr { border-bottom:1px solid var(--border); transition:background .12s; background:var(--surface); }
+    tbody tr.empty-row { background: var(--bg); opacity: 0.6; }
+    tbody tr.empty-row:hover { background: var(--bg); opacity: 0.8; }
     tbody tr:last-child { border-bottom:none; }
     tbody tr:hover { background:var(--red-soft); }
     tbody tr.rank-1 { background:#fffbf0; }
@@ -876,7 +878,7 @@
 <!-- Toast při obnovení připojení -->
 <div id="reconnectToast">✅ Připojení obnoveno — synchronizuji data…</div>
 
-<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Zpět nahoru">↑</button>
+<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Zpět nahoru">⬆</button>
 
 <!-- Import modal -->
 <div id="importModal">
@@ -1660,7 +1662,7 @@ function renderResults() {
       const valid = v => v !== null && v !== undefined && v !== '' && v !== false;
       return valid(c1) || valid(c2);
     }
-    let rows = data.filter(d => d.kategorie === cat && hasTime(d));
+    let rows = data.filter(d => d.kategorie === cat && hasTime(d) && d.team && d.team.trim() !== '');
     if (!rows.length) return;
 
     rows = [...rows].sort((a, b) => {
@@ -1758,7 +1760,10 @@ function timeDisplay(val) {
 
 function renderStartlist() {
   const tbody = document.getElementById('startlistBody');
-  const sorted = [...data].sort((a,b) => a.start - b.start);
+  const allSorted = [...data].sort((a,b) => a.start - b.start);
+  const isEmptyTeam = d => !d.team || d.team.trim() === '' || /^-+$/.test(d.team.trim());
+  // Návštěvníci nevidí prázdné pozice (tým bez názvu nebo s "----")
+  const sorted = isAdmin ? allSorted : allSorted.filter(d => !isEmptyTeam(d));
   const editMode = isAdmin && document.body.classList.contains('edit-mode');
 
   // Aktualizuj colgroup podle edit módu
@@ -1820,18 +1825,22 @@ function renderStartlist() {
   }
 
   tbody.innerHTML = sorted.map((d, i) => {
-    const isDone = doneSet.has(d.start);
-    const isNext = !isDone && sorted.findIndex(x => !doneSet.has(x.start)) === i;
-    const rowClass = isDone ? 'done' : isNext ? 'next' : '';
+    const isDone  = doneSet.has(d.start);
+    const isEmpty = isEmptyTeam(d);
+    const isNext  = !isDone && !isEmpty && sorted.findIndex(x => !doneSet.has(x.start) && !isEmptyTeam(x)) === i;
+    const rowClass = isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '';
 
     const statusTag = isDone
       ? `<span class="done-tag">✓ Odběhnuto</span>`
       : isNext ? `<span class="next-tag">▶ Příprava</span>` : '';
 
+    // Prázdný řádek — zobraz jen startovní číslo a možnost editace
+    const emptyLabel = isEmpty && !editMode ? `<span style="color:var(--muted);font-size:12px">— volné místo —</span>` : '';
+
     // Editable cells (only in admin + edit mode)
     const teamCell = editMode
       ? `<td><div class="tname editable" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${esc(d.team)}</div></td>`
-      : `<td><div class="tname">${esc(d.team)}</div></td>`;
+      : `<td><div class="tname">${isEmpty ? emptyLabel : esc(d.team)}</div></td>`;
 
     const catCell = editMode
       ? `<td><select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">
@@ -1856,7 +1865,7 @@ function renderStartlist() {
           <button class="order-btn" title="Posunout nahoru" onclick="moveTeam(${d.start}, -1)" ${i===0?'disabled':''}>↑</button>
           <button class="order-btn" title="Posunout dolů" onclick="moveTeam(${d.start}, 1)" ${i===sorted.length-1?'disabled':''}>↓</button>
         ` : ''}
-        <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
+        ${!isEmpty ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
         ${editMode ? `<button class="del-btn" title="Odstranit tým" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       </td>` : '';
 
@@ -1880,9 +1889,10 @@ function renderStartlist() {
 
   // ── Mobile cards for startlist ──
   const mobileCards = sorted.map((d, i) => {
-    const isDone = doneSet.has(d.start);
-    const isNext = !isDone && sorted.findIndex(x => !doneSet.has(x.start)) === i;
-    const rowClass = isDone ? 'done' : isNext ? 'next' : '';
+    const isDone  = doneSet.has(d.start);
+    const isEmpty = isEmptyTeam(d);
+    const isNext  = !isDone && !isEmpty && sorted.findIndex(x => !doneSet.has(x.start) && !isEmptyTeam(x)) === i;
+    const rowClass = isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '';
 
     const statusTag = isDone
       ? `<span class="done-tag">✓ Odběhnuto</span>`
@@ -1890,7 +1900,9 @@ function renderStartlist() {
 
     const teamHtml = editMode
       ? `<div class="tname editable sl-team" contenteditable="true" data-field="team" data-start="${d.start}" onblur="saveField(this)">${esc(d.team)}</div>`
-      : `<div class="sl-team">${esc(d.team)}</div>`;
+      : isEmpty
+        ? `<div class="sl-team" style="color:var(--muted);font-size:12px">— volné místo —</div>`
+        : `<div class="sl-team">${esc(d.team)}</div>`;
 
     const catHtml = editMode
       ? `<select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}</select>`
@@ -1913,7 +1925,7 @@ function renderStartlist() {
         <button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button>
         <button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>
       ` : ''}
-      <button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>
+      ${!isEmpty ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
       ${editMode ? `<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       ${d.zapisCas ? `<span class="sl-zapis">${d.zapisCas}</span>` : ''}
     </div>` : '';
