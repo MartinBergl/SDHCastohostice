@@ -206,6 +206,9 @@
 
     .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; text-align:right; color:var(--red); white-space:nowrap; }
     .best-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
+    .gap-col { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; text-align:right; color:var(--sub); white-space:nowrap; }
+    .gap-col.leader { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; text-align:right; }
+    .gap-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
 
     /* ── LIVE INFO LIŠTA (návštěvníci) ── */
     .live-bar {
@@ -378,6 +381,75 @@
 
     .admin-footer { padding:16px 48px 24px; display:flex; justify-content:center; background:var(--bg); }
 
+    /* ── PŘEHLEDOVÝ PANEL ── */
+    .summary-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 24px 48px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .summary-cell {
+      flex: 1;
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+    .summary-cell + .summary-cell {
+      border-left: 1px solid var(--border);
+    }
+    .summary-cell-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--sub);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .summary-cell-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .summary-cell-value .sv-denom {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--sub);
+    }
+    .summary-cell-value.sv-empty {
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 400;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .summary-cell-team {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--sub);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+    .summary-cell:first-child .summary-cell-value { color: #16a34a; }
+    [data-theme="dark"] .summary-cell:first-child .summary-cell-value { color: #4ade80; }
+    [data-theme="dark"] .summary-bar { background: var(--surface); border-color: var(--border); }
+    @media (max-width: 700px) {
+      .summary-bar { margin: 16px 0 0; border-radius: 0; border-left: none; border-right: none; flex-direction: column; }
+      .summary-cell { padding: 12px 16px; flex: none; width: 100%; }
+      .summary-cell + .summary-cell { border-left: none; border-top: 1px solid var(--border); }
+      .summary-cell-value { font-size: 22px; }
+    }
     /* ── SPONZOŘI ── */
     .sponsors-section {
       background: var(--surface);
@@ -469,6 +541,7 @@
     .rc-times { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
     .rc-best { font-family:'DM Mono',monospace; font-size:16px; font-weight:700; color:var(--red); }
     .rc-best.empty { color:var(--muted); font-size:13px; font-weight:400; font-family:'DM Sans',sans-serif; }
+    .rc-gap { font-family:'DM Mono',monospace; font-size:12px; font-weight:500; color:var(--sub); margin-top:1px; }
     .rc-sub-times { font-family:'DM Mono',monospace; font-size:11px; color:var(--sub); }
     .rc-sub-times .worst { color:var(--muted); }
 
@@ -1176,14 +1249,11 @@
   </div>
 </header>
 
-<div class="live-bar" id="liveBar">
-  <span class="live-bar-dot"></span>
-  <span>Živě — výsledky se aktualizují automaticky</span>
-  <span class="live-bar-dot"></span>
-</div>
+
 
 <div id="phaseBanner"></div>
 
+<div class="summary-bar" id="summaryBar" style="display:none"></div>
 <div class="content" id="content"></div>
 
 <div class="startlist-section">
@@ -1913,7 +1983,60 @@ function renderTimeCell(val, isBest) {
   return `<td class="tcell${isBest?' best':''}">${val.toFixed(2)}&thinsp;s</td>`;
 }
 
+function renderSummaryBar() {
+  const bar = document.getElementById('summaryBar');
+  if (!bar) return;
+
+  // Zobraz jen ve fázi results (stejná podmínka jako renderResults)
+  if (!isAdmin && phase !== 'results') { bar.style.display = 'none'; return; }
+
+  const realTeams = data.filter(d => !isEmptyTeam(d));
+  const total     = realTeams.length;
+  const done      = realTeams.filter(d => doneSet.has(d.start)).length;
+
+  // Nejlepší čas pro každou kategorii (jen kategorie s alespoň 1 časem)
+  const catBests = CATEGORIES.map(cat => {
+    const rows = data.filter(d => d.kategorie === cat && !isEmptyTeam(d));
+    let best = null, team = null;
+    rows.forEach(d => {
+      const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
+      const fastest = nums.length ? Math.min(...nums) : null;
+      if (fastest !== null && (best === null || fastest < best)) { best = fastest; team = d.team; }
+    });
+    return { cat, best, team };
+  }).filter(c => c.best !== null);
+
+  // Počítadlo
+  let html = `<div class="summary-cell">
+    <div class="summary-cell-label">Družstev odběhnuto</div>
+    <div class="summary-cell-value">${done}<span class="sv-denom"> /${total}</span></div>
+  </div>`;
+
+  // Nejlepší časy
+  catBests.forEach(({ cat, best, team }) => {
+    html += `<div class="summary-cell">
+      <div class="summary-cell-label">Nejrychlejší proud — ${esc(cat)}</div>
+      <div class="summary-cell-value">${best.toFixed(2)}<span class="sv-denom"> s</span></div>
+      ${team ? `<div class="summary-cell-team">${esc(team)}</div>` : ''}
+    </div>`;
+  });
+
+  // Pokud žádné časy ještě nejsou, zobraz placeholder pro každou kategorii
+  if (catBests.length === 0) {
+    CATEGORIES.forEach(cat => {
+      html += `<div class="summary-cell">
+        <div class="summary-cell-label">Nejrychlejší proud — ${esc(cat)}</div>
+        <div class="summary-cell-value sv-empty">—</div>
+      </div>`;
+    });
+  }
+
+  bar.innerHTML = html;
+  bar.style.display = 'flex';
+}
+
 function renderResults() {
+  renderSummaryBar();
   const el = document.getElementById('content');
   el.innerHTML = '';
 
@@ -1937,6 +2060,8 @@ function renderResults() {
       return ta - tb;
     });
 
+    const leaderTime = (() => { const bt = bestTime(rows[0]); return bt; })();
+
     const rowsHtml = rows.map((d, i) => {
       const bt = bestTime(d);
       const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
@@ -1948,6 +2073,12 @@ function renderResults() {
       const bestHtml = bt!==null
         ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>`
         : `<td class="best-col empty">—</td>`;
+      const gap = (i===0||bt===null||leaderTime===null) ? null : bt - leaderTime;
+      const gapHtml = i===0
+        ? `<td class="gap-col leader">—</td>`
+        : gap!==null
+          ? `<td class="gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
+          : `<td class="gap-col empty">—</td>`;
 
       return `<tr class="${rc}">
         <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
@@ -1956,6 +2087,7 @@ function renderResults() {
         ${renderTimeCell(d.cas1, c1worst)}
         ${renderTimeCell(d.cas2, c2worst)}
         ${bestHtml}
+        ${gapHtml}
       </tr>`;
     }).join('');
 
@@ -1969,6 +2101,8 @@ function renderResults() {
       const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
       const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
       const bestStr = bt!==null ? `${bt.toFixed(2)}&thinsp;s` : null;
+      const cardGap = (i===0||bt===null||leaderTime===null) ? null : bt - leaderTime;
+      const gapStr = i===0 ? null : cardGap!==null ? `+${cardGap.toFixed(2)}&thinsp;s` : null;
       return `<div class="result-card ${rc}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
         <div class="rc-body">
@@ -1977,6 +2111,7 @@ function renderResults() {
         </div>
         <div class="rc-times">
           ${bestStr ? `<div class="rc-best">${bestStr}</div>` : `<div class="rc-best empty">—</div>`}
+          ${gapStr ? `<div class="rc-gap">${gapStr}</div>` : ''}
           <div class="rc-sub-times">
             <span class="${c1worst?'':'worst'}">${fmtTime(d.cas1)}</span>
             <span style="color:var(--muted)"> / </span>
@@ -2002,10 +2137,11 @@ function renderResults() {
           <col style="width:155px">
           <col style="width:155px">
           <col style="width:165px">
+          <col style="width:110px">
         </colgroup>
         <thead><tr>
           <th class="c">Poř.</th><th class="c">St. č.</th><th>Tým</th>
-          <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th>
+          <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th><th class="r">Ztráta</th>
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
