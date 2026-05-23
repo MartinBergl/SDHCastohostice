@@ -69,9 +69,9 @@
     [data-theme="dark"] .sponsors-title { color: #7b9fd4; }
     [data-theme="dark"] .sponsor-text { color: #7b9fd4; }
     [data-theme="dark"] .cat-name { color: var(--text); }
-    [data-theme="dark"] .cb-ml { background:#1a2535; color:#60a5fa; }
-    [data-theme="dark"] .cb-st { background:#2a1a18; color:#e05545; }
-    [data-theme="dark"] .cb-nz { background:#1e1d1c; color:#78716c; }
+    [data-theme="dark"] .cb-ml { background:#1a2535; color:#60a5fa; border-color:#1e3a5f; }
+    [data-theme="dark"] .cb-st { background:#2a1a18; color:#e05545; border-color:#5a2a22; }
+    [data-theme="dark"] .cb-nz { background:#1e1d1c; color:#78716c; border-color:#3a3835; }
     [data-theme="dark"] .rank-1 { background:#1e1c10 !important; }
     [data-theme="dark"] .rank-2 { background:#161614 !important; }
     [data-theme="dark"] .rank-3 { background:#1a1510 !important; }
@@ -163,7 +163,7 @@
     /* TABLES */
     table { width:100%; border-collapse:collapse; }
     thead th { font-size:11px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--text); padding:10px 14px; text-align:left; background:var(--surface); border-bottom:1px solid var(--border); }
-    thead th.r { text-align:right; }
+    thead th.r { text-align:center; }
     thead th.c { text-align:center; }
 
     .startlist-table thead th {
@@ -197,17 +197,17 @@
     .tname { font-size:14px; font-weight:500; color:var(--text); }
 
 
-    .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
+    .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:center; color:var(--sub); white-space:nowrap; }
     .tcell.best  { color:var(--text); font-weight:500; }
     .tcell.empty { color:var(--muted); font-size:12px; }
 
-    .dsq-tag { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; padding:2px 6px; border-radius:4px; }
-    .np-tag  { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#b45309; background:#fffbeb; border:1px solid #fcd34d; padding:2px 6px; border-radius:4px; }
+    .dsq-tag { font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; padding:3px 9px; border-radius:4px; }
+    .np-tag  { font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#b45309; background:#fffbeb; border:1px solid #fcd34d; padding:3px 9px; border-radius:4px; }
 
-    .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; text-align:right; color:var(--red); white-space:nowrap; }
+    .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; text-align:center; color:var(--red); white-space:nowrap; }
     .best-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
-    .gap-col { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; text-align:right; color:var(--sub); white-space:nowrap; }
-    .gap-col.leader { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; text-align:right; }
+    .gap-col { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; text-align:center; color:var(--sub); white-space:nowrap; }
+    .gap-col.leader { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; text-align:center; }
     .gap-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
 
     /* ── LIVE INFO LIŠTA (návštěvníci) ── */
@@ -347,10 +347,10 @@
     .order-btn:hover:not(:disabled) { background:var(--edit-bg); border-color:var(--edit-border); color:var(--text); }
     .order-btn:disabled { opacity:.25; cursor:default; }
 
-    .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:default; }
-    .cb-ml { background:#eff6ff; color:#3b82f6; }
-    .cb-st { background:#fdf1f0; color:#d63b2a; }
-    .cb-nz { background:#f5f5f4; color:#78716c; }
+    .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:default; border: 1px solid transparent; }
+    .cb-ml { background:#eff6ff; color:#3b82f6; border-color:#c7dbf9; }
+    .cb-st { background:#fdf1f0; color:#d63b2a; border-color:#f4cac4; }
+    .cb-nz { background:#f5f5f4; color:#78716c; border-color:#d6d3d0; }
 
     /* ── INLINE EDITING ── */
     .editable { cursor:text; border-radius:3px; transition:background .12s; }
@@ -923,17 +923,39 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--sub);
       white-space: nowrap;
     }
-    .progress-badge .pb-done { color: #16a34a; }
-    .progress-badge .pb-remaining { color: var(--red); }
+    .progress-badge .pb-done {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #15803d;
+    }
+    .progress-badge .pb-remaining {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: #fef9c3;
+      border: 1px solid #fde047;
+      color: #a16207;
+    }
+    .progress-badge .pb-total {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    [data-theme="dark"] .progress-badge .pb-done { background:#14532d; border-color:#166534; color:#4ade80; }
+    [data-theme="dark"] .progress-badge .pb-remaining { background:#422006; border-color:#92400e; color:#fcd34d; }
 
     /* Mobilní floating badge */
     #progressFloat {
@@ -955,6 +977,7 @@
       white-space: nowrap;
     }
     #progressFloat.visible { display: flex; }
+    #progressFloat.visible.scroll-hidden { display: none; }
     #progressFloat .pb-done { color: #16a34a; }
     #progressFloat .pb-remaining { color: var(--red); }
     @media (min-width: 701px) { #progressFloat { display: none !important; } }
@@ -1208,7 +1231,7 @@
 <div id="importModal">
   <div class="import-box">
     <div class="import-title">⬆ Import startovní listiny</div>
-    <div class="import-sub">Nahraj Excel soubor (.xlsx) se sloupci: <strong>St. č.</strong>, <strong>Tým</strong>, <strong>Kategorie</strong>. První řádek musí být záhlaví.</div>
+    <div class="import-sub">Nahraj Excel soubor (.xlsx) se sloupci: <strong>St. č.</strong>, <strong>Družstvo</strong>, <strong>Kategorie</strong>. První řádek musí být záhlaví.</div>
     <div class="import-drop" id="importDrop" onclick="document.getElementById('importFileInput').click()">
       <div class="import-drop-icon">📂</div>
       <div class="import-drop-text">Přetáhni soubor sem nebo <strong>klikni pro výběr</strong></div>
@@ -1269,7 +1292,7 @@
       <tr>
         <th id="dragColHead" style="display:none;width:28px;padding:0"></th>
         <th class="c">St. č.</th>
-        <th>Tým</th>
+        <th>Družstvo</th>
         <th class="c">Kategorie</th>
         <th class="r">Levý terč</th>
         <th class="r">Pravý terč</th>
@@ -1798,6 +1821,7 @@ async function loadFromFirebase() {
     doneSet = parseDoneSnap(snap);
     renderStartlist();
     renderProgressCounter();
+    renderSummaryBar();
     updateLiveIndicator();
   });
 
@@ -1905,6 +1929,7 @@ onAuthStateChanged(auth, user => {
       doneSet = parseDoneSnap(snap);
       renderStartlist();
       renderProgressCounter();
+      renderSummaryBar();
     });
 
     adminPhaseUnsub = onValue(ref(db, 'phase'), snap => {
@@ -1978,8 +2003,8 @@ function fmtTime(val) {
 
 function renderTimeCell(val, isBest) {
   if (val === null || val === undefined) return `<td class="tcell empty">—</td>`;
-  if (val === "DSQ") return `<td class="tcell" style="text-align:right"><span class="dsq-tag">DSQ</span></td>`;
-  if (val === "NP")  return `<td class="tcell" style="text-align:right"><span class="np-tag">NP</span></td>`;
+  if (val === "DSQ") return `<td class="tcell" style="text-align:center"><span class="dsq-tag">DSQ</span></td>`;
+  if (val === "NP")  return `<td class="tcell" style="text-align:center"><span class="np-tag">NP</span></td>`;
   return `<td class="tcell${isBest?' best':''}">${val.toFixed(2)}&thinsp;s</td>`;
 }
 
@@ -2010,6 +2035,7 @@ function renderSummaryBar() {
   let html = `<div class="summary-cell">
     <div class="summary-cell-label">Družstev odběhnuto</div>
     <div class="summary-cell-value">${done}<span class="sv-denom"> /${total}</span></div>
+    ${total - done > 0 ? `<div class="summary-cell-team">Zbývá: ${total - done}</div>` : `<div class="summary-cell-team" style="color:var(--green, #16a34a)">Všechna odběhla ✓</div>`}
   </div>`;
 
   // Nejlepší časy
@@ -2127,7 +2153,7 @@ function renderResults() {
     block.innerHTML = `
       <div class="cat-label">
         <span class="cat-name">${esc(cat)}</span>
-        <span class="cbadge ${BADGE[cat] || 'cb-nz'}" style="font-size:12px">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
+        <span class="cbadge ${BADGE[cat] || 'cb-nz'}" style="font-size:12px">${n} ${n===1?'družstvo':n<5?'družstva':'družstev'}</span>
       </div>
       <table class="results-table">
         <colgroup>
@@ -2140,7 +2166,7 @@ function renderResults() {
           <col style="width:110px">
         </colgroup>
         <thead><tr>
-          <th class="c">Poř.</th><th class="c">St. č.</th><th>Tým</th>
+          <th class="c">Poř.</th><th class="c">St. č.</th><th>Družstvo</th>
           <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th><th class="r">Ztráta</th>
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
@@ -2269,7 +2295,7 @@ function renderStartlist() {
           <button class="order-btn" title="Posunout dolů" onclick="moveTeam(${d.start}, 1)" ${i===sorted.length-1?'disabled':''}>↓</button>
         ` : ''}
         ${!isEmpty ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
-        ${editMode ? `<button class="del-btn" title="Odstranit tým" onclick="deleteTeam(${d.start})">✕</button>` : ''}
+        ${editMode ? `<button class="del-btn" title="Odstranit družstvo" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       </td>` : '';
 
     const tsVal = d.zapisCas
@@ -2622,7 +2648,7 @@ function saveField(el) {
     }
     const duplicate = data.find(d => d.start === newStart && d !== row);
     if (duplicate) {
-      alert(`Startovní číslo ${newStart} už používá tým „${duplicate.team}". Zadej jiné číslo.`);
+      alert(`Startovní číslo ${newStart} už používá družstvo „${duplicate.team}". Zadej jiné číslo.`);
       el.innerText = String(startNum); // vrátit původní hodnotu
       return;
     }
@@ -2677,7 +2703,7 @@ function saveTimeField(el) {
 function resetTeamTimes(startNum) {
   const row = data.find(d => d.start === startNum);
   if (!row) return;
-  if (!confirm(`Opravdu resetovat časy týmu „${row.team}"?`)) return;
+  if (!confirm(`Opravdu resetovat časy družstva „${row.team}"?`)) return;
   const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
   row.cas1 = null;
   row.cas2 = null;
@@ -2689,7 +2715,7 @@ function resetTeamTimes(startNum) {
 }
 
 function deleteTeam(startNum) {
-  if (!confirm('Opravdu odstranit tento tým?')) return;
+  if (!confirm('Opravdu odstranit toto družstvo?')) return;
   data = data.filter(d => d.start !== startNum);
   doneSet.delete(startNum);
   // Smazání týmu vyžaduje přepis celého pole (nelze patchovat mazání)
@@ -2700,7 +2726,7 @@ function deleteTeam(startNum) {
 
 function addTeam() {
   const maxStart = data.length ? Math.max(...data.map(d=>d.start)) : 0;
-  data.push({ start: maxStart+1, team: 'Nový tým', kategorie: 'Mladší děti', cas1: null, cas2: null });
+  data.push({ start: maxStart+1, team: 'Nové družstvo', kategorie: 'Mladší děti', cas1: null, cas2: null });
   // Přidání týmu mění délku pole — nutný plný zápis
   saveData(true);
   renderResults(); renderStartlist();
@@ -2737,6 +2763,7 @@ function toggleDone(startNum) {
   isDone ? doneSet.delete(startNum) : doneSet.add(startNum);
   saveDone();
   renderStartlist();
+  renderSummaryBar();
 }
 
 // ── PRESENCE SYSTÉM ──────────────────────────────────
@@ -2935,7 +2962,7 @@ function renderAdminBar() {
           <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">
             ${editMode ? '✏️ Editace ZAP' : '✏️ Editovat data'}
           </button>
-          ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat tým</button>` : ''}
+          ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat družstvo</button>` : ''}
         </div>
 
         <div class="admin-divider"></div>
@@ -3051,7 +3078,7 @@ async function exportXLSX() {
 
     // Záhlaví sloupců
     wsData.push([
-      cell('Pořadí', sColHdr), cell('St. č.', sColHdr), cell('Tým', sColHdr),
+      cell('Pořadí', sColHdr), cell('St. č.', sColHdr), cell('Družstvo', sColHdr),
       cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Výsledný čas (s)', sColHdr)
     ]);
     r1++;
@@ -3111,7 +3138,7 @@ async function exportXLSX() {
 
   // Záhlaví
   wsData2.push([
-    cell('St. č.', sColHdr), cell('Tým', sColHdr), cell('Kategorie', sColHdr),
+    cell('St. č.', sColHdr), cell('Družstvo', sColHdr), cell('Kategorie', sColHdr),
     cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Stav', sColHdr)
   ]);
   r2++;
@@ -3305,11 +3332,11 @@ function handleImportFile(file) {
       const findKey = (...names) => keys.find(k => names.some(n => k.trim().toLowerCase() === n.toLowerCase()));
 
       const keyStart = findKey('St. č.', 'St.č.', 'start', 'číslo', 'č.');
-      const keyTeam  = findKey('Tým', 'Název', 'team', 'název týmu');
+      const keyTeam  = findKey('Družstvo', 'Tým', 'Název', 'team', 'název družstva');
       const keyCat   = findKey('Kategorie', 'kat', 'category');
 
       if (!keyStart) { showImportError('Nenalezen sloupec se startovním číslem (očekáváno: "St. č.").'); return; }
-      if (!keyTeam)  { showImportError('Nenalezen sloupec s názvem týmu (očekáváno: "Tým").'); return; }
+      if (!keyTeam)  { showImportError('Nenalezen sloupec s názvem družstva (očekáváno: "Tým" nebo "Družstvo").'); return; }
       if (!keyCat)   { showImportError('Nenalezen sloupec s kategorií (očekáváno: "Kategorie").'); return; }
 
       const parsed = [];
@@ -3322,7 +3349,7 @@ function handleImportFile(file) {
         const finalKat = CATEGORIES.includes(kat) ? kat : 'Nezařazeno';
 
         if (isNaN(start) || start < 1) { errors.push(`Řádek ${i+2}: neplatné startovní číslo "${row[keyStart]}"`); return; }
-        if (!team) { errors.push(`Řádek ${i+2}: prázdný název týmu`); return; }
+        if (!team) { errors.push(`Řádek ${i+2}: prázdný název družstva`); return; }
         if (kat && !CATEGORIES.includes(kat)) {
           // Neblokuj import, jen upozorni
           errors.push(`Řádek ${i+2}: neznámá kategorie "${kat}" — přiřazeno jako Nezařazeno`);
@@ -3344,7 +3371,7 @@ function handleImportFile(file) {
       document.getElementById('importError').classList.remove('visible');
 
       const previewHtml = `<table>
-        <thead><tr><th>St. č.</th><th>Tým</th><th>Kategorie</th></tr></thead>
+        <thead><tr><th>St. č.</th><th>Družstvo</th><th>Kategorie</th></tr></thead>
         <tbody>${parsed.map(d => `<tr>
           <td>${d.start}</td>
           <td>${esc(d.team)}</td>
@@ -3372,7 +3399,7 @@ function handleImportFile(file) {
       }
 
       document.getElementById('importStats').innerHTML =
-        `Načteno <strong>${parsed.length} týmů</strong>. Po importu budou <strong>přepsána všechna stávající data</strong> startovní listiny.`;
+        `Načteno <strong>${parsed.length} družstev</strong>. Po importu budou <strong>přepsána všechna stávající data</strong> startovní listiny.`;
       document.getElementById('importConfirmBtn').disabled = false;
       _importData = parsed;
 
@@ -3394,7 +3421,7 @@ function showImportError(msg) {
 
 async function confirmImport() {
   if (!_importData || !_importData.length) return;
-  if (!confirm(`Opravdu importovat ${_importData.length} týmů? Tato akce přepíše celou stávající startovní listinu.`)) return;
+  if (!confirm(`Opravdu importovat ${_importData.length} družstev? Tato akce přepíše celou stávající startovní listinu.`)) return;
 
   data = _importData;
   doneSet = new Set(); // reset odběhnutých
@@ -3409,7 +3436,7 @@ function downloadImportTemplate() {
   const XLSX = window.XLSX;
   if (!XLSX) { alert('Chyba: Knihovna XLSX se nenačetla.'); return; }
   const wsData = [
-    ['St. č.', 'Tým', 'Kategorie'],
+    ['St. č.', 'Družstvo', 'Kategorie'],
     [1, 'SDH Příklad A', 'Mladší děti'],
     [2, 'SDH Příklad B', 'Starší děti'],
   ];
@@ -3525,7 +3552,7 @@ function renderProgressCounter() {
   if (badge) {
     if (show) {
       badge.style.display = '';
-      badge.innerHTML = `<span class="pb-done">✅ ${done}</span> <span style="color:var(--border)">|</span> <span class="pb-remaining">⏳ ${remaining}</span> <span style="color:var(--muted)">z ${total}</span>`;
+      badge.innerHTML = `<span class="pb-done">✅ ${done}</span><span class="pb-remaining">⏳ ${remaining}</span><span class="pb-total">z ${total}</span>`;
     } else {
       badge.style.display = 'none';
     }
@@ -3569,8 +3596,11 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 window.toggleTheme = toggleTheme;
 
 const _scrollBtn = document.getElementById('scrollTopBtn');
+const _progressFloat = document.getElementById('progressFloat');
 window.addEventListener('scroll', () => {
-  if (_scrollBtn) _scrollBtn.classList.toggle('visible', window.scrollY > 300);
+  const scrolled = window.scrollY > 300;
+  if (_scrollBtn) _scrollBtn.classList.toggle('visible', scrolled);
+  if (_progressFloat) _progressFloat.classList.toggle('scroll-hidden', !scrolled);
 }, { passive: true });
 window.openImportModal     = openImportModal;
 window.closeImportModal    = closeImportModal;
