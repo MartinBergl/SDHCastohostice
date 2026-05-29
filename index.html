@@ -69,9 +69,12 @@
     [data-theme="dark"] .sponsors-title { color: #7b9fd4; }
     [data-theme="dark"] .sponsor-text { color: #7b9fd4; }
     [data-theme="dark"] .cat-name { color: var(--text); }
-    [data-theme="dark"] .cb-ml { background:#1a2535; color:#60a5fa; border-color:#1e3a5f; }
-    [data-theme="dark"] .cb-st { background:#2a1a18; color:#e05545; border-color:#5a2a22; }
-    [data-theme="dark"] .cb-nz { background:#1e1d1c; color:#78716c; border-color:#3a3835; }
+    [data-theme="dark"] .cb-ml   { background:#1a2535; color:#60a5fa; border-color:#1e3a5f; }
+    [data-theme="dark"] .cb-st   { background:#2a1a18; color:#e05545; border-color:#5a2a22; }
+    [data-theme="dark"] .cb-nz   { background:#1e1d1c; color:#78716c; border-color:#3a3835; }
+    [data-theme="dark"] .cb-muzi { background:#0f2318; color:#4ade80; border-color:#166534; }
+    [data-theme="dark"] .cb-zeny { background:#2a1030; color:#d946ef; border-color:#7e22ce; }
+    [data-theme="dark"] .cb-ps12 { background:#2a1800; color:#fb923c; border-color:#9a3412; }
     [data-theme="dark"] .rank-1 { background:#1e1c10 !important; }
     [data-theme="dark"] .rank-2 { background:#161614 !important; }
     [data-theme="dark"] .rank-3 { background:#1a1510 !important; }
@@ -135,16 +138,16 @@
       margin-bottom: 8px;
     }
     .header-subtitle {
-      font-size: clamp(14px, 2vw, 20px);
-      font-weight: 700;
+      font-size: clamp(16px, 2.5vw, 24px);
+      font-weight: 800;
       color: #1a1916;
       line-height: 1.3;
       margin-bottom: 4px;
     }
     .header-date {
-      font-size: clamp(14px, 2vw, 20px);
-      font-weight: 700;
-      color: #1a1916;
+      font-size: clamp(12px, 1.5vw, 15px);
+      font-weight: 500;
+      color: #8a8580;
       line-height: 1.3;
     }
 
@@ -204,7 +207,7 @@
     .dsq-tag { font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; padding:3px 9px; border-radius:4px; }
     .np-tag  { font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#b45309; background:#fffbeb; border:1px solid #fcd34d; padding:3px 9px; border-radius:4px; }
 
-    .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; text-align:center; color:var(--red); white-space:nowrap; }
+    .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:700; text-align:center; color:var(--red); white-space:nowrap; }
     .best-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
     .gap-col { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; text-align:center; color:var(--sub); white-space:nowrap; }
     .gap-col.leader { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; text-align:center; }
@@ -348,9 +351,69 @@
     .order-btn:disabled { opacity:.25; cursor:default; }
 
     .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:default; border: 1px solid transparent; }
-    .cb-ml { background:#eff6ff; color:#3b82f6; border-color:#c7dbf9; }
-    .cb-st { background:#fdf1f0; color:#d63b2a; border-color:#f4cac4; }
-    .cb-nz { background:#f5f5f4; color:#78716c; border-color:#d6d3d0; }
+    .cb-ml   { background:#eff6ff; color:#3b82f6; border-color:#c7dbf9; }
+    .cb-st   { background:#fdf1f0; color:#d63b2a; border-color:#f4cac4; }
+    .cb-nz   { background:#f5f5f4; color:#78716c; border-color:#d6d3d0; }
+    .cb-muzi { background:#f0fdf4; color:#16a34a; border-color:#86efac; }
+    .cb-zeny { background:#fdf4ff; color:#a21caf; border-color:#e9b8f5; }
+    .cb-ps12 { background:#fff7ed; color:#c2410c; border-color:#fdba74; }
+
+    /* ── FINÁLOVÁ SEKCE ── */
+    .finale-section {
+      margin: 24px 48px 0;
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .finale-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      border-bottom: 1px solid #fde68a;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    [data-theme="dark"] .finale-header { background: linear-gradient(135deg, #2a2000, #1e1800); border-bottom-color: #4a3800; }
+    .finale-title { font-size: 18px; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+    .finale-subtitle { font-size: 12px; color: var(--sub); font-weight: 500; }
+    .finale-table { width: 100%; border-collapse: collapse; }
+    .finale-table th {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--sub); padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--bg);
+    }
+    .finale-table th.c { text-align: center; }
+    .finale-table th.r { text-align: center; }
+    .finale-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); vertical-align: middle; }
+    .finale-table tr:last-child td { border-bottom: none; }
+    .finale-table tr.rank-1 td { background: #fffbeb; }
+    .finale-table tr.rank-2 td { background: #f8fafc; }
+    .finale-table tr.rank-3 td { background: #fdf8f5; }
+    [data-theme="dark"] .finale-table tr.rank-1 td { background: #1e1800; }
+    [data-theme="dark"] .finale-table tr.rank-2 td { background: #161820; }
+    [data-theme="dark"] .finale-table tr.rank-3 td { background: #1a1510; }
+    .finale-table td.best-col,
+    .finale-table tr.rank-1 td.best-col,
+    .finale-table tr.rank-2 td.best-col,
+    .finale-table tr.rank-3 td.best-col { color: var(--red); }
+    .finale-table td.best-col.empty { color: var(--muted); }
+    .finale-source-cat { font-size: 11px; color: var(--sub); margin-top: 2px; }
+    .finale-pick-btn {
+      font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 5px;
+      border: 1px solid var(--gold); color: var(--gold); background: #fffbeb; cursor: pointer;
+    }
+    .finale-pick-btn:hover { background: #fef3c7; }
+    .finale-remove-btn {
+      font-size: 11px; padding: 3px 8px; border-radius: 5px;
+      border: 1px solid var(--border); color: var(--sub); background: var(--bg); cursor: pointer;
+    }
+    .finale-remove-btn:hover { background: var(--red-soft); color: var(--red); border-color: var(--red); }
+    @media (max-width: 700px) {
+      .finale-section { margin: 16px 0 0; border-radius: 0; border-left: none; border-right: none; }
+      .finale-table th, .finale-table td { padding: 8px 10px; font-size: 12px; }
+    }
 
     /* ── INLINE EDITING ── */
     .editable { cursor:text; border-radius:3px; transition:background .12s; }
@@ -458,7 +521,7 @@
       text-align: center;
     }
     .sponsors-title {
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 700;
       color: #1a237e;
       margin-bottom: 28px;
@@ -696,6 +759,7 @@
       line-height: 1.25;
     }
     .inv-title span { color: var(--text); }
+    [data-theme="dark"] .inv-title { color: var(--text); }
 
     /* Info karty */
     .inv-cards {
@@ -746,6 +810,18 @@
       gap: 7px;
     }
     .inv-notes p { font-size: 13px; color: #8a8580; line-height: 1.6; }
+    .inv-notes p.inv-finale-note {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 10px 16px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      line-height: 1.5;
+    }
+    [data-theme="dark"] .inv-notes p.inv-finale-note { background: #1e1800; border-color: #4a3800; color: var(--text); }
     .inv-notes a { color: var(--red); text-decoration: none; }
     .inv-notes a:hover { text-decoration: underline; }
 
@@ -757,11 +833,11 @@
       margin-top: 8px;
     }
     .inv-countdown-label {
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: #1a1916;
+      color: var(--text);
       margin-bottom: 16px;
     }
 
@@ -1225,7 +1301,7 @@
 <div id="reconnectToast">✅ Připojení obnoveno — synchronizuji data…</div>
 
 <button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Zpět nahoru">⬆</button>
-<div id="progressFloat"></div>
+<div id="progressFloat" class="scroll-hidden"></div>
 
 <!-- Import modal -->
 <div id="importModal">
@@ -1265,8 +1341,8 @@
     <img src="images/logo_nadpis_1.png" alt="Znak SDH Častohostice" class="header-logo-img" />
     <div class="header-text">
       <div class="header-title">SDH Častohostice</div>
-      <div class="header-subtitle">O pohár starostky obce</div>
-      <div class="header-date">9. května 2026</div>
+      <div class="header-subtitle">13. ročník Noční soutěže</div>
+      <div class="header-date">17. července 2026</div>
     </div>
     <img src="images/logo_nadpis_2.png" alt="Znak okresu" class="header-logo-img" />
   </div>
@@ -1276,6 +1352,7 @@
 
 <div id="phaseBanner"></div>
 
+<div class="finale-section" id="finaleSection" style="display:none"></div>
 <div class="summary-bar" id="summaryBar" style="display:none"></div>
 <div class="content" id="content"></div>
 
@@ -1404,13 +1481,18 @@ const DEFAULT_DATA = [
   { start:12, team:"SDH Poděbrady B",   kategorie:"Starší děti", cas1:null, cas2:null },
 ];
 
-const CATEGORIES = ["Mladší děti","Starší děti","Nezařazeno"];
-const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Nezařazeno":"cb-nz" };
+const CATEGORIES = ["Mladší děti","Starší děti","Muži","Ženy","PS12","Nezařazeno"];
+const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Muži":"cb-muzi", "Ženy":"cb-zeny", "PS12":"cb-ps12", "Nezařazeno":"cb-nz" };
 
 // ── STAV ─────────────────────────────────────────────
 let isAdmin = false;
 let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet = new Set();
+
+// ── FINÁLE ────────────────────────────────────────────
+// finaleData: pole { start, team, sourceStart, cas1, cas2, zapisCas }
+let finaleData    = [];
+let finaleVisible = false;
 
 // ── OPTIMALIZACE: debounce pro ukládání dat ───────────
 // Zabraňuje opakovaným zápisům při rychlých změnách (drag&drop, bulk editace).
@@ -1656,57 +1738,79 @@ function renderPhaseBanner() {
   el.innerHTML = `<div class="phase-banner">
     <img src="images/zabka.png" alt="" class="inv-top-img" />
     <div class="inv-header">
-      <p class="inv-org">SDH Častohostice ve spolupráci s Obecním úřadem</p>
-      <p class="inv-sub">Vás zve na soutěž zařazenou do okresní ligy mladých hasičů</p>
-      <h1 class="inv-title">O pohár starostky<br>obce <span>Častohostice</span></h1>
+      <p class="inv-org">Sbor dobrovolných hasičů Častohostice</p>
+      <p class="inv-sub">si Vás dovoluje pozvat na</p>
+      <h1 class="inv-title">13. ročník Noční soutěže</h1>
     </div>
 
     <div class="inv-cards">
       <div class="inv-card">
         <div class="inv-card-icon"><img src="images/termin.png" alt="Termín" style="width:50px;height:50px;object-fit:contain;" /></div>
         <div class="inv-card-label">Termín</div>
-        <div class="inv-card-value">9. května 2026</div>
+        <div class="inv-card-value">Pátek<br>17. července 2026</div>
       </div>
       <div class="inv-card">
         <div class="inv-card-icon"><img src="images/zahajeni.png" alt="Zahájení" style="width:50px;height:50px;object-fit:contain;" /></div>
         <div class="inv-card-label">Zahájení</div>
-        <div class="inv-card-value">9:15 hod.</div>
+        <div class="inv-card-value">22:00 hod.</div>
       </div>
       <div class="inv-card">
         <div class="inv-card-icon"><img src="images/startovne.png" alt="Startovné" style="width:50px;height:50px;object-fit:contain;" /></div>
         <div class="inv-card-label">Startovné</div>
-        <div class="inv-card-value">200,- / družstvo</div>
+        <div class="inv-card-value">200,- Kč<br>družstvo / kategorie</div>
       </div>
     </div>
 
     <div class="inv-table">
       <div class="inv-row">
-        <span class="inv-label">Disciplína:</span>
-        <span class="inv-value">požární útok mladších a starších žáků</span>
+        <span class="inv-label">Místo konání:</span>
+        <span class="inv-value">Hasičský areál Častohostice</span>
+      </div>
+      <div class="inv-row">
+        <span class="inv-label">Kategorie:</span>
+        <span class="inv-value">
+          PS Speciál – Muži a Ženy<br>
+          PS 12 – Muži
+        </span>
       </div>
       <div class="inv-row">
         <span class="inv-label">Program:</span>
         <span class="inv-value">
-          8:30 – 9:00 hod. příjezd a prezentace<br>
-          9:00 hod. nástup<br>
-          9:15 hod. zahájení soutěže
+          do 21:30 hod. příjezd a prezentace družstev<br>
+          22:00 hod. začátek soutěže
+        </span>
+      </div>
+      <div class="inv-row">
+        <span class="inv-label">Pravidla:</span>
+        <span class="inv-value">
+          Dle pravidel Jihlavské OPEN ligy<br>
+          Celá soutěž na 2B, hadice B65, C42 povoleny<br>
+          Možnost zapůjčení 2 závodníků
         </span>
       </div>
       <div class="inv-row">
         <span class="inv-label">Rezervace:</span>
-        <span class="inv-value">Pořadí dle rezervace na <a href="https://www.firesport.eu/soutez-asastohostice-15792.html" target="_blank" rel="noopener">www.firesport.eu</a>, dále podle příjezdu</span>
+        <span class="inv-value">Dle rezervace na <a href="https://www.firesport.eu/soutez-asastohostice-16119.html" target="_blank" rel="noopener">www.firesport.eu</a>, dále podle příjezdu<br>Soutěž je otevřená do startu posledního družstva</span>
+      </div>
+      <div class="inv-row">
+        <span class="inv-label">Ocenění:</span>
+        <span class="inv-value">
+          Věcné ceny<br>
+          Poháry pro první tři družstva v každé kategorii<br>
+          Vítězové obdrží Putovní poháry (PS Speciál)
+        </span>
       </div>
     </div>
 
     <div class="inv-notes">
-      <p>Nutno vyplnit přihlášku na <a href="https://www.dh-vysocina.cz" target="_blank" rel="noopener">www.dh-vysocina.cz</a> a odevzdat ji při prezentaci spolu s průkazy</p>
-      <p>Občerstvení zajištěno po celou dobu soutěže</p>
-      <p>Informace: <strong>603 531 914</strong> – Vladimír Nesiba</p>
-      <p>Na Vaši účast se těší SDH Častohostice a Obecní úřad Častohostice</p>
+      <p class="inv-finale-note">🏆 Pět nejlepších časů + jeden losovaný útok postoupí do finále <strong>o velký sud piva</strong> 🍺</p>
+      <p>Občerstvení zajištěno</p>
+      <p>Informace: <strong>603 531 914</strong> – V. Nesiba</p>
+      <p>Na Vaši účast se těší SDH Častohostice</p>
     </div>
 
     <div class="inv-countdown-wrap">
-      <div class="inv-countdown-label">⏱ Do začátku soutěže zbývá ⏱</div>
+      <div class="inv-countdown-label">DO ZAČÁTKU SOUTĚŽE ZBÝVÁ</div>
       <div id="countdownDisplay"></div>
     </div>
   </div>`;
@@ -1825,6 +1929,17 @@ async function loadFromFirebase() {
     updateLiveIndicator();
   });
 
+  onValue(ref(db, 'finale'), snap => {
+    if (snap.exists()) {
+      const val = snap.val();
+      finaleData    = val.data    || [];
+      finaleVisible = val.visible || false;
+    } else {
+      finaleData = []; finaleVisible = false;
+    }
+    renderFinale();
+  });
+
   visitorPhaseUnsub = onValue(ref(db, 'phase'), snap => {
     phase = snap.exists() ? snap.val() : 'hidden';
     renderPhaseBanner();
@@ -1930,6 +2045,17 @@ onAuthStateChanged(auth, user => {
       renderStartlist();
       renderProgressCounter();
       renderSummaryBar();
+    });
+
+    onValue(ref(db, 'finale'), snap => {
+      if (snap.exists()) {
+        const val = snap.val();
+        finaleData    = val.data    || [];
+        finaleVisible = val.visible || false;
+      } else {
+        finaleData = []; finaleVisible = false;
+      }
+      renderFinale();
     });
 
     adminPhaseUnsub = onValue(ref(db, 'phase'), snap => {
@@ -2061,8 +2187,296 @@ function renderSummaryBar() {
   bar.style.display = 'flex';
 }
 
+// ── FINÁLE: ULOŽENÍ / NAČTENÍ ─────────────────────────
+function saveFinale() {
+  const patch = {
+    'finale/data':    finaleData,
+    'finale/visible': finaleVisible,
+  };
+  if (isConnected) {
+    update(ref(db), patch).catch(e => console.error('saveFinale error', e));
+  } else {
+    offlineQueueAdd({ type: 'update', key: 'finale', patch });
+  }
+}
+
+// ── FINÁLE: RENDER ────────────────────────────────────
+function renderFinale() {
+  const el = document.getElementById('finaleSection');
+  if (!el) return;
+
+  // Skryj celou sekci pokud není finále viditelné a nejsme admin
+  const show = isAdmin || finaleVisible;
+  if (!show) { el.style.display = 'none'; return; }
+  el.style.display = '';
+
+  const MAX = 6;
+  const hasTimes = finaleData.some(f => f.cas1 !== null || f.cas2 !== null);
+
+  // Seřaď finalisty dle výsledného času (null na konec)
+  const sorted = [...finaleData].sort((a, b) => {
+    const ta = bestTime(a), tb = bestTime(b);
+    if (ta === null && tb === null) return 0;
+    if (ta === null) return 1;
+    if (tb === null) return -1;
+    return ta - tb;
+  });
+
+  const leaderTime = sorted.length > 0 ? bestTime(sorted[0]) : null;
+
+  // Hlavička
+  const adminControls = isAdmin ? `
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <button class="admin-btn" style="font-size:12px;padding:4px 12px;" onclick="openFinalePickModal()">＋ Vybrat finalisty</button>
+      <button class="admin-btn ${finaleVisible ? 'phase-results' : 'phase-hidden'}" style="font-size:12px;padding:4px 12px;"
+        onclick="toggleFinaleVisible()">
+        ${finaleVisible ? '🏆 Viditelné' : '🔒 Skryto'}
+      </button>
+    </div>` : '';
+
+  // Tabulka
+  let tbodyHtml = '';
+  if (sorted.length === 0) {
+    tbodyHtml = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;font-style:italic;">Žádní finalisté zatím nevybráni</td></tr>`;
+  } else {
+    tbodyHtml = sorted.map((f, i) => {
+      const bt = bestTime(f);
+      const rc = bt !== null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const c1n = typeof f.cas1 === 'number', c2n = typeof f.cas2 === 'number';
+      const c1worst = c1n&&c2n ? f.cas1>=f.cas2 : c1n;
+      const c2worst = c1n&&c2n ? f.cas2>f.cas1  : c2n;
+      const gap = (i===0||bt===null||leaderTime===null) ? null : bt - leaderTime;
+      const gapHtml = i===0 ? `<td class="gap-col leader">—</td>`
+        : gap!==null ? `<td class="gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
+        : `<td class="gap-col empty">—</td>`;
+      const srcRow = data.find(d => d.start === f.sourceStart);
+      const catBadge = srcRow ? `<span class="cbadge ${BADGE[srcRow.kategorie]||'cb-nz'}" style="font-size:10px">${esc(srcRow.kategorie)}</span>` : '';
+      const removeBtn = isAdmin ? `<button class="finale-remove-btn" onclick="removeFromFinale(${f.start})" title="Odebrat z finále">✕</button>` : '';
+      const timeBtn = isAdmin ? `<button class="finale-pick-btn" onclick="openFinaleQuickTime(${f.start})" title="Zadat čas">⏱</button>` : '';
+      return `<tr class="${rc}">
+        <td style="width:40px;text-align:center"><span class="rank ${i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':''}">${rankTxt}</span></td>
+        <td style="width:50px;text-align:center"><span class="snum">${f.start}</span></td>
+        <td>
+          <div class="tname">${esc(f.team)}</div>
+          <div class="finale-source-cat">${catBadge}</div>
+        </td>
+        ${renderTimeCell(f.cas1, c1worst)}
+        ${renderTimeCell(f.cas2, c2worst)}
+        ${bt!==null ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>` : `<td class="best-col empty">—</td>`}
+        ${gapHtml}
+        ${isAdmin ? `<td style="width:80px;text-align:center">${timeBtn} ${removeBtn}</td>` : ''}
+      </tr>`;
+    }).join('');
+  }
+
+  const adminTh = isAdmin ? `<th style="width:80px"></th>` : '';
+
+  el.innerHTML = `
+    <div class="finale-header">
+      <div>
+        <div class="finale-title">🏆 Finále</div>
+        <div class="finale-subtitle">${sorted.length} z ${MAX} finalistů vybráno</div>
+      </div>
+      ${adminControls}
+    </div>
+    <table class="finale-table">
+      <thead><tr>
+        <th class="c" style="width:40px">Poř.</th>
+        <th class="c" style="width:50px">St. č.</th>
+        <th>Družstvo</th>
+        <th class="r">Levý terč</th>
+        <th class="r">Pravý terč</th>
+        <th class="r">Výsledný čas</th>
+        <th class="r">Ztráta</th>
+        ${adminTh}
+      </tr></thead>
+      <tbody>${tbodyHtml}</tbody>
+    </table>`;
+}
+
+// ── FINÁLE: PŘEPNUTÍ VIDITELNOSTI ─────────────────────
+function toggleFinaleVisible() {
+  if (!isAdmin) return;
+  finaleVisible = !finaleVisible;
+  saveFinale();
+  renderFinale();
+}
+
+// ── FINÁLE: ODEBRAT FINALISTU ─────────────────────────
+function removeFromFinale(finaleStart) {
+  if (!isAdmin) return;
+  finaleData = finaleData.filter(f => f.start !== finaleStart);
+  saveFinale();
+  renderFinale();
+}
+
+// ── FINÁLE: MODAL PRO VÝBĚR FINALISTŮ ────────────────
+function openFinalePickModal() {
+  if (!isAdmin) return;
+  document.getElementById('finalePickOverlay')?.remove();
+  document.getElementById('finalePickModal')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'finalePickOverlay';
+  overlay.className = 'qtp-overlay';
+  overlay.onclick = closeFinalePickModal;
+  document.body.appendChild(overlay);
+
+  // Seřaď všechna reálná družstva dle nejlepšího času
+  const allTeams = data.filter(d => !isEmptyTeam(d)).sort((a, b) => {
+    const ta = bestTime(a), tb = bestTime(b);
+    if (ta === null && tb === null) return 0;
+    if (ta === null) return 1;
+    if (tb === null) return -1;
+    return ta - tb;
+  });
+
+  const alreadyIn = new Set(finaleData.map(f => f.sourceStart));
+  const MAX = 6;
+
+  const rows = allTeams.map(d => {
+    const bt = bestTime(d);
+    const inFinale = alreadyIn.has(d.start);
+    const full = finaleData.length >= MAX && !inFinale;
+    const btnHtml = inFinale
+      ? `<button onclick="removeFromFinaleBySource(${d.start})" style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--red);color:var(--red);background:var(--red-soft);cursor:pointer;">Odebrat</button>`
+      : `<button onclick="addToFinaleFromModal(${d.start})" ${full?'disabled':''} style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--gold);color:var(--gold);background:#fffbeb;cursor:pointer;${full?'opacity:.4;cursor:default;':''}">Přidat</button>`;
+    const badge = `<span class="cbadge ${BADGE[d.kategorie]||'cb-nz'}" style="font-size:10px">${esc(d.kategorie)}</span>`;
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 10px;font-size:13px;font-weight:600">${d.start}</td>
+      <td style="padding:8px 10px;font-size:13px">${esc(d.team)}<br>${badge}</td>
+      <td style="padding:8px 10px;font-family:'DM Mono',monospace;font-size:13px;color:var(--red)">${bt!==null?bt.toFixed(2)+' s':'—'}</td>
+      <td style="padding:8px 10px">${btnHtml}</td>
+    </tr>`;
+  }).join('');
+
+  // Input pro startovní číslo finalisty
+  const popup = document.createElement('div');
+  popup.id = 'finalePickModal';
+  popup.className = 'quick-time-popup';
+  popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-height:80vh;overflow-y:auto;width:min(520px,95vw)';
+  popup.innerHTML = `
+    <div class="qtp-title">VÝBĚR FINALISTŮ (${finaleData.length}/${MAX})</div>
+    <div style="margin-bottom:8px;font-size:12px;color:var(--sub)">Klikni Přidat — startovní číslo finalisty zadáš v dalším kroku.</div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:2px solid var(--border)">
+        <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--sub)">St.č.</th>
+        <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--sub)">Družstvo</th>
+        <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--sub)">Nejl. čas</th>
+        <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--sub)"></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="qtp-btns" style="margin-top:12px">
+      <button class="qtp-cancel" onclick="closeFinalePickModal()">Zavřít</button>
+    </div>`;
+  document.body.appendChild(popup);
+}
+
+function closeFinalePickModal() {
+  document.getElementById('finalePickOverlay')?.remove();
+  document.getElementById('finalePickModal')?.remove();
+}
+
+function addToFinaleFromModal(sourceStart) {
+  if (!isAdmin) return;
+  const row = data.find(d => d.start === sourceStart);
+  if (!row) return;
+  if (finaleData.length >= 6) { alert('Finále je plné (max. 6 finalistů).'); return; }
+  if (finaleData.some(f => f.sourceStart === sourceStart)) return;
+
+  // Prompt pro startovní číslo finalisty
+  const newStart = parseInt(prompt(`Zadej startovní číslo pro ${row.team} ve finále:`, ''));
+  if (isNaN(newStart) || newStart <= 0) return;
+  if (finaleData.some(f => f.start === newStart)) {
+    alert(`Startovní číslo ${newStart} je již obsazeno jiným finalistou.`); return;
+  }
+
+  finaleData.push({ start: newStart, team: row.team, sourceStart, cas1: null, cas2: null, zapisCas: null });
+  finaleData.sort((a, b) => a.start - b.start);
+  saveFinale();
+  renderFinale();
+  closeFinalePickModal();
+  openFinalePickModal(); // znovu otevři pro přidání dalšího
+}
+
+function removeFromFinaleBySource(sourceStart) {
+  if (!isAdmin) return;
+  finaleData = finaleData.filter(f => f.sourceStart !== sourceStart);
+  saveFinale();
+  renderFinale();
+  closeFinalePickModal();
+  openFinalePickModal();
+}
+
+// ── FINÁLE: ZADÁNÍ ČASU ───────────────────────────────
+function openFinaleQuickTime(finaleStart) {
+  if (!isAdmin) return;
+  const f = finaleData.find(d => d.start === finaleStart);
+  if (!f) return;
+
+  document.getElementById('qtpOverlay')?.remove();
+  document.getElementById('qtpPopup')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'qtpOverlay';
+  overlay.className = 'qtp-overlay';
+  overlay.onclick = closeQuickTime;
+  document.body.appendChild(overlay);
+
+  const popup = document.createElement('div');
+  popup.id = 'qtpPopup';
+  popup.className = 'quick-time-popup';
+  popup.innerHTML = `
+    <div class="qtp-title">FINÁLE — ČASY — St. č. ${f.start}</div>
+    <div class="qtp-team">${esc(f.team)}</div>
+    <div class="qtp-row">
+      <span class="qtp-label">Levý terč</span>
+      <input class="qtp-input" id="qtpFCas1" placeholder="např. 12.34"
+        value="${f.cas1!==null&&f.cas1!==undefined?(typeof f.cas1==='number'?f.cas1.toFixed(2):f.cas1):''}" />
+    </div>
+    <div class="qtp-row">
+      <span class="qtp-label">Pravý terč</span>
+      <input class="qtp-input" id="qtpFCas2" placeholder="např. 11.85"
+        value="${f.cas2!==null&&f.cas2!==undefined?(typeof f.cas2==='number'?f.cas2.toFixed(2):f.cas2):''}" />
+    </div>
+    <div class="qtp-btns">
+      <button class="qtp-cancel" onclick="closeQuickTime()">Zrušit</button>
+      ${(f.cas1!==null||f.cas2!==null)?`<button class="qtp-cancel" style="color:#b45309;border-color:#fcd34d;background:#fffbeb" onclick="resetFinaleTime(${finaleStart});closeQuickTime()">↺ Reset</button>`:''}
+      <button class="qtp-save" onclick="saveFinaleQuickTime(${finaleStart})">Uložit</button>
+    </div>`;
+  popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)';
+  document.body.appendChild(popup);
+  document.getElementById('qtpFCas1').focus();
+  document.getElementById('qtpFCas1').onkeydown = e => { if (e.key==='Enter') document.getElementById('qtpFCas2').focus(); };
+  document.getElementById('qtpFCas2').onkeydown = e => { if (e.key==='Enter') saveFinaleQuickTime(finaleStart); };
+}
+
+function saveFinaleQuickTime(finaleStart) {
+  const f = finaleData.find(d => d.start === finaleStart);
+  if (!f) return;
+  f.cas1 = parseTimeVal(document.getElementById('qtpFCas1').value);
+  f.cas2 = parseTimeVal(document.getElementById('qtpFCas2').value);
+  const now = new Date();
+  f.zapisCas = (f.cas1===null&&f.cas2===null) ? null
+    : `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  closeQuickTime();
+  saveFinale();
+  renderFinale();
+}
+
+function resetFinaleTime(finaleStart) {
+  const f = finaleData.find(d => d.start === finaleStart);
+  if (!f) return;
+  f.cas1 = null; f.cas2 = null; f.zapisCas = null;
+  saveFinale();
+  renderFinale();
+}
+
 function renderResults() {
   renderSummaryBar();
+  renderFinale();
   const el = document.getElementById('content');
   el.innerHTML = '';
 
@@ -3055,13 +3469,14 @@ async function exportXLSX() {
   let r1 = 0;
 
   // Hlavní nadpis
-  wsData.push([cell('DĚTSKÉ ZÁVODY SDH ČASTOHOSTICE — VÝSLEDKY', sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle)]);
+  wsData.push([cell('SDH ČASTOHOSTICE — VÝSLEDKY', sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle), cell('',sTitle)]);
   merges1.push({ s:{ r:r1, c:0 }, e:{ r:r1, c:5 } });
   r1++;
   wsData.push([cell('',sNormal)]);
   r1++;
 
   CATEGORIES.forEach(cat => {
+    if (cat === 'Nezařazeno') return;
     let catRows = data.filter(d => d.kategorie === cat);
     if (!catRows.length) return;
     catRows = [...catRows].sort((a, b) => {
@@ -3176,7 +3591,22 @@ async function exportXLSX() {
   const now = new Date();
   const pad = n => String(n).padStart(2, '0');
   const datestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-  XLSX.writeFile(wb, `vysledky-castohostice_${datestamp}.xlsx`);
+  const filename = `vysledky-castohostice_${datestamp}.xlsx`;
+  try {
+    // Preferuj Blob + anchor (funguje ve všech moderních prohlížečích)
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  } catch(e) {
+    console.error('Export error:', e);
+    alert('Export se nezdařil: ' + e.message);
+  }
 }
 
 function renderAnnPanel() {
@@ -3237,8 +3667,8 @@ function exportJSON() {
   const exportData = {
     meta: {
       exportDate: now.toISOString(),
-      event: 'O pohár starostky obce Častohostice',
-      date: '9. května 2026'
+      event: '13. ročník Noční soutěže Častohostice',
+      date: '17. července 2026'
     },
     data,
     done: Object.fromEntries([...doneSet].map(id => [String(id), true])),
@@ -3444,7 +3874,13 @@ function downloadImportTemplate() {
   ws['!cols'] = [{ wch: 8 }, { wch: 30 }, { wch: 16 }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Startovní listina');
-  XLSX.writeFile(wb, 'sablona-startovni-listina.xlsx');
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([wbout], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'sablona-startovni-listina.xlsx';
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
 }
 
 function toggleEditMode() {
@@ -3522,9 +3958,19 @@ window.toggleLoginPopup = toggleLoginPopup;
 window.loginMobile      = loginMobile;
 window.closeExportMenu  = closeExportMenu;
 window.exportJSON    = exportJSON;
+window.exportXLSX    = exportXLSX;
 window.openQuickTime = openQuickTime;
 window.closeQuickTime = closeQuickTime;
 window.saveQuickTime = saveQuickTime;
+window.openFinalePickModal    = openFinalePickModal;
+window.closeFinalePickModal   = closeFinalePickModal;
+window.addToFinaleFromModal   = addToFinaleFromModal;
+window.removeFromFinaleBySource = removeFromFinaleBySource;
+window.removeFromFinale       = removeFromFinale;
+window.toggleFinaleVisible    = toggleFinaleVisible;
+window.openFinaleQuickTime    = openFinaleQuickTime;
+window.saveFinaleQuickTime    = saveFinaleQuickTime;
+window.resetFinaleTime        = resetFinaleTime;
 window.undoHistory   = undoHistory;
 window.clearHistory  = clearHistory;
 window.toggleHistoryBody = toggleHistoryBody;
@@ -3544,8 +3990,8 @@ function renderProgressCounter() {
   const done      = realTeams.filter(d => doneSet.has(d.start)).length;
   const remaining = total - done;
 
-  // Zobraz jen když je fáze results a jsou nějaké týmy
-  const show = phase === 'results' && total > 0;
+  // Zobraz když je fáze results, nebo když je admin (admin potřebuje počítadlo vždy)
+  const show = (isAdmin || phase === 'results') && total > 0;
 
   // Desktop badge v hlavičce startovní listiny
   const badge = document.getElementById('progressBadge');
