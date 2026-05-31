@@ -1454,7 +1454,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, update, onValue, get, onDisconnect, push }
+import { getDatabase, ref, set, update, remove, onValue, get, onDisconnect, push }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1905,6 +1905,11 @@ function unsubVisitors() {
   if (visitorPhaseUnsub) { visitorPhaseUnsub(); visitorPhaseUnsub = null; }
   if (visitorCdUnsub)    { visitorCdUnsub();    visitorCdUnsub    = null; }
   if (visitorAnnUnsub)   { visitorAnnUnsub();   visitorAnnUnsub   = null; }
+  // Odstraň visitor presence záznam — uživatel se stal adminem
+  if (_presenceRef) {
+    try { remove(_presenceRef); } catch(e) {}
+    _presenceRef = null;
+  }
 }
 
 // ── NAČTENÍ DAT PRO NÁVŠTĚVNÍKY ──────────────────────
@@ -2219,7 +2224,8 @@ function renderFinale() {
   if (!el) return;
 
   // Skryj celou sekci pokud není finále viditelné a nejsme admin
-  const show = isAdmin || finaleVisible;
+  // Návštěvníci vidí finále jen ve fázi results (stejně jako ostatní tabulky)
+  const show = isAdmin || (finaleVisible && phase === 'results');
   if (!show) { el.style.display = 'none'; return; }
   el.style.display = '';
 
@@ -3242,6 +3248,10 @@ async function initPresence() {
   try {
     onValue(ref(db, '.info/connected'), async snap => {
       if (snap.val() !== true) return;
+      // Odstraň starý záznam při reconnectu, aby nevznikly duplicity
+      if (_presenceRef) {
+        try { await remove(_presenceRef); } catch(e) {}
+      }
       _presenceRef = push(ref(db, 'presence'));
       await onDisconnect(_presenceRef).remove();
       await set(_presenceRef, { t: Date.now() });
