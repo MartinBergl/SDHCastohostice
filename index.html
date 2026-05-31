@@ -89,6 +89,7 @@
     [data-theme="dark"] .presence-badge { background:#1a2535; color:#60a5fa; border-color:#2a3a55; }
     [data-theme="dark"] .phase-banner { background:#1c1b1a; border-color:var(--border); }
     [data-theme="dark"] .inv-card { background:#161514; }
+    [data-theme="dark"] .inv-card-value { color: var(--text); }
     [data-theme="dark"] .inv-notes { background:#161514; }
     [data-theme="dark"] .sponsor-item { background:#161514; border-color:var(--border); }
     [data-theme="dark"] .startlist-header { background:#111110; }
@@ -101,6 +102,15 @@
     [data-theme="dark"] .startlist-table tbody tr.done .snum { color:#16a34a; border-color:#1a5a20; background:#0e1e10; }
     [data-theme="dark"] .startlist-table tbody tr.done:hover { background:#111e12; }
     [data-theme="dark"] .startlist-table tbody tr.next { background:#1e1a0a; border-left-color:var(--gold); }
+    .startlist-all-done {
+      text-align: center;
+      padding: 32px 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #16a34a;
+      letter-spacing: .5px;
+    }
+    [data-theme="dark"] .startlist-all-done { color: #4ade80; }
     [data-theme="dark"] .startlist-table tbody tr.next:hover { background:#252010; }
     [data-theme="dark"] .done-tag { background:#0e1e10; color:#4ade80; border-color:#1a5a20; }
     [data-theme="dark"] .next-tag { background:#1e1a0a; color:#d4a017; border-color:#5a4a10; }
@@ -1363,6 +1373,9 @@
       <div id="progressBadge" class="progress-badge" style="display:none"></div>
       <div id="startlistCounts" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
     </div>
+  </div>
+  <div id="startlistAllDoneBanner" style="display:none" class="startlist-all-done">
+    ✅ Všechna družstva odběhla
   </div>
   <table class="startlist-table" id="startlistTable">
     <thead>
@@ -2667,10 +2680,45 @@ function renderStartlist() {
       .join('');
   }
 
-  tbody.innerHTML = sorted.map((d, i) => {
+  // Pro návštěvníky: skryj odběhnuté kromě posledního; při všech odběhnutých zobraz hlášku
+  let visitorAllDone = false;
+  let visitorSorted = sorted;
+  if (!isAdmin) {
+    const realTeams = sorted.filter(d => !isEmptyTeam(d));
+    const doneTeams = realTeams.filter(d => doneSet.has(d.start));
+    const remaining = realTeams.filter(d => !doneSet.has(d.start));
+
+    if (realTeams.length > 0 && remaining.length === 0) {
+      // Všechna odběhla
+      visitorAllDone = true;
+      visitorSorted = [];
+    } else {
+      // Zobraz poslední odběhnuté + všechna zbývající
+      const lastDone = doneTeams.length > 0 ? [doneTeams[doneTeams.length - 1]] : [];
+      visitorSorted = [...lastDone, ...remaining];
+    }
+  }
+
+  // Zobraz hlášku "Všechna odběhla" nebo tabulku
+  const allDoneBanner = document.getElementById('startlistAllDoneBanner');
+  const startlistTable = document.getElementById('startlistTable');
+  if (allDoneBanner && startlistTable) {
+    if (visitorAllDone) {
+      allDoneBanner.style.display = '';
+      startlistTable.style.display = 'none';
+    } else {
+      allDoneBanner.style.display = 'none';
+      startlistTable.style.display = '';
+    }
+  }
+
+  // Předpočítej startovní číslo prvního zbývajícího (pro isNext)
+  const nextStart = sorted.find(x => !doneSet.has(x.start) && !isEmptyTeam(x))?.start ?? null;
+
+  tbody.innerHTML = visitorSorted.map((d, i) => {
     const isDone  = doneSet.has(d.start);
     const isEmpty = isEmptyTeam(d);
-    const isNext  = !isDone && !isEmpty && sorted.findIndex(x => !doneSet.has(x.start) && !isEmptyTeam(x)) === i;
+    const isNext  = !isDone && !isEmpty && d.start === nextStart;
     const rowClass = isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '';
 
     const statusTag = isDone
@@ -2731,10 +2779,11 @@ function renderStartlist() {
   }).join('');
 
   // ── Mobile cards for startlist ──
-  const mobileCards = sorted.map((d, i) => {
+  const mobileSrc = isAdmin ? sorted : visitorSorted;
+  const mobileCards = mobileSrc.length === 0 ? '' : mobileSrc.map((d, i) => {
     const isDone  = doneSet.has(d.start);
     const isEmpty = isEmptyTeam(d);
-    const isNext  = !isDone && !isEmpty && sorted.findIndex(x => !doneSet.has(x.start) && !isEmptyTeam(x)) === i;
+    const isNext  = !isDone && !isEmpty && d.start === nextStart;
     const rowClass = isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '';
 
     const statusTag = isDone
@@ -2799,7 +2848,11 @@ function renderStartlist() {
 
   // Render mobile cards container (already in HTML)
   const cardsContainer = document.getElementById('startlistCardsContainer');
-  cardsContainer.innerHTML = mobileCards;
+  if (visitorAllDone) {
+    cardsContainer.innerHTML = '';
+  } else {
+    cardsContainer.innerHTML = mobileCards;
+  }
 
   // Inicializuj drag & drop pokud je admin v edit módu
   if (isAdmin && document.body.classList.contains('edit-mode')) {
