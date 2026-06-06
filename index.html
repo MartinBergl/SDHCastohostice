@@ -422,7 +422,11 @@
     .finale-remove-btn:hover { background: var(--red-soft); color: var(--red); border-color: var(--red); }
     @media (max-width: 700px) {
       .finale-section { margin: 16px 0 0; border-radius: 0; border-left: none; border-right: none; }
-      .finale-table th, .finale-table td { padding: 8px 10px; font-size: 12px; }
+      .finale-table th, .finale-table td { padding: 8px 6px; font-size: 11px; }
+      .finale-admin-col { display: none; }
+      th.finale-admin-th { display: none; }
+      .finale-gap-col { display: none; }
+      th.finale-gap-th { display: none; }
     }
 
     /* ── INLINE EDITING ── */
@@ -2266,13 +2270,25 @@ function renderFinale() {
       const c1worst = c1n&&c2n ? f.cas1>=f.cas2 : c1n;
       const c2worst = c1n&&c2n ? f.cas2>f.cas1  : c2n;
       const gap = (i===0||bt===null||leaderTime===null) ? null : bt - leaderTime;
-      const gapHtml = i===0 ? `<td class="gap-col leader">—</td>`
-        : gap!==null ? `<td class="gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
-        : `<td class="gap-col empty">—</td>`;
+      const gapHtml = i===0 ? `<td class="gap-col leader finale-gap-col">—</td>`
+        : gap!==null ? `<td class="gap-col finale-gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
+        : `<td class="gap-col empty finale-gap-col">—</td>`;
       const srcRow = data.find(d => d.start === f.sourceStart);
       const catBadge = srcRow ? `<span class="cbadge ${BADGE[srcRow.kategorie]||'cb-nz'}" style="font-size:10px">${esc(srcRow.kategorie)}</span>` : '';
       const removeBtn = isAdmin ? `<button class="finale-remove-btn" onclick="removeFromFinale(${f.start})" title="Odebrat z finále">✕</button>` : '';
-      const timeBtn = isAdmin ? `<button class="finale-pick-btn" onclick="openFinaleQuickTime(${f.start})" title="Zadat čas">⏱</button>` : '';
+      const timeBtn = '';
+      const mobileActionsInCell = '';
+
+      const finaleTimeCell = (val, isWorst) => {
+        if (!isAdmin) return renderTimeCell(val, isWorst);
+        const display = val === null || val === undefined ? '—'
+          : val === 'DSQ' ? '<span class="dsq-tag">DSQ</span>'
+          : val === 'NP'  ? '<span class="np-tag">NP</span>'
+          : `${val.toFixed(2)} s`;
+        const cls = `tcell clickable${val === null || val === undefined ? ' empty' : ''}`;
+        return `<td class="${cls}" onclick="openFinaleQuickTime(${f.start})" title="Klikni pro zadání času" style="text-align:center;cursor:pointer">${display}</td>`;
+      };
+
       return `<tr class="${rc}">
         <td style="width:40px;text-align:center"><span class="rank ${i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':''}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${f.start}</span></td>
@@ -2280,16 +2296,16 @@ function renderFinale() {
           <div class="tname">${esc(f.team)}</div>
           <div class="finale-source-cat">${catBadge}</div>
         </td>
-        ${renderTimeCell(f.cas1, c1worst)}
-        ${renderTimeCell(f.cas2, c2worst)}
+        ${finaleTimeCell(f.cas1, c1worst)}
+        ${finaleTimeCell(f.cas2, c2worst)}
         ${bt!==null ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>` : `<td class="best-col empty">—</td>`}
         ${gapHtml}
-        ${isAdmin ? `<td style="width:80px;text-align:center">${timeBtn} ${removeBtn}</td>` : ''}
+        ${isAdmin ? `<td class="finale-admin-col" style="width:60px;text-align:center">${removeBtn}</td>` : ''}
       </tr>`;
     }).join('');
   }
 
-  const adminTh = isAdmin ? `<th style="width:80px"></th>` : '';
+  const adminTh = isAdmin ? `<th class="finale-admin-th" style="width:80px"></th>` : '';
 
   el.innerHTML = `
     <div class="finale-header">
@@ -2307,7 +2323,7 @@ function renderFinale() {
         <th class="r">Levý terč</th>
         <th class="r">Pravý terč</th>
         <th class="r">Výsledný čas</th>
-        <th class="r">Ztráta</th>
+        <th class="r finale-gap-th">Ztráta</th>
         ${adminTh}
       </tr></thead>
       <tbody>${tbodyHtml}</tbody>
