@@ -1954,7 +1954,7 @@ async function loadFromFirebase() {
   onValue(ref(db, 'finale'), snap => {
     if (snap.exists()) {
       const val = snap.val();
-      finaleData    = val.data    || [];
+      finaleData    = Array.isArray(val.data) ? val.data : val.data ? Object.values(val.data) : [];
       finaleVisible = val.visible || false;
     } else {
       finaleData = []; finaleVisible = false;
@@ -2072,7 +2072,7 @@ onAuthStateChanged(auth, user => {
     onValue(ref(db, 'finale'), snap => {
       if (snap.exists()) {
         const val = snap.val();
-        finaleData    = val.data    || [];
+        finaleData    = Array.isArray(val.data) ? val.data : val.data ? Object.values(val.data) : [];
         finaleVisible = val.visible || false;
       } else {
         finaleData = []; finaleVisible = false;
@@ -2126,7 +2126,8 @@ function esc(s) {
 
 // ── HELPER: parse time value ──────────────────────────
 function parseTimeVal(str) {
-  const s = str.trim().toUpperCase();
+  if (str === null || str === undefined) return null;
+  const s = String(str).trim().toUpperCase();
   if (s === '' || s === '-' || s === '—') return null;
   if (s === 'DSQ') return 'DSQ';
   if (s === 'NP')  return 'NP';
@@ -2234,8 +2235,6 @@ function renderFinale() {
   el.style.display = '';
 
   const MAX = 6;
-  const hasTimes = finaleData.some(f => f.cas1 !== null || f.cas2 !== null);
-
   // Seřaď finalisty dle výsledného času (null na konec)
   const sorted = [...finaleData].sort((a, b) => {
     const ta = bestTime(a), tb = bestTime(b);
@@ -2276,8 +2275,6 @@ function renderFinale() {
       const srcRow = data.find(d => d.start === f.sourceStart);
       const catBadge = srcRow ? `<span class="cbadge ${BADGE[srcRow.kategorie]||'cb-nz'}" style="font-size:10px">${esc(srcRow.kategorie)}</span>` : '';
       const removeBtn = isAdmin ? `<button class="finale-remove-btn" onclick="removeFromFinale(${f.start})" title="Odebrat z finále">✕</button>` : '';
-      const timeBtn = '';
-      const mobileActionsInCell = '';
 
       const finaleTimeCell = (val, isWorst) => {
         if (!isAdmin) return renderTimeCell(val, isWorst);
@@ -3142,6 +3139,18 @@ function saveField(el) {
       return;
     }
     row.start = newStart;
+    // Aktualizuj doneSet na nové startovní číslo
+    if (doneSet.has(startNum)) {
+      doneSet.delete(startNum);
+      doneSet.add(newStart);
+      saveDone();
+    }
+    // Aktualizuj finaleData pokud je tým finalista (jako zdroj)
+    const finaleEntry = finaleData.find(f => f.sourceStart === startNum);
+    if (finaleEntry) {
+      finaleEntry.sourceStart = newStart;
+      saveFinale();
+    }
     saveTeamFullPatch(startNum);
     renderResults(); renderStartlist();
     return;
@@ -3207,6 +3216,12 @@ function deleteTeam(startNum) {
   if (!confirm('Opravdu odstranit toto družstvo?')) return;
   data = data.filter(d => d.start !== startNum);
   doneSet.delete(startNum);
+  // Pokud je tým ve finále jako zdroj, odeber ho i odtud
+  const wasInFinale = finaleData.some(f => f.sourceStart === startNum);
+  if (wasInFinale) {
+    finaleData = finaleData.filter(f => f.sourceStart !== startNum);
+    saveFinale();
+  }
   // Smazání týmu vyžaduje přepis celého pole (nelze patchovat mazání)
   saveData(true);
   saveDone();
