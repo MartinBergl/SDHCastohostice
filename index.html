@@ -86,7 +86,6 @@
     [data-theme="dark"] .live-bar { background:#0e1e10; border-bottom-color:#1a5a20; color:#4ade80; }
     [data-theme="dark"] .live-bar-dot { background:#4ade80; }
     [data-theme="dark"] .conn-badge.online { background:#0e1e10; color:#4ade80; border-color:#1a5a20; }
-    [data-theme="dark"] .presence-badge { background:#1a2535; color:#60a5fa; border-color:#2a3a55; }
     [data-theme="dark"] .phase-banner { background:#1c1b1a; border-color:var(--border); }
     [data-theme="dark"] .inv-card { background:#161514; }
     [data-theme="dark"] .inv-card-value { color: var(--text); }
@@ -330,8 +329,6 @@
     .conn-badge.offline { color:#fff;    background:var(--red); border-color:#b83020; animation:connPulse 1s ease-in-out infinite; }
     @keyframes connPulse { 0%,100%{ opacity:1; } 50%{ opacity:0.7; } }
 
-    /* Počítadlo návštěvníků */
-    .presence-badge { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:5px 10px; border-radius:6px; border:1px solid #93c5fd; background:#eff6ff; color:#1d6fba; white-space:nowrap; }
     .admin-on { font-size:12px; font-weight:600; color:#16a34a; }
     .admin-hint { font-size:12px; color:var(--red); }
 
@@ -1092,28 +1089,6 @@
     .login-popup .admin-input { width: 100%; box-sizing: border-box; }
     .login-popup .login-btns { display: flex; gap: 8px; }
     .login-popup .login-btns button { flex: 1; }
-    /* Floating přihlašovací tlačítko (jen mobil) */
-    #loginFloatBtn {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      left: 20px;
-      z-index: 999;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,.15);
-      align-items: center;
-      gap: 6px;
-    }
-    #loginFloatBtn.visible { display: flex; }
-    @media (min-width: 701px) { #loginFloatBtn { display: none !important; } }
 
     .login-mobile {
       display: none;
@@ -1350,6 +1325,11 @@
   <span class="ann-icon" id="annIconRight"></span>
 </div>
 
+<div class="live-bar" id="liveBar">
+  <span class="live-bar-dot"></span>
+  <span>Výsledky se aktualizují živě</span>
+</div>
+
 <header class="header">
   <div class="header-inner">
     <img src="images/logo_nadpis_1.png" alt="Znak SDH Častohostice" class="header-logo-img" />
@@ -1458,7 +1438,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, update, remove, onValue, get, onDisconnect, push }
+import { getDatabase, ref, set, update, onValue, get }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1897,23 +1877,20 @@ function updateLiveIndicator() {
 }
 
 // ── REALTIME LISTENERY PRO NÁVŠTĚVNÍKY ───────────────
-let visitorDataUnsub  = null;
-let visitorDoneUnsub  = null;
-let visitorPhaseUnsub = null;
-let visitorCdUnsub    = null;
-let visitorAnnUnsub   = null;
+let visitorDataUnsub   = null;
+let visitorDoneUnsub   = null;
+let visitorFinaleUnsub = null;
+let visitorPhaseUnsub  = null;
+let visitorCdUnsub     = null;
+let visitorAnnUnsub    = null;
 
 function unsubVisitors() {
-  if (visitorDataUnsub)  { visitorDataUnsub();  visitorDataUnsub  = null; }
-  if (visitorDoneUnsub)  { visitorDoneUnsub();  visitorDoneUnsub  = null; }
-  if (visitorPhaseUnsub) { visitorPhaseUnsub(); visitorPhaseUnsub = null; }
-  if (visitorCdUnsub)    { visitorCdUnsub();    visitorCdUnsub    = null; }
-  if (visitorAnnUnsub)   { visitorAnnUnsub();   visitorAnnUnsub   = null; }
-  // Odstraň visitor presence záznam — uživatel se stal adminem
-  if (_presenceRef) {
-    try { remove(_presenceRef); } catch(e) {}
-    _presenceRef = null;
-  }
+  if (visitorDataUnsub)   { visitorDataUnsub();   visitorDataUnsub   = null; }
+  if (visitorDoneUnsub)   { visitorDoneUnsub();   visitorDoneUnsub   = null; }
+  if (visitorFinaleUnsub) { visitorFinaleUnsub(); visitorFinaleUnsub = null; }
+  if (visitorPhaseUnsub)  { visitorPhaseUnsub();  visitorPhaseUnsub  = null; }
+  if (visitorCdUnsub)     { visitorCdUnsub();     visitorCdUnsub     = null; }
+  if (visitorAnnUnsub)    { visitorAnnUnsub();    visitorAnnUnsub    = null; }
 }
 
 // ── NAČTENÍ DAT PRO NÁVŠTĚVNÍKY ──────────────────────
@@ -1924,8 +1901,6 @@ let _visitorFirstLoad = true;
 
 async function loadFromFirebase() {
   _visitorFirstLoad = true;
-  // Zaregistruj přítomnost návštěvníka
-  initPresence();
 
   visitorDataUnsub = onValue(ref(db, 'data'), snap => {
     if (snap.exists()) {
@@ -1951,7 +1926,7 @@ async function loadFromFirebase() {
     updateLiveIndicator();
   });
 
-  onValue(ref(db, 'finale'), snap => {
+  visitorFinaleUnsub = onValue(ref(db, 'finale'), snap => {
     if (snap.exists()) {
       const val = snap.val();
       finaleData    = Array.isArray(val.data) ? val.data : val.data ? Object.values(val.data) : [];
@@ -1990,6 +1965,7 @@ async function loadFromFirebase() {
 // po opakovaném přihlášení/odhlášení).
 let adminDataUnsub     = null;
 let adminDoneUnsub     = null;
+let adminFinaleUnsub   = null;
 let adminPhaseUnsub    = null;
 let adminCdUnsub       = null;
 let adminAnnUnsub      = null;
@@ -2000,19 +1976,18 @@ onAuthStateChanged(auth, user => {
     document.body.classList.remove('edit-mode');
     document.body.classList.remove('admin-mode');
     // Odhlášení: zruš admin listenery
-    if (adminDataUnsub)  { adminDataUnsub();  adminDataUnsub  = null; }
-    if (adminDoneUnsub)  { adminDoneUnsub();  adminDoneUnsub  = null; }
-    if (adminPhaseUnsub) { adminPhaseUnsub(); adminPhaseUnsub = null; }
-    if (adminCdUnsub)    { adminCdUnsub();    adminCdUnsub    = null; }
-    if (adminAnnUnsub)   { adminAnnUnsub();   adminAnnUnsub   = null; }
+    if (adminDataUnsub)   { adminDataUnsub();   adminDataUnsub   = null; }
+    if (adminDoneUnsub)   { adminDoneUnsub();   adminDoneUnsub   = null; }
+    if (adminFinaleUnsub) { adminFinaleUnsub(); adminFinaleUnsub = null; }
+    if (adminPhaseUnsub)  { adminPhaseUnsub();  adminPhaseUnsub  = null; }
+    if (adminCdUnsub)     { adminCdUnsub();     adminCdUnsub     = null; }
+    if (adminAnnUnsub)    { adminAnnUnsub();    adminAnnUnsub    = null; }
     renderAdminBar();
     renderHistory();
     // Zastav auto-logout timer
     stopAutoLogout();
     // Spusť visitor listenery
     loadFromFirebase();
-    // Zastav počítadlo návštěvníků
-    stopPresenceCounter();
   } else {
     document.body.classList.add('admin-mode');
     // Přihlášení admina: zruš visitor listenery
@@ -2020,8 +1995,6 @@ onAuthStateChanged(auth, user => {
     updateLiveIndicator();
     // Spusť auto-logout timer
     resetAutoLogout();
-    // Spusť počítadlo návštěvníků
-    initPresenceCounter();
 
     // Při startu: pokud je fronta neprázdná a jsme online, synchronizuj
     // (fronta mohla vzniknout při předchozím výpadku a přežít reload stránky)
@@ -2069,7 +2042,7 @@ onAuthStateChanged(auth, user => {
       renderSummaryBar();
     });
 
-    onValue(ref(db, 'finale'), snap => {
+    adminFinaleUnsub = onValue(ref(db, 'finale'), snap => {
       if (snap.exists()) {
         const val = snap.val();
         finaleData    = Array.isArray(val.data) ? val.data : val.data ? Object.values(val.data) : [];
@@ -2967,6 +2940,33 @@ function initDragDrop() {
   document.addEventListener('touchend', _touchEndHandler);
 }
 
+// ── PŘEMAPOVÁNÍ ODKAZŮ NA STARTOVNÍ ČÍSLO ─────────────
+// Při změně pořadí (moveTeam, drag&drop) se přepisují startovní čísla.
+// doneSet i finaleData.sourceStart jsou klíčované startovním číslem, takže
+// je nutné je přemapovat — jinak by stav „odběhnuto" a finalisté zůstali
+// viset na pozici místo na družstvu.
+// map: { staréStartČíslo: novéStartČíslo }
+function remapStartReferences(map) {
+  if (!map || Object.keys(map).length === 0) return;
+
+  // doneSet — přelož členy přes mapu (objekty bez změny zůstanou)
+  let doneChanged = false;
+  const newDone = new Set();
+  doneSet.forEach(s => {
+    const mapped = map[s] !== undefined ? map[s] : s;
+    if (mapped !== s) doneChanged = true;
+    newDone.add(mapped);
+  });
+  if (doneChanged) { doneSet = newDone; saveDone(); }
+
+  // finaleData.sourceStart — uprav odkaz na zdrojové družstvo
+  let finaleChanged = false;
+  finaleData.forEach(f => {
+    if (map[f.sourceStart] !== undefined) { f.sourceStart = map[f.sourceStart]; finaleChanged = true; }
+  });
+  if (finaleChanged) { saveFinale(); renderFinale(); }
+}
+
 function swapByPosition(srcStart, tgtStart) {
   const sorted = [...data].sort((a, b) => a.start - b.start);
   const srcIdx = sorted.findIndex(d => d.start === srcStart);
@@ -2977,8 +2977,15 @@ function swapByPosition(srcStart, tgtStart) {
   const moved = sorted.splice(srcIdx, 1)[0];
   sorted.splice(tgtIdx, 0, moved);
 
-  // Přepiš start čísla podle nového pořadí
-  sorted.forEach((d, i) => { d.start = i + 1; });
+  // Přepiš start čísla podle nového pořadí a sestav mapu staré→nové
+  const remap = {};
+  sorted.forEach((d, i) => {
+    const newStart = i + 1;
+    if (d.start !== newStart) remap[d.start] = newStart;
+    d.start = newStart;
+  });
+  remapStartReferences(remap);
+
   // Drag & drop mění start čísla více záznamů najednou — nutný plný zápis.
   // Debounce zabrání vícenásobnému zápisu při rychlém přetahování.
   saveData(); renderResults(); renderStartlist();
@@ -3124,38 +3131,6 @@ function saveField(el) {
   const row = data.find(d => d.start === startNum);
   if (!row) return;
 
-  // Validace duplicitního startovního čísla
-  if (field === 'start') {
-    const newStart = parseInt(val);
-    if (isNaN(newStart) || newStart < 1) {
-      alert('Startovní číslo musí být kladné celé číslo.');
-      el.innerText = String(startNum); // vrátit původní hodnotu
-      return;
-    }
-    const duplicate = data.find(d => d.start === newStart && d !== row);
-    if (duplicate) {
-      alert(`Startovní číslo ${newStart} už používá družstvo „${duplicate.team}". Zadej jiné číslo.`);
-      el.innerText = String(startNum); // vrátit původní hodnotu
-      return;
-    }
-    row.start = newStart;
-    // Aktualizuj doneSet na nové startovní číslo
-    if (doneSet.has(startNum)) {
-      doneSet.delete(startNum);
-      doneSet.add(newStart);
-      saveDone();
-    }
-    // Aktualizuj finaleData pokud je tým finalista (jako zdroj)
-    const finaleEntry = finaleData.find(f => f.sourceStart === startNum);
-    if (finaleEntry) {
-      finaleEntry.sourceStart = newStart;
-      saveFinale();
-    }
-    saveTeamFullPatch(startNum);
-    renderResults(); renderStartlist();
-    return;
-  }
-
   row[field] = val;
   // OPTIMALIZACE: přejmenování týmu → patch jen 1 záznamu
   saveTeamFullPatch(startNum);
@@ -3252,9 +3227,13 @@ function moveTeam(startNum, dir) {
   if (swapIdx < 0 || swapIdx >= sorted.length) return;
 
   // Swap start numbers between the two rows
-  const tmpStart = sorted[idx].start;
-  sorted[idx].start = sorted[swapIdx].start;
-  sorted[swapIdx].start = tmpStart;
+  const startA = sorted[idx].start;
+  const startB = sorted[swapIdx].start;
+  sorted[idx].start = startB;
+  sorted[swapIdx].start = startA;
+
+  // Přemapuj doneSet a finaleData podle družstva, ne podle pozice
+  remapStartReferences({ [startA]: startB, [startB]: startA });
 
   // OPTIMALIZACE: debounce — při rychlém klikání ↑↓ se provede jen 1 zápis
   saveData(); renderResults(); renderStartlist();
@@ -3270,43 +3249,6 @@ function toggleDone(startNum) {
   renderSummaryBar();
 }
 
-// ── PRESENCE SYSTÉM ──────────────────────────────────
-let _presenceRef   = null;
-let _presenceUnsub = null;
-let _lastPresenceCount = 0;
-
-async function initPresence() {
-  try {
-    onValue(ref(db, '.info/connected'), async snap => {
-      if (snap.val() !== true) return;
-      // Odstraň starý záznam při reconnectu, aby nevznikly duplicity
-      if (_presenceRef) {
-        try { await remove(_presenceRef); } catch(e) {}
-      }
-      _presenceRef = push(ref(db, 'presence'));
-      await onDisconnect(_presenceRef).remove();
-      await set(_presenceRef, { t: Date.now() });
-    });
-  } catch(e) {
-    console.error('Presence init error:', e);
-  }
-}
-
-function initPresenceCounter() {
-  if (_presenceUnsub) { _presenceUnsub(); _presenceUnsub = null; }
-  _presenceUnsub = onValue(ref(db, 'presence'), snap => {
-    const count = snap.exists() ? Object.keys(snap.val()).length : 0;
-    _lastPresenceCount = count;
-    const el = document.getElementById('presenceCount');
-    if (el) el.textContent = count;
-  }, err => {
-    console.error('Presence counter error:', err);
-  });
-}
-
-function stopPresenceCounter() {
-  if (_presenceUnsub) { _presenceUnsub(); _presenceUnsub = null; }
-}
 // ── AUTOMATICKÉ ODHLÁŠENÍ PO NEČINNOSTI ──────────────
 // Admin je odhlášen po 2 hodinách bez jakékoliv aktivity.
 const AUTO_LOGOUT_MS = 2 * 60 * 60 * 1000; // 2 hodiny
@@ -3431,10 +3373,8 @@ onValue(ref(db, '.info/connected'), snap => {
 // ── ADMIN BAR ─────────────────────────────────────────
 function renderAdminBar() {
   const bar = document.getElementById('adminBar');
-  const loginFloat = document.getElementById('loginFloatBtn');
 
   if (isAdmin) {
-    if (loginFloat) loginFloat.classList.remove('visible');
     const editMode = document.body.classList.contains('edit-mode');
     const email = auth.currentUser?.email ?? '';
 
@@ -3457,7 +3397,6 @@ function renderAdminBar() {
         <div class="admin-group">
           <span class="admin-on">🔓 ${email}</span>
           ${connBadge}
-          <span class="presence-badge">👥 <span id="presenceCount">${_lastPresenceCount ?? '…'}</span></span>
         </div>
 
         <div class="admin-divider"></div>
@@ -3492,8 +3431,6 @@ function renderAdminBar() {
       </div>
     `;
   } else {
-    const loginFloat = document.getElementById('loginFloatBtn');
-    if (loginFloat) loginFloat.classList.remove('visible');
     bar.innerHTML = `
       <!-- Desktop: přihlašovací pole přímo -->
       <div class="login-inline">
@@ -3948,12 +3885,16 @@ async function confirmImport() {
   if (!confirm(`Opravdu importovat ${_importData.length} družstev? Tato akce přepíše celou stávající startovní listinu.`)) return;
 
   data = _importData;
-  doneSet = new Set(); // reset odběhnutých
+  doneSet = new Set();   // reset odběhnutých
+  finaleData = [];       // reset finalistů — vážou se na původní (přepsanou) listinu
+  finaleVisible = false;
   saveData(true);
   saveDone();
+  saveFinale();
   closeImportModal();
   renderResults();
   renderStartlist();
+  renderFinale();
 }
 
 function downloadImportTemplate() {
@@ -4025,16 +3966,6 @@ window.moveTeam      = moveTeam;
 window.toggleEditMode = toggleEditMode;
 window.login         = login;
 window.logout        = logout;
-function toggleExportMenu(e) {
-  e.stopPropagation();
-  document.getElementById('exportDropdown')?.classList.toggle('open');
-}
-function closeExportMenu() {
-  document.getElementById('exportDropdown')?.classList.remove('open');
-}
-// Zavři dropdown při kliknutí mimo
-document.addEventListener('click', () => closeExportMenu());
-
 function toggleLoginPopup() {
   document.getElementById('loginPopup')?.classList.toggle('open');
 }
@@ -4050,7 +3981,6 @@ function loginMobile() {
 
 window.toggleLoginPopup = toggleLoginPopup;
 window.loginMobile      = loginMobile;
-window.closeExportMenu  = closeExportMenu;
 window.exportJSON    = exportJSON;
 window.exportXLSX    = exportXLSX;
 window.openQuickTime = openQuickTime;
@@ -4127,11 +4057,6 @@ function toggleTheme() {
   const saved = localStorage.getItem('sdh-theme');
   applyTheme(saved === 'dark');
 })();
-
-// Sleduj změny systémového nastavení (jen pokud uživatel nemá vlastní preferenci)
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-  if (!localStorage.getItem('sdh-theme')) applyTheme(false);
-});
 
 window.toggleTheme = toggleTheme;
 
