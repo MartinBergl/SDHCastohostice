@@ -323,6 +323,24 @@
     .admin-btn.export:hover { background:#dbeafe; }
     .admin-btn.ann-on-btn { border-color:#f5c6c2; color:var(--red); background:var(--red-soft); }
 
+    /* Modernizovaná admin lišta: stavový čip, přepínače, ikonové tlačítko */
+    .status-chip { display:inline-flex; align-items:center; gap:7px; background:var(--bg); border:1px solid var(--border); border-radius:999px; padding:5px 13px; font-size:12px; font-weight:600; color:var(--sub); white-space:nowrap; }
+    .status-dot { width:8px; height:8px; border-radius:50%; background:#16a34a; flex:none; }
+    .status-chip.offline { color:#fff; background:var(--red); border-color:#b83020; animation:connPulse 1s ease-in-out infinite; }
+    .status-chip.offline .status-dot { background:#fff; }
+    .switch-row { display:inline-flex; align-items:center; gap:8px; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; padding:4px 0; }
+    .switch-track { width:34px; height:20px; border-radius:999px; background:#d6d3cd; position:relative; flex:none; transition:background .18s; }
+    .switch-knob { position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.25); transition:left .18s; }
+    .switch-row.on .switch-track { background:#16a34a; }
+    .switch-row.on .switch-knob { left:16px; }
+    .switch-label { font-size:12px; font-weight:600; color:var(--sub); white-space:nowrap; }
+    .switch-row.on .switch-label { color:var(--text); }
+    .switch-row.warn-off .switch-label { color:var(--red); }
+    .admin-btn.icon-only { display:inline-flex; align-items:center; justify-content:center; padding:7px 9px; line-height:0; }
+    [data-theme="dark"] .status-chip { background:#1c1b1a; }
+    [data-theme="dark"] .switch-track { background:#3a3937; }
+    [data-theme="dark"] .export-dropdown { background:#1c1b1a; }
+
     /* Ukazatel připojení */
     .conn-badge { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:5px 10px; border-radius:6px; border:1px solid; white-space:nowrap; }
     .conn-badge.online  { color:#16a34a; background:#f0fdf4; border-color:#86efac; }
@@ -1438,7 +1456,7 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, update, onValue, get }
+import { getDatabase, ref, set, update, onValue, get, onDisconnect, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -1463,20 +1481,9 @@ const auth = getAuth(app);
 // Heslo se spravuje v Firebase Console → Authentication → Users
 // ─────────────────────────────────────────────────────
 
-const DEFAULT_DATA = [
-  { start:1,  team:"SDH Starý Kolín A", kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:2,  team:"SDH Nymburk",       kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:3,  team:"SDH Poděbrady",     kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:4,  team:"SDH Kouřim A",      kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:5,  team:"SDH Kolín centrum", kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:6,  team:"SDH Velký Osek",    kategorie:"Mladší děti", cas1:null, cas2:null },
-  { start:7,  team:"SDH Pečky",         kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:8,  team:"SDH Kouřim B",      kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:9,  team:"SDH Starý Kolín B", kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:10, team:"SDH Nymburk B",     kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:11, team:"SDH Kolín B",       kategorie:"Starší děti", cas1:null, cas2:null },
-  { start:12, team:"SDH Poděbrady B",   kategorie:"Starší děti", cas1:null, cas2:null },
-];
+// Výchozí data jsou prázdná — pokud by uzel 'data' v databázi neexistoval,
+// návštěvníci uvidí prázdnou listinu místo falešných vzorových družstev.
+const DEFAULT_DATA = [];
 
 const CATEGORIES = ["Mladší děti","Starší děti","Muži","Ženy","PS12","Nezařazeno"];
 const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Muži":"cb-muzi", "Ženy":"cb-zeny", "PS12":"cb-ps12", "Nezařazeno":"cb-nz" };
@@ -1485,6 +1492,18 @@ const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Muži":"cb-
 let isAdmin = false;
 let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet = new Set();
+let dupeStarts = []; // duplicitní startovní čísla (varování v admin liště)
+
+// ── ZÁMEK EDITACE ────────────────────────────────────
+// Každá otevřená stránka (tab/zařízení) má vlastní náhodné ID relace.
+// Zámek se porovnává podle něj, NE podle e-mailu — ochrana tedy funguje
+// i mezi dvěma zařízeními přihlášenými stejným admin účtem.
+const SESSION_ID = crypto.randomUUID
+  ? crypto.randomUUID()
+  : Math.random().toString(36).slice(2) + Date.now().toString(36);
+let editLock = null;       // aktuální obsah uzlu 'editLock' z DB
+let adminLockUnsub = null;
+const EDIT_LOCK_STALE_MS = 10 * 60 * 1000; // starší zámek = opuštěný (pád, ztráta spojení)
 
 // ── FINÁLE ────────────────────────────────────────────
 // finaleData: pole { start, team, sourceStart, cas1, cas2, zapisCas }
@@ -1982,6 +2001,8 @@ onAuthStateChanged(auth, user => {
     if (adminPhaseUnsub)  { adminPhaseUnsub();  adminPhaseUnsub  = null; }
     if (adminCdUnsub)     { adminCdUnsub();     adminCdUnsub     = null; }
     if (adminAnnUnsub)    { adminAnnUnsub();    adminAnnUnsub    = null; }
+    if (adminLockUnsub)   { adminLockUnsub();   adminLockUnsub   = null; }
+    editLock = null;
     renderAdminBar();
     renderHistory();
     // Zastav auto-logout timer
@@ -2008,26 +2029,18 @@ onAuthStateChanged(auth, user => {
     adminDataUnsub = onValue(ref(db, 'data'), snap => {
       if (snap.exists()) {
         data = snap.val();
-        // Detekce duplicitních startovních čísel
+        // Detekce duplicitních startovních čísel — uloží se do stavové
+        // proměnné a vykreslí uvnitř renderAdminBar (dřívější DOM prepend
+        // zmizel při každém překreslení admin lišty)
         const seen = {};
         const dupes = [];
         data.forEach(d => {
           if (seen[d.start]) dupes.push(d.start);
           else seen[d.start] = true;
         });
-        if (dupes.length) {
-          console.warn('Duplicitní startovní čísla:', dupes);
-          const el = document.getElementById('adminBar');
-          if (el && !document.getElementById('dupeWarning')) {
-            const w = document.createElement('span');
-            w.id = 'dupeWarning';
-            w.style.cssText = 'font-size:12px;font-weight:600;color:var(--red);background:var(--red-soft);border:1px solid #f5c6c2;border-radius:6px;padding:4px 10px;';
-            w.textContent = `⚠️ Duplicitní St.č.: ${[...new Set(dupes)].join(', ')} — oprav v editaci`;
-            el.prepend(w);
-          }
-        } else {
-          document.getElementById('dupeWarning')?.remove();
-        }
+        dupeStarts = [...new Set(dupes)];
+        if (dupeStarts.length) console.warn('Duplicitní startovní čísla:', dupeStarts);
+        renderAdminBar();
       }
       renderResults();
       renderStartlist();
@@ -2070,6 +2083,22 @@ onAuthStateChanged(auth, user => {
       renderAnnPanel();
     });
 
+    // Zámek editace: sleduj, kdo právě edituje. Pokud editaci převezme
+    // jiná relace, ukonči zde editační režim a upozorni.
+    adminLockUnsub = onValue(ref(db, 'editLock'), snap => {
+      editLock = snap.exists() ? snap.val() : null;
+      const inEdit = document.body.classList.contains('edit-mode');
+      if (inEdit && editLock && editLock.sessionId !== SESSION_ID) {
+        // Náš zámek převzal někdo jiný — zruš onDisconnect,
+        // aby při výpadku této relace nesmazal cizí zámek
+        onDisconnect(ref(db, 'editLock')).cancel();
+        document.body.classList.remove('edit-mode');
+        renderStartlist();
+        alert(`Editaci převzala jiná relace (${editLock.email || 'admin'}). Editační režim zde byl ukončen.`);
+      }
+      renderAdminBar();
+    });
+
     // Historie se načte jednorázově (jen pro admina, není veřejná)
     get(ref(db, 'history')).then(histSnap => {
       if (histSnap.exists()) {
@@ -2105,15 +2134,40 @@ function parseTimeVal(str) {
   if (s === 'DSQ') return 'DSQ';
   if (s === 'NP')  return 'NP';
   const n = parseFloat(s.replace(',', '.'));
-  return isNaN(n) ? null : n;
+  // Odmítni neplatné hodnoty: NaN, záporné a nulové časy (překlep "-5.23"
+  // by jinak tým katapultoval na 1. místo) a nesmyslně velké hodnoty
+  return isNaN(n) || n <= 0 || n > 9999 ? null : n;
 }
 
 // ── VÝSLEDKOVÁ TABULKA ────────────────────────────────
+// DSQ/NP na kterémkoli terči → celý pokus je neplatný (výsledný čas DSQ/NP),
+// případný čas na druhém terči se nepočítá. DSQ má přednost před NP.
 function bestTime(d) {
+  if (d.cas1 === 'DSQ' || d.cas2 === 'DSQ') return 'DSQ';
+  if (d.cas1 === 'NP'  || d.cas2 === 'NP')  return 'NP';
   const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
   if (nums.length === 2) return Math.max(...nums);
   if (nums.length === 1) return nums[0];
   return null;
+}
+
+// Řazení dle výsledného času: platné časy vzestupně, pak DSQ/NP, pak prázdné
+function cmpBest(a, b) {
+  const ta = bestTime(a), tb = bestTime(b);
+  const na = typeof ta === 'number', nb = typeof tb === 'number';
+  if (na && nb) return ta - tb;
+  if (na) return -1;
+  if (nb) return 1;
+  const rank = v => v === 'DSQ' || v === 'NP' ? 1 : 2; // DSQ/NP před prázdnými
+  return rank(ta) - rank(tb);
+}
+
+// Zobrazení výsledného času (HTML) — čísla, DSQ, NP i prázdno
+function fmtBest(bt) {
+  if (bt === null || bt === undefined) return null;
+  if (bt === 'DSQ') return '<span class="dsq-tag">DSQ</span>';
+  if (bt === 'NP')  return '<span class="np-tag">NP</span>';
+  return bt.toFixed(2) + '&thinsp;s';
 }
 
 function fmtTime(val) {
@@ -2142,8 +2196,10 @@ function renderSummaryBar() {
   const done      = realTeams.filter(d => doneSet.has(d.start)).length;
 
   // Nejlepší čas pro každou kategorii (jen kategorie s alespoň 1 časem)
+  // Družstva s DSQ/NP na kterémkoli terči se nepočítají — pokus je neplatný
   const catBests = CATEGORIES.map(cat => {
-    const rows = data.filter(d => d.kategorie === cat && !isEmptyTeam(d));
+    const rows = data.filter(d => d.kategorie === cat && !isEmptyTeam(d)
+      && d.cas1 !== 'DSQ' && d.cas2 !== 'DSQ' && d.cas1 !== 'NP' && d.cas2 !== 'NP');
     let best = null, team = null;
     rows.forEach(d => {
       const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
@@ -2208,25 +2264,24 @@ function renderFinale() {
   el.style.display = '';
 
   const MAX = 6;
-  // Seřaď finalisty dle výsledného času (null na konec)
-  const sorted = [...finaleData].sort((a, b) => {
-    const ta = bestTime(a), tb = bestTime(b);
-    if (ta === null && tb === null) return 0;
-    if (ta === null) return 1;
-    if (tb === null) return -1;
-    return ta - tb;
-  });
+  // Seřaď finalisty dle výsledného času (DSQ/NP a prázdné na konec)
+  const sorted = [...finaleData].sort(cmpBest);
 
-  const leaderTime = sorted.length > 0 ? bestTime(sorted[0]) : null;
+  const leaderTime = (() => {
+    if (!sorted.length) return null;
+    const bt = bestTime(sorted[0]);
+    return typeof bt === 'number' ? bt : null;
+  })();
 
   // Hlavička
   const adminControls = isAdmin ? `
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
       <button class="admin-btn" style="font-size:12px;padding:4px 12px;" onclick="openFinalePickModal()">＋ Vybrat finalisty</button>
-      <button class="admin-btn ${finaleVisible ? 'phase-results' : 'phase-hidden'}" style="font-size:12px;padding:4px 12px;"
-        onclick="toggleFinaleVisible()">
-        ${finaleVisible ? '🏆 Viditelné' : '🔒 Skryto'}
-      </button>
+      <div class="switch-row ${finaleVisible ? 'on' : 'warn-off'}" onclick="toggleFinaleVisible()"
+        role="switch" aria-checked="${finaleVisible}" title="Přepnout viditelnost finále pro návštěvníky">
+        <span class="switch-track"><span class="switch-knob"></span></span>
+        <span class="switch-label">${finaleVisible ? '🏆 Viditelné pro návštěvníky' : '🔒 Skryto pro návštěvníky'}</span>
+      </div>
     </div>` : '';
 
   // Tabulka
@@ -2236,12 +2291,13 @@ function renderFinale() {
   } else {
     tbodyHtml = sorted.map((f, i) => {
       const bt = bestTime(f);
-      const rc = bt !== null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
-      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const btNum = typeof bt === 'number';
+      const rc = btNum ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+      const rankTxt = i===0&&btNum?'🥇':i===1&&btNum?'🥈':i===2&&btNum?'🥉':`${i+1}.`;
       const c1n = typeof f.cas1 === 'number', c2n = typeof f.cas2 === 'number';
       const c1worst = c1n&&c2n ? f.cas1>=f.cas2 : c1n;
       const c2worst = c1n&&c2n ? f.cas2>f.cas1  : c2n;
-      const gap = (i===0||bt===null||leaderTime===null) ? null : bt - leaderTime;
+      const gap = (i===0||!btNum||leaderTime===null) ? null : bt - leaderTime;
       const gapHtml = i===0 ? `<td class="gap-col leader finale-gap-col">—</td>`
         : gap!==null ? `<td class="gap-col finale-gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
         : `<td class="gap-col empty finale-gap-col">—</td>`;
@@ -2259,8 +2315,9 @@ function renderFinale() {
         return `<td class="${cls}" onclick="openFinaleQuickTime(${f.start})" title="Klikni pro zadání času" style="text-align:center;cursor:pointer">${display}</td>`;
       };
 
+      const bestStr = fmtBest(bt);
       return `<tr class="${rc}">
-        <td style="width:40px;text-align:center"><span class="rank ${i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':''}">${rankTxt}</span></td>
+        <td style="width:40px;text-align:center"><span class="rank ${i===0&&btNum?'g':i===1&&btNum?'s':i===2&&btNum?'b':''}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${f.start}</span></td>
         <td>
           <div class="tname">${esc(f.team)}</div>
@@ -2268,7 +2325,7 @@ function renderFinale() {
         </td>
         ${finaleTimeCell(f.cas1, c1worst)}
         ${finaleTimeCell(f.cas2, c2worst)}
-        ${bt!==null ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>` : `<td class="best-col empty">—</td>`}
+        ${bestStr !== null ? `<td class="best-col"${btNum?'':' style="text-align:center"'}>${bestStr}</td>` : `<td class="best-col empty">—</td>`}
         ${gapHtml}
         ${isAdmin ? `<td class="finale-admin-col" style="width:60px;text-align:center">${removeBtn}</td>` : ''}
       </tr>`;
@@ -2303,6 +2360,10 @@ function renderFinale() {
 // ── FINÁLE: PŘEPNUTÍ VIDITELNOSTI ─────────────────────
 function toggleFinaleVisible() {
   if (!isAdmin) return;
+  // Potvrzení před zveřejněním finále návštěvníkům (stejně jako u fáze)
+  if (!finaleVisible) {
+    if (!confirm('Opravdu zveřejnit tabulku finále pro návštěvníky?')) return;
+  }
   finaleVisible = !finaleVisible;
   saveFinale();
   renderFinale();
@@ -2328,14 +2389,8 @@ function openFinalePickModal() {
   overlay.onclick = closeFinalePickModal;
   document.body.appendChild(overlay);
 
-  // Seřaď všechna reálná družstva dle nejlepšího času
-  const allTeams = data.filter(d => !isEmptyTeam(d)).sort((a, b) => {
-    const ta = bestTime(a), tb = bestTime(b);
-    if (ta === null && tb === null) return 0;
-    if (ta === null) return 1;
-    if (tb === null) return -1;
-    return ta - tb;
-  });
+  // Seřaď všechna reálná družstva dle výsledného času (DSQ/NP a prázdné na konec)
+  const allTeams = data.filter(d => !isEmptyTeam(d)).sort(cmpBest);
 
   const alreadyIn = new Set(finaleData.map(f => f.sourceStart));
   const MAX = 6;
@@ -2351,7 +2406,7 @@ function openFinalePickModal() {
     return `<tr style="border-bottom:1px solid var(--border)">
       <td style="padding:8px 10px;font-size:13px;font-weight:600">${d.start}</td>
       <td style="padding:8px 10px;font-size:13px">${esc(d.team)}<br>${badge}</td>
-      <td style="padding:8px 10px;font-family:'DM Mono',monospace;font-size:13px;color:var(--red)">${bt!==null?bt.toFixed(2)+' s':'—'}</td>
+      <td style="padding:8px 10px;font-family:'DM Mono',monospace;font-size:13px;color:var(--red)">${typeof bt==='number'?bt.toFixed(2)+' s':bt!==null?bt:'—'}</td>
       <td style="padding:8px 10px">${btnHtml}</td>
     </tr>`;
   }).join('');
@@ -2490,35 +2545,32 @@ function renderResults() {
 
   CATEGORIES.forEach(cat => {
     function hasTime(d) {
-      const c1 = d.cas1, c2 = d.cas2;
-      const valid = v => v !== null && v !== undefined && v !== '' && v !== false;
-      return valid(c1) || valid(c2);
+      // Platná hodnota je číslo nebo 'DSQ'/'NP' — nikdy false, stačí tedy
+      // vyloučit null/undefined a prázdný řetězec
+      const valid = v => v !== null && v !== undefined && v !== '';
+      return valid(d.cas1) || valid(d.cas2);
     }
     let rows = data.filter(d => d.kategorie === cat && hasTime(d) && d.team && d.team.trim() !== '');
     if (!rows.length) return;
 
-    rows = [...rows].sort((a, b) => {
-      const ta = bestTime(a), tb = bestTime(b);
-      if (ta===null && tb===null) return 0;
-      if (ta===null) return 1;
-      if (tb===null) return -1;
-      return ta - tb;
-    });
+    rows = [...rows].sort(cmpBest);
 
-    const leaderTime = (() => { const bt = bestTime(rows[0]); return bt; })();
+    const leaderTime = (() => { const bt = bestTime(rows[0]); return typeof bt === 'number' ? bt : null; })();
 
     const rowsHtml = rows.map((d, i) => {
       const bt = bestTime(d);
-      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
-      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':(i+1)+'.';
-      const rankCls = i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':'';
+      const btNum = typeof bt === 'number'; // medaile/ztráta jen pro platné časy
+      const rc = btNum ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+      const rankTxt = i===0&&btNum?'🥇':i===1&&btNum?'🥈':i===2&&btNum?'🥉':(i+1)+'.';
+      const rankCls = i===0&&btNum?'g':i===1&&btNum?'s':i===2&&btNum?'b':'';
       const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
       const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
       const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      const bestHtml = bt!==null
-        ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>`
+      const bestStr = fmtBest(bt);
+      const bestHtml = bestStr !== null
+        ? `<td class="best-col"${btNum?'':' style="text-align:center"'}>${bestStr}</td>`
         : `<td class="best-col empty">—</td>`;
-      const gap = (i===0||bt===null||leaderTime===null) ? null : bt - leaderTime;
+      const gap = (i===0||!btNum||leaderTime===null) ? null : bt - leaderTime;
       const gapHtml = i===0
         ? `<td class="gap-col leader">—</td>`
         : gap!==null
@@ -2539,14 +2591,15 @@ function renderResults() {
     // Mobile cards for results
     const cardsHtml = rows.map((d, i) => {
       const bt = bestTime(d);
-      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
-      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const btNum = typeof bt === 'number';
+      const rc = btNum ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+      const rankTxt = i===0&&btNum?'🥇':i===1&&btNum?'🥈':i===2&&btNum?'🥉':`${i+1}.`;
       const isNum = !['🥇','🥈','🥉'].includes(rankTxt);
       const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
       const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
       const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      const bestStr = bt!==null ? `${bt.toFixed(2)}&thinsp;s` : null;
-      const cardGap = (i===0||bt===null||leaderTime===null) ? null : bt - leaderTime;
+      const bestStr = fmtBest(bt);
+      const cardGap = (i===0||!btNum||leaderTime===null) ? null : bt - leaderTime;
       const gapStr = i===0 ? null : cardGap!==null ? `+${cardGap.toFixed(2)}&thinsp;s` : null;
       return `<div class="result-card ${rc}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
@@ -2729,7 +2782,7 @@ function renderStartlist() {
       ? `<td><select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">
           ${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}
          </select></td>`
-      : `<td><span class="cbadge ${BADGE[d.kategorie]}">${esc(d.kategorie)}</span></td>`;
+      : `<td><span class="cbadge ${BADGE[d.kategorie] || 'cb-nz'}">${esc(d.kategorie)}</span></td>`;
 
     const cas1Cell = editMode
       ? `<td style="text-align:right"><input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" /></td>`
@@ -2790,7 +2843,7 @@ function renderStartlist() {
 
     const catHtml = editMode
       ? `<select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}</select>`
-      : `<span class="cbadge ${BADGE[d.kategorie]}">${esc(d.kategorie)}</span>`;
+      : `<span class="cbadge ${BADGE[d.kategorie] || 'cb-nz'}">${esc(d.kategorie)}</span>`;
 
     const c1Html = editMode
       ? `<input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" />`
@@ -2968,25 +3021,19 @@ function remapStartReferences(map) {
 }
 
 function swapByPosition(srcStart, tgtStart) {
-  const sorted = [...data].sort((a, b) => a.start - b.start);
-  const srcIdx = sorted.findIndex(d => d.start === srcStart);
-  const tgtIdx = sorted.findIndex(d => d.start === tgtStart);
-  if (srcIdx === -1 || tgtIdx === -1) return;
+  // Prosté prohození A↔B: přetažené družstvo si vymění startovní číslo
+  // s cílovým, ostatní družstva (včetně prázdných pozic a mezer v číslování)
+  // zůstávají beze změny. Stejná sémantika jako moveTeam se sousedem.
+  const src = data.find(d => d.start === srcStart);
+  const tgt = data.find(d => d.start === tgtStart);
+  if (!src || !tgt) return;
 
-  // Přesuň src na pozici tgt — posuň ostatní
-  const moved = sorted.splice(srcIdx, 1)[0];
-  sorted.splice(tgtIdx, 0, moved);
+  src.start = tgtStart;
+  tgt.start = srcStart;
 
-  // Přepiš start čísla podle nového pořadí a sestav mapu staré→nové
-  const remap = {};
-  sorted.forEach((d, i) => {
-    const newStart = i + 1;
-    if (d.start !== newStart) remap[d.start] = newStart;
-    d.start = newStart;
-  });
-  remapStartReferences(remap);
+  // Přemapuj doneSet a finaleData podle družstva, ne podle pozice
+  remapStartReferences({ [srcStart]: tgtStart, [tgtStart]: srcStart });
 
-  // Drag & drop mění start čísla více záznamů najednou — nutný plný zápis.
   // Debounce zabrání vícenásobnému zápisu při rychlém přetahování.
   saveData(); renderResults(); renderStartlist();
 }
@@ -3191,6 +3238,13 @@ function deleteTeam(startNum) {
   if (!confirm('Opravdu odstranit toto družstvo?')) return;
   data = data.filter(d => d.start !== startNum);
   doneSet.delete(startNum);
+  // Odstraň položky historie smazaného týmu — undo by jinak mohlo
+  // zapsat časy budoucímu týmu se stejným startovním číslem
+  let historyChanged = false;
+  for (let i = changeHistory.length - 1; i >= 0; i--) {
+    if (changeHistory[i].start === startNum) { changeHistory.splice(i, 1); historyChanged = true; }
+  }
+  if (historyChanged) { saveHistory(); renderHistory(); }
   // Pokud je tým ve finále jako zdroj, odeber ho i odtud
   const wasInFinale = finaleData.some(f => f.sourceStart === startNum);
   if (wasInFinale) {
@@ -3259,6 +3313,7 @@ function resetAutoLogout() {
   if (_autoLogoutTimer) clearTimeout(_autoLogoutTimer);
   _autoLogoutTimer = setTimeout(() => {
     if (isAdmin) {
+      if (document.body.classList.contains('edit-mode')) releaseEditLock();
       alert('Byli jste automaticky odhlášeni z důvodu nečinnosti (2 hodiny).');
       signOut(auth);
     }
@@ -3365,6 +3420,20 @@ onValue(ref(db, '.info/connected'), snap => {
       showReconnectToast();
       offlineQueueFlush();
     }
+    // Znovuzískání zámku editace: onDisconnect během výpadku zámek na
+    // serveru smazal a jeho registrace nepřežívá nové spojení. Ověř
+    // aktuální stav v DB — pokud mezitím editaci převzala jiná relace,
+    // zámek nezabírej (listener editLock zdejší editaci sám ukončí).
+    if (document.body.classList.contains('edit-mode')) {
+      get(ref(db, 'editLock')).then(snap => {
+        const lk = snap.exists() ? snap.val() : null;
+        const foreignFresh = lk && lk.sessionId !== SESSION_ID
+          && (Date.now() - (typeof lk.ts === 'number' ? lk.ts : 0)) < EDIT_LOCK_STALE_MS;
+        if (!foreignFresh && document.body.classList.contains('edit-mode')) {
+          acquireEditLock();
+        }
+      }).catch(() => { /* při chybě čtení zámek nezabírej */ });
+    }
   }
 
   renderAdminBar();
@@ -3378,55 +3447,57 @@ function renderAdminBar() {
     const editMode = document.body.classList.contains('edit-mode');
     const email = auth.currentUser?.email ?? '';
 
-    const phaseLabels = {
-      hidden:  { cls:'phase-hidden',  icon:'🔒', label:'Skryto pro návštěvníky' },
-      results: { cls:'phase-results', icon:'🏆', label:'Viditelné pro návštěvníky' },
-    };
     const nextPhase = { hidden:'results', results:'hidden' };
-    const ph = phaseLabels[phase] || phaseLabels.hidden;
-
     const queueCount = offlineQueueLoad().length;
-    const connBadge = isConnected
-      ? `<span class="conn-badge online">🟢 Online</span>`
-      : `<span class="conn-badge offline">🔴 Offline${queueCount > 0 ? ` · ⏳ ${queueCount}` : ''}</span>`;
+
+    const dupeWarning = dupeStarts.length
+      ? `<span id="dupeWarning" style="font-size:12px;font-weight:600;color:var(--red);background:var(--red-soft);border:1px solid #f5c6c2;border-radius:6px;padding:4px 10px;">⚠️ Duplicitní St.č.: ${dupeStarts.join(', ')} — oprav v editaci</span>`
+      : '';
+
+    const lockBadge = lockHeldByOther()
+      ? `<span style="font-size:12px;font-weight:600;color:#b45309;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:4px 10px;">✏️ Listinu právě edituje: ${esc(editLock.email || 'jiná relace')}</span>`
+      : '';
 
     bar.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;justify-content:center;">
+      ${dupeWarning}
+      ${lockBadge}
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;justify-content:center;">
 
-        <!-- Skupina 1: Status -->
-        <div class="admin-group">
-          <span class="admin-on">🔓 ${email}</span>
-          ${connBadge}
+        <!-- Stavový čip: e-mail + připojení -->
+        <span class="status-chip ${isConnected ? '' : 'offline'}" title="${isConnected ? 'Online' : 'Offline — změny se ukládají do fronty'}">
+          <span class="status-dot"></span>${esc(email)}${isConnected ? '' : ` · Offline${queueCount > 0 ? ` ⏳ ${queueCount}` : ''}`}
+        </span>
+
+        <!-- Přepínač: viditelnost pro návštěvníky -->
+        <div class="switch-row ${phase === 'results' ? 'on' : 'warn-off'}" onclick="setPhase('${nextPhase[phase]}')"
+          role="switch" aria-checked="${phase === 'results'}" title="Přepnout viditelnost pro návštěvníky">
+          <span class="switch-track"><span class="switch-knob"></span></span>
+          <span class="switch-label">${phase === 'results' ? '🏆 Viditelné pro návštěvníky' : '🔒 Skryto pro návštěvníky'}</span>
         </div>
 
-        <div class="admin-divider"></div>
-
-        <!-- Skupina 2: Ovládání -->
-        <div class="admin-group">
-          <button class="admin-btn ${ph.cls}" onclick="setPhase('${nextPhase[phase]}')" title="Přepnout viditelnost pro návštěvníky">
-            ${ph.icon} ${ph.label}
-          </button>
-          <button class="admin-btn ${editMode?'add':''}" onclick="toggleEditMode()">
-            ${editMode ? '✏️ Editace ZAP' : '✏️ Editovat data'}
-          </button>
-          ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat družstvo</button>` : ''}
+        <!-- Přepínač: editace dat -->
+        <div class="switch-row ${editMode ? 'on' : ''}" onclick="toggleEditMode()"
+          role="switch" aria-checked="${editMode}" title="Přepnout editační režim listiny">
+          <span class="switch-track"><span class="switch-knob"></span></span>
+          <span class="switch-label">✏️ Editace dat</span>
         </div>
 
-        <div class="admin-divider"></div>
+        ${editMode ? `<button class="admin-btn add" onclick="addTeam()">＋ Přidat družstvo</button>` : ''}
 
-        <!-- Skupina 3: Export/Import -->
-        <div class="admin-group">
-          <button class="admin-btn export" onclick="exportXLSX()" title="Stáhnout výsledky jako Excel (.xlsx)">⬇ Excel</button>
-          <button class="admin-btn export" onclick="exportJSON()" title="Stáhnout data jako JSON pro archiv">⬇ JSON</button>
-          <button class="admin-btn export" onclick="openImportModal()" title="Importovat startovní listinu z Excel">⬆ Import</button>
+        <!-- Export dropdown -->
+        <div class="export-wrap">
+          <button class="admin-btn export" onclick="toggleExportMenu(event)" title="Stáhnout data">⬇ Export ▾</button>
+          <div class="export-dropdown" id="exportDropdown">
+            <button onclick="exportXLSX()">📊 Excel (.xlsx)</button>
+            <button onclick="exportJSON()">🗂 JSON (archiv)</button>
+          </div>
         </div>
 
-        <div class="admin-divider"></div>
+        <button class="admin-btn export" onclick="openImportModal()" title="Importovat startovní listinu z Excel">⬆ Import</button>
 
-        <!-- Skupina 4: Odhlášení -->
-        <div class="admin-group">
-          <button class="admin-btn logout" onclick="logout()">Odhlásit</button>
-        </div>
+        <button class="admin-btn logout icon-only" onclick="logout()" title="Odhlásit" aria-label="Odhlásit">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
 
       </div>
     `;
@@ -3510,12 +3581,7 @@ async function exportXLSX() {
     if (cat === 'Nezařazeno') return;
     let catRows = data.filter(d => d.kategorie === cat);
     if (!catRows.length) return;
-    catRows = [...catRows].sort((a, b) => {
-      const ta = bestTime(a), tb = bestTime(b);
-      if (ta===null && tb===null) return 0;
-      if (ta===null) return 1; if (tb===null) return -1;
-      return ta - tb;
-    });
+    catRows = [...catRows].sort(cmpBest);
 
     // Název kategorie
     wsData.push([cell(cat, sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr), cell('',sCatHdr)]);
@@ -3531,13 +3597,16 @@ async function exportXLSX() {
 
     catRows.forEach((d, i) => {
       const bt = bestTime(d);
-      const rowStyle = i===0 ? sRank1 : i===1 ? sRank2 : i===2 ? sRank3 : sNormal;
-      const rankTxt  = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
+      const btNum = typeof bt === 'number';
+      const rowStyle = i===0&&btNum ? sRank1 : i===1&&btNum ? sRank2 : i===2&&btNum ? sRank3 : sNormal;
+      const rankTxt  = i===0&&btNum?'🥇':i===1&&btNum?'🥈':i===2&&btNum?'🥉':`${i+1}.`;
       const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
       const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
       const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      const bestCell = bt !== null
+      const bestCell = btNum
         ? cell(parseFloat(bt.toFixed(2)), { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } })
+        : bt === 'DSQ' ? cell('DSQ', { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } })
+        : bt === 'NP'  ? cell('NP',  { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'B45309' } }, alignment:{ horizontal:'right' } })
         : cell('—', sEmpty);
       wsData.push([
         cell(rankTxt, { ...rowStyle, alignment:{ horizontal:'center' } }),
@@ -3670,7 +3739,7 @@ function renderAnnPanel() {
           </label>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <input id="annInput" type="text" class="admin-input" style="width:100%;max-width:480px;" placeholder="Text oznámení…" oninput="updateAnnPreview()" value="${announcement?.text??''}" />
+          <input id="annInput" type="text" class="admin-input" style="width:100%;max-width:480px;" placeholder="Text oznámení…" oninput="updateAnnPreview()" value="${esc(announcement?.text??'')}" />
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="countdown-admin-btn" onclick="publishAnn()">✓ Zveřejnit</button>
@@ -3888,6 +3957,11 @@ async function confirmImport() {
   doneSet = new Set();   // reset odběhnutých
   finaleData = [];       // reset finalistů — vážou se na původní (přepsanou) listinu
   finaleVisible = false;
+  // Vymaž historii změn — odkazuje na původní (přepsaná) družstva.
+  // Undo by jinak mohlo zapsat staré časy novému týmu se stejným st. č.
+  changeHistory.length = 0;
+  saveHistory();
+  renderHistory();
   saveData(true);
   saveDone();
   saveFinale();
@@ -3918,7 +3992,51 @@ function downloadImportTemplate() {
   setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
 }
 
+// ── EXPORT DROPDOWN ──────────────────────────────────
+function toggleExportMenu(ev) {
+  ev.stopPropagation(); // nesmí probublat do document handleru níže
+  document.getElementById('exportDropdown')?.classList.toggle('open');
+}
+// Kliknutí kamkoliv jinam menu zavře (kliknutí na položku menu probublá
+// sem také, takže se menu po výběru exportu zavře samo)
+document.addEventListener('click', () => {
+  document.getElementById('exportDropdown')?.classList.remove('open');
+});
+
+// ── ZÁMEK EDITACE: pomocné funkce ────────────────────
+function lockHeldByOther() {
+  if (!editLock || editLock.sessionId === SESSION_ID) return false;
+  const ts = typeof editLock.ts === 'number' ? editLock.ts : 0;
+  return (Date.now() - ts) < EDIT_LOCK_STALE_MS; // prošlý zámek ignoruj
+}
+
+function acquireEditLock() {
+  set(ref(db, 'editLock'), {
+    sessionId: SESSION_ID,
+    email: auth.currentUser?.email || '',
+    ts: serverTimestamp(),
+  });
+  // Pojistka: při ztrátě spojení (zavření tabu, pád) server zámek smaže sám
+  onDisconnect(ref(db, 'editLock')).remove();
+}
+
+function releaseEditLock() {
+  // Zruš onDisconnect dřív, než by mohl smazat zámek jiné relace
+  onDisconnect(ref(db, 'editLock')).cancel();
+  if (editLock?.sessionId === SESSION_ID) set(ref(db, 'editLock'), null);
+}
+
 function toggleEditMode() {
+  const turningOn = !document.body.classList.contains('edit-mode');
+  if (turningOn) {
+    if (lockHeldByOther()) {
+      const who = editLock.email || 'jiný admin';
+      if (!confirm(`Listinu právě edituje ${who} (jiná relace / zařízení).\nPřevzít editaci? Druhé relaci bude editační režim ukončen.`)) return;
+    }
+    acquireEditLock();
+  } else {
+    releaseEditLock();
+  }
   document.body.classList.toggle('edit-mode');
   renderAdminBar();
   renderStartlist();
@@ -3944,11 +4062,28 @@ function login() {
 }
 
 function logout() {
+  // Uvolni zámek editace dřív, než odhlášení zablokuje zápis do DB
+  if (document.body.classList.contains('edit-mode')) releaseEditLock();
   signOut(auth);
 }
 
 // ── INIT ─────────────────────────────────────────────
 renderAdminBar();
+
+// Pokud se data nenačtou do 8 s (výpadek sítě, blokovaný Firebase),
+// nahraď spinner srozumitelnou hláškou s tlačítkem pro nové načtení.
+setTimeout(() => {
+  const el = document.getElementById('loadingOverlay');
+  if (el && !el.classList.contains('hidden')) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:24px;max-width:340px;">
+        <div style="font-size:40px;margin-bottom:12px;">📡</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">Nepodařilo se načíst data</div>
+        <div style="font-size:13px;color:var(--sub);line-height:1.5;margin-bottom:16px;">Zkontroluj připojení k internetu a zkus to znovu.</div>
+        <button onclick="location.reload()" style="padding:9px 22px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">↻ Načíst znovu</button>
+      </div>`;
+  }
+}, 8000);
 
 // Zpřístupnit funkce globálně (nutné kvůli type="module")
 window.toggleDone        = toggleDone;
@@ -3964,6 +4099,7 @@ window.resetTeamTimes = resetTeamTimes;
 window.addTeam       = addTeam;
 window.moveTeam      = moveTeam;
 window.toggleEditMode = toggleEditMode;
+window.toggleExportMenu = toggleExportMenu;
 window.login         = login;
 window.logout        = logout;
 function toggleLoginPopup() {
