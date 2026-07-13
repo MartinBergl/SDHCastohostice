@@ -2195,9 +2195,14 @@ function renderSummaryBar() {
   const total     = realTeams.length;
   const done      = realTeams.filter(d => doneSet.has(d.start)).length;
 
-  // Nejlepší čas pro každou kategorii (jen kategorie s alespoň 1 časem)
+  // Zobrazuj jen kategorie, které mají v listině alespoň jedno reálné
+  // družstvo. Kategorie Nezařazeno se v souhrnu nezobrazuje nikdy.
+  const presentCats = CATEGORIES.filter(cat =>
+    cat !== 'Nezařazeno' && realTeams.some(d => d.kategorie === cat));
+
+  // Nejlepší čas pro každou obsazenou kategorii
   // Družstva s DSQ/NP na kterémkoli terči se nepočítají — pokus je neplatný
-  const catBests = CATEGORIES.map(cat => {
+  const catBests = presentCats.map(cat => {
     const rows = data.filter(d => d.kategorie === cat && !isEmptyTeam(d)
       && d.cas1 !== 'DSQ' && d.cas2 !== 'DSQ' && d.cas1 !== 'NP' && d.cas2 !== 'NP');
     let best = null, team = null;
@@ -2207,7 +2212,7 @@ function renderSummaryBar() {
       if (fastest !== null && (best === null || fastest < best)) { best = fastest; team = d.team; }
     });
     return { cat, best, team };
-  }).filter(c => c.best !== null);
+  });
 
   // Počítadlo
   let html = `<div class="summary-cell">
@@ -2216,24 +2221,18 @@ function renderSummaryBar() {
     ${total - done > 0 ? `<div class="summary-cell-team">Zbývá: ${total - done}</div>` : `<div class="summary-cell-team" style="color:var(--green, #16a34a)">Všechna odběhla ✓</div>`}
   </div>`;
 
-  // Nejlepší časy
+  // Jedna buňka pro každou obsazenou kategorii — s časem, nebo s placeholderem,
+  // dokud v ní žádný čas není (rozložení lišty tak neskáče)
   catBests.forEach(({ cat, best, team }) => {
-    html += `<div class="summary-cell">
+    html += best !== null ? `<div class="summary-cell">
       <div class="summary-cell-label">Nejrychlejší proud — ${esc(cat)}</div>
       <div class="summary-cell-value">${best.toFixed(2)}<span class="sv-denom"> s</span></div>
       ${team ? `<div class="summary-cell-team">${esc(team)}</div>` : ''}
+    </div>` : `<div class="summary-cell">
+      <div class="summary-cell-label">Nejrychlejší proud — ${esc(cat)}</div>
+      <div class="summary-cell-value sv-empty">—</div>
     </div>`;
   });
-
-  // Pokud žádné časy ještě nejsou, zobraz placeholder pro každou kategorii
-  if (catBests.length === 0) {
-    CATEGORIES.forEach(cat => {
-      html += `<div class="summary-cell">
-        <div class="summary-cell-label">Nejrychlejší proud — ${esc(cat)}</div>
-        <div class="summary-cell-value sv-empty">—</div>
-      </div>`;
-    });
-  }
 
   bar.innerHTML = html;
   bar.style.display = 'flex';
@@ -3879,7 +3878,12 @@ function handleImportFile(file) {
         const finalKat = CATEGORIES.includes(kat) ? kat : 'Nezařazeno';
 
         if (isNaN(start) || start < 1) { errors.push(`Řádek ${i+2}: neplatné startovní číslo "${row[keyStart]}"`); return; }
-        if (!team) { errors.push(`Řádek ${i+2}: prázdný název družstva`); return; }
+        // Prázdný název (nebo jen pomlčky) = volná pozice ve startovní
+        // listině — startovní číslo se drží, družstvo lze doplnit později
+        if (!team || /^-+$/.test(team)) {
+          parsed.push({ start, team: '', kategorie: 'Nezařazeno', cas1: null, cas2: null });
+          return;
+        }
         if (kat && !CATEGORIES.includes(kat)) {
           // Neblokuj import, jen upozorni
           errors.push(`Řádek ${i+2}: neznámá kategorie "${kat}" — přiřazeno jako Nezařazeno`);
@@ -3900,14 +3904,18 @@ function handleImportFile(file) {
 
       document.getElementById('importError').classList.remove('visible');
 
+      const emptyCount = parsed.filter(d => !d.team).length;
       const previewHtml = `<table>
         <thead><tr><th>St. č.</th><th>Družstvo</th><th>Kategorie</th></tr></thead>
-        <tbody>${parsed.map(d => `<tr>
+        <tbody>${parsed.map(d => !d.team ? `<tr>
+          <td>${d.start}</td>
+          <td colspan="2" style="color:var(--muted);font-style:italic;">— volné místo —</td>
+        </tr>` : `<tr>
           <td>${d.start}</td>
           <td>${esc(d.team)}</td>
           <td>${esc(d.kategorie)}</td>
         </tr>`).join('')}</tbody>
-      </table>`;
+      </table>${emptyCount ? `<div style="font-size:12px;color:var(--muted);margin-top:6px;">Listina obsahuje ${emptyCount === 1 ? '1 volné místo' : emptyCount < 5 ? emptyCount + ' volná místa' : emptyCount + ' volných míst'}.</div>` : ''}`;
 
       document.getElementById('importPreview').innerHTML = previewHtml;
       document.getElementById('importPreviewWrap').style.display = '';
