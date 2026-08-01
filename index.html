@@ -83,7 +83,7 @@
     [data-theme="dark"] .result-card.rank-3 { background:#1a1510; border-color:#5a3a18; }
     [data-theme="dark"] .import-box { border-top-color: #4a7aaa; }
     [data-theme="dark"] .import-preview thead th { background:#1a2535; color:#60a5fa; }
-    [data-theme="dark"] .live-bar { background:#0e1e10; border-bottom-color:#1a5a20; color:#4ade80; }
+    [data-theme="dark"] .live-badge { color:#4ade80; }
     [data-theme="dark"] .live-bar-dot { background:#4ade80; }
     [data-theme="dark"] .conn-badge.online { background:#0e1e10; color:#4ade80; border-color:#1a5a20; }
     [data-theme="dark"] .phase-banner { background:#1c1b1a; border-color:var(--border); }
@@ -180,7 +180,7 @@
 
     .startlist-table thead th {
       position: sticky;
-      top: 55px;
+      top: var(--thead-top, 55px);
       z-index: 10;
       box-shadow: 0 1px 0 var(--border);
     }
@@ -223,20 +223,19 @@
     .gap-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
 
     /* ── LIVE INFO LIŠTA (návštěvníci) ── */
-    .live-bar {
+    /* Indikátor živých aktualizací v hlavičce startovní listiny */
+    .live-badge {
       display: none;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 9px 48px;
-      background: #f0fdf4;
-      border-bottom: 1px solid #86efac;
-      font-size: 13px;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
       color: #15803d;
+      white-space: nowrap;
     }
-    .live-bar.visible { display: flex; }
+    .live-badge.visible { display: inline-flex; }
     .live-bar-dot {
-      width: 8px; height: 8px;
+      width: 7px; height: 7px;
       border-radius: 50%;
       background: #16a34a;
       flex-shrink: 0;
@@ -246,7 +245,6 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50%       { opacity: 0.4; transform: scale(0.75); }
     }
-    .live-bar-time { font-family: 'DM Mono', monospace; font-weight: 600; }
 
     /* ── STARTOVNÍ LISTINA ── */
     .startlist-section { margin:0 48px 60px; padding-top:32px; border-top:1px solid var(--border); }
@@ -472,6 +470,33 @@
     .ann-banner .ann-text { flex:1; }
 
     .admin-footer { padding:16px 48px 24px; display:flex; justify-content:center; background:var(--bg); }
+
+    /* TV režim (?tv v URL) — celoobrazovková rotace pohledů na televizi */
+    body.tv-mode .admin-footer,
+    body.tv-mode #themeToggle { display:none !important; }
+    body.tv-mode { zoom: 1.15; } /* mírné zvětšení pro čitelnost z dálky */
+    body.tv-mode .header { padding-top:14px; padding-bottom:14px; } /* kompaktnější, ať zbyde místo na tabulky */
+    body.tv-mode .startlist-section { border-top:none; padding-top:16px; }
+    /* Sponzoři na TV ve stejné mřížce jako na stránce (dlaždice vedle sebe),
+       ať sekce nezabírá zbytečnou výšku */
+    body.tv-mode .sponsors-grid { gap:20px; }
+    body.tv-mode .sponsor-item { flex:0 0 280px; max-width:280px; min-height:220px; padding:20px 16px; }
+    body.tv-mode .sponsor-img { max-height:180px; max-width:240px; }
+    #tvDots { position:fixed; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:100; }
+    .tv-dot { width:9px; height:9px; border-radius:50%; background:var(--border); transition:background .3s; }
+    .tv-dot.on { background:var(--red); }
+
+    /* TV: fixní pruh s družstvy, která se chystají na start */
+    #tvNextBar { position:fixed; left:0; right:0; bottom:0; z-index:99; display:none; align-items:center; gap:12px; padding:9px 20px; background:var(--surface); border-top:2px solid var(--red); box-shadow:0 -2px 12px rgba(0,0,0,.10); overflow:hidden; }
+    #tvNextBar.visible { display:flex; }
+    .tvnb-team { display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:var(--text); background:var(--bg); border:1px solid var(--border); border-radius:999px; padding:5px 14px 5px 6px; white-space:nowrap; min-width:0; }
+    .tvnb-team .snum { flex:none; }
+    .tvnb-team.first { background:var(--red-soft); border-color:#f5c6c2; }
+    .tvnb-tag { flex:none; background:var(--red); color:#fff; border-radius:999px; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:3px 9px; }
+    .tvnb-name { overflow:hidden; text-overflow:ellipsis; }
+    /* Pruh nesmí trvale zakrývat konec projížděné stránky ani tečky */
+    body.tv-mode.has-next-bar { padding-bottom:64px; }
+    body.tv-mode.has-next-bar #tvDots { bottom:60px; }
 
     /* ── PŘEHLEDOVÝ PANEL ── */
     .summary-bar {
@@ -1260,7 +1285,7 @@
 
 
     @media (max-width:700px) {
-      .live-bar { padding: 8px 16px; font-size: 12px; text-align: center; }
+      .live-badge { font-size: 11px; }
       .ann-banner { padding:12px 16px; font-size:14px; }
       .offline-box { padding: 24px 20px; }
       .offline-title { font-size: 18px; }
@@ -1343,11 +1368,6 @@
   <span class="ann-icon" id="annIconRight"></span>
 </div>
 
-<div class="live-bar" id="liveBar">
-  <span class="live-bar-dot"></span>
-  <span>Výsledky se aktualizují živě</span>
-</div>
-
 <header class="header">
   <div class="header-inner">
     <img src="images/logo_nadpis_1.png" alt="Znak SDH Častohostice" class="header-logo-img" />
@@ -1366,13 +1386,14 @@
 
 <div class="finale-section" id="finaleSection" style="display:none"></div>
 <div class="summary-bar" id="summaryBar" style="display:none"></div>
-<div class="content" id="content"></div>
 
 <div class="startlist-section">
   <div class="startlist-header">
-    <span class="startlist-title">Startovní listina</span>
+    <span style="display:inline-flex;align-items:center;gap:10px;">
+      <span class="startlist-title">Startovní listina</span>
+      <span class="live-badge" id="liveBadge"><span class="live-bar-dot"></span>živě</span>
+    </span>
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-      <div id="progressBadge" class="progress-badge" style="display:none"></div>
       <div id="startlistCounts" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
     </div>
   </div>
@@ -1398,6 +1419,8 @@
   <div id="startlistCardsContainer" class="startlist-cards"></div>
 </div>
 
+<div class="content" id="content"></div>
+
 <div class="history-panel" id="historyPanel" style="display:none">
   <div class="history-header" onclick="toggleHistoryBody()">
     <span class="history-title">📋 Historie změn</span>
@@ -1414,6 +1437,8 @@
 <div class="history-panel" id="countdownPanel" style="display:none"></div>
 
 <div class="history-panel" id="annPanel" style="display:none"></div>
+
+<div class="history-panel" id="tvPanel" style="display:none"></div>
 
 <div class="sponsors-section">
   <div class="sponsors-title">Děkujeme sponzorům soutěže</div>
@@ -1738,6 +1763,7 @@ function renderPhaseBanner() {
 
   // Ann panel — renderuj stejně jako countdown
   renderAnnPanel();
+  renderTvPanel();
 
   if (phase !== 'hidden') {
     el.innerHTML = '';
@@ -1886,12 +1912,12 @@ function hideOverlay() {
 
 // ── LIVE INDIKÁTOR ───────────────────────────────────
 function updateLiveIndicator() {
-  const bar = document.getElementById('liveBar');
-  if (!bar) return;
+  const badge = document.getElementById('liveBadge');
+  if (!badge) return;
   if (!isAdmin && phase === 'results') {
-    bar.classList.add('visible');
+    badge.classList.add('visible');
   } else {
-    bar.classList.remove('visible');
+    badge.classList.remove('visible');
   }
 }
 
@@ -2200,18 +2226,15 @@ function renderSummaryBar() {
   const presentCats = CATEGORIES.filter(cat =>
     cat !== 'Nezařazeno' && realTeams.some(d => d.kategorie === cat));
 
-  // Nejlepší čas pro každou obsazenou kategorii
-  // Družstva s DSQ/NP na kterémkoli terči se nepočítají — pokus je neplatný
+  // Vedoucí družstvo každé obsazené kategorie — dle výsledného času
+  // (horší z obou terčů), stejné řazení jako výsledková tabulka.
+  // Družstva s DSQ/NP vést nemohou.
   const catBests = presentCats.map(cat => {
-    const rows = data.filter(d => d.kategorie === cat && !isEmptyTeam(d)
-      && d.cas1 !== 'DSQ' && d.cas2 !== 'DSQ' && d.cas1 !== 'NP' && d.cas2 !== 'NP');
-    let best = null, team = null;
-    rows.forEach(d => {
-      const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
-      const fastest = nums.length ? Math.min(...nums) : null;
-      if (fastest !== null && (best === null || fastest < best)) { best = fastest; team = d.team; }
-    });
-    return { cat, best, team };
+    const rows = data
+      .filter(d => d.kategorie === cat && !isEmptyTeam(d) && typeof bestTime(d) === 'number')
+      .sort(cmpBest);
+    if (!rows.length) return { cat, best: null, team: null };
+    return { cat, best: bestTime(rows[0]), team: rows[0].team };
   });
 
   // Počítadlo
@@ -2221,15 +2244,15 @@ function renderSummaryBar() {
     ${total - done > 0 ? `<div class="summary-cell-team">Zbývá: ${total - done}</div>` : `<div class="summary-cell-team" style="color:var(--green, #16a34a)">Všechna odběhla ✓</div>`}
   </div>`;
 
-  // Jedna buňka pro každou obsazenou kategorii — s časem, nebo s placeholderem,
-  // dokud v ní žádný čas není (rozložení lišty tak neskáče)
+  // Jedna buňka pro každou obsazenou kategorii — s vedoucím družstvem,
+  // nebo s placeholderem, dokud v ní žádný platný čas není
   catBests.forEach(({ cat, best, team }) => {
     html += best !== null ? `<div class="summary-cell">
-      <div class="summary-cell-label">Nejrychlejší proud — ${esc(cat)}</div>
+      <div class="summary-cell-label">Vede — ${esc(cat)}</div>
       <div class="summary-cell-value">${best.toFixed(2)}<span class="sv-denom"> s</span></div>
       ${team ? `<div class="summary-cell-team">${esc(team)}</div>` : ''}
     </div>` : `<div class="summary-cell">
-      <div class="summary-cell-label">Nejrychlejší proud — ${esc(cat)}</div>
+      <div class="summary-cell-label">Vede — ${esc(cat)}</div>
       <div class="summary-cell-value sv-empty">—</div>
     </div>`;
   });
@@ -2609,11 +2632,11 @@ function renderResults() {
         <div class="rc-times">
           ${bestStr ? `<div class="rc-best">${bestStr}</div>` : `<div class="rc-best empty">—</div>`}
           ${gapStr ? `<div class="rc-gap">${gapStr}</div>` : ''}
-          <div class="rc-sub-times">
+          ${btNum || bt === null ? `<div class="rc-sub-times">
             <span class="${c1worst?'':'worst'}">${fmtTime(d.cas1)}</span>
             <span style="color:var(--muted)"> / </span>
             <span class="${c2worst?'':'worst'}">${fmtTime(d.cas2)}</span>
-          </div>
+          </div>` : ''}
         </div>
       </div>`;
     }).join('');
@@ -2621,6 +2644,7 @@ function renderResults() {
     const n = rows.length;
     const block = document.createElement('div');
     block.className = 'category-block';
+    block.dataset.cat = cat; // pro cílení jednotlivých kategorií v TV režimu
     block.innerHTML = `
       <div class="cat-label">
         <span class="cat-name">${esc(cat)}</span>
@@ -2658,7 +2682,47 @@ function timeDisplay(val) {
 // ── POMOCNÉ FUNKCE ────────────────────────────────────
 const isEmptyTeam = d => !d.team || d.team.trim() === '' || /^-+$/.test(d.team.trim());
 
+// Lídři kategorií v hlavičce startovní listiny — průběžně první družstvo
+// každé obsazené kategorie (dle výsledného času). Nezařazeno se nezobrazuje.
+// Sticky offset: hlavička tabulky se lepí pod sticky hlavičku listiny.
+// Výška hlavičky se může měnit (zalomení počítadel), proto se měří
+// z reálného DOM a předává přes CSS proměnnou.
+function updateStickyOffsets() {
+  const header = document.querySelector('.startlist-header');
+  const h1 = header ? header.offsetHeight : 55;
+  document.documentElement.style.setProperty('--thead-top', h1 + 'px');
+}
+window.addEventListener('resize', updateStickyOffsets);
+
+// TV: fixní pruh „Na startu" — první 4 družstva, která ještě neodběhla,
+// dle startovních čísel. Čistě zobrazovací vrstva jen pro ?tv režim,
+// do tabulky nijak nezasahuje; aktualizuje se s každým překreslením listiny.
+function renderTvNextBar() {
+  if (!TV_MODE) return;
+  let bar = document.getElementById('tvNextBar');
+  if (!bar) { bar = document.createElement('div'); bar.id = 'tvNextBar'; document.body.appendChild(bar); }
+
+  const upcoming = data
+    .filter(d => !isEmptyTeam(d) && !doneSet.has(d.start))
+    .sort((a, b) => a.start - b.start)
+    .slice(0, 5);
+
+  const show = phase === 'results' && upcoming.length > 0;
+  bar.classList.toggle('visible', show);
+  document.body.classList.toggle('has-next-bar', show);
+  if (!show) { bar.innerHTML = ''; return; }
+
+  bar.innerHTML = upcoming.map((d, i) => `
+      <span class="tvnb-team ${i === 0 ? 'first' : ''}">
+        ${i === 0 ? '<span class="tvnb-tag">▶ Příprava</span>' : ''}
+        <span class="snum">${d.start}</span>
+        <span class="tvnb-name">${esc(d.team)}</span>
+      </span>`).join('');
+}
+
 function renderStartlist() {
+  requestAnimationFrame(updateStickyOffsets); // hlavička mění výšku dle zalomení počítadel
+  renderTvNextBar(); // TV pruh „Na startu" (mimo TV režim no-op)
   const tbody = document.getElementById('startlistBody');
   const allSorted = [...data].sort((a,b) => a.start - b.start);
   // Návštěvníci nevidí prázdné pozice (tým bez názvu nebo s "----")
@@ -2783,25 +2847,23 @@ function renderStartlist() {
          </select></td>`
       : `<td><span class="cbadge ${BADGE[d.kategorie] || 'cb-nz'}">${esc(d.kategorie)}</span></td>`;
 
-    const cas1Cell = editMode
-      ? `<td style="text-align:right"><input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" /></td>`
-      : isAdmin
-        ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas1)}</td>`
-        : `<td class="tcell">${timeDisplay(d.cas1)}</td>`;
+    // Časy terčů se zadávají výhradně přes rychlé zadávání (klik na buňku
+    // mimo editační režim) — v editaci listiny jsou jen pro čtení
+    const cas1Cell = (isAdmin && !editMode)
+      ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas1)}</td>`
+      : `<td class="tcell">${timeDisplay(d.cas1)}</td>`;
 
-    const cas2Cell = editMode
-      ? `<td style="text-align:right"><input class="time-input" value="${timeDisplay(d.cas2).replace(' s','')}" data-field="cas2" data-start="${d.start}" onblur="saveTimeField(this)" /></td>`
-      : isAdmin
-        ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</td>`
-        : `<td class="tcell">${timeDisplay(d.cas2)}</td>`;
+    const cas2Cell = (isAdmin && !editMode)
+      ? `<td class="tcell clickable" onclick="openQuickTime(${d.start})" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</td>`
+      : `<td class="tcell">${timeDisplay(d.cas2)}</td>`;
 
     const actionCell = isAdmin ? `<td style="text-align:right;white-space:nowrap">
         ${editMode ? `
           <button class="order-btn" title="Posunout nahoru" onclick="moveTeam(${d.start}, -1)" ${i===0?'disabled':''}>↑</button>
           <button class="order-btn" title="Posunout dolů" onclick="moveTeam(${d.start}, 1)" ${i===sorted.length-1?'disabled':''}>↓</button>
         ` : ''}
-        ${!isEmpty ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
-        ${editMode ? `<button class="del-btn" title="Odstranit družstvo" onclick="deleteTeam(${d.start})">✕</button>` : ''}
+        ${!isEmpty && !editMode ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
+        ${editMode ? `<button class="del-btn" title="Odstranit družstvo (pozice zůstane volná)" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       </td>` : '';
 
     const tsVal = d.zapisCas
@@ -2844,24 +2906,21 @@ function renderStartlist() {
       ? `<select class="cat-select" data-field="kategorie" data-start="${d.start}" onchange="saveSelectField(this)">${CATEGORIES.map(c=>`<option value="${esc(c)}"${c===d.kategorie?' selected':''}>${esc(c)}</option>`).join('')}</select>`
       : `<span class="cbadge ${BADGE[d.kategorie] || 'cb-nz'}">${esc(d.kategorie)}</span>`;
 
-    const c1Html = editMode
-      ? `<input class="time-input" value="${timeDisplay(d.cas1).replace(' s','')}" data-field="cas1" data-start="${d.start}" onblur="saveTimeField(this)" />`
-      : isAdmin
-        ? `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas1)}</span>`
-        : `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''}">${timeDisplay(d.cas1)}</span>`;
+    // Časy terčů jen přes rychlé zadávání — v editaci listiny pro čtení
+    const c1Html = (isAdmin && !editMode)
+      ? `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas1)}</span>`
+      : `<span class="sl-time-val${d.cas1===null||d.cas1===undefined?' empty':''}">${timeDisplay(d.cas1)}</span>`;
 
-    const c2Html = editMode
-      ? `<input class="time-input" value="${timeDisplay(d.cas2).replace(' s','')}" data-field="cas2" data-start="${d.start}" onblur="saveTimeField(this)" />`
-      : isAdmin
-        ? `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</span>`
-        : `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''}">${timeDisplay(d.cas2)}</span>`;
+    const c2Html = (isAdmin && !editMode)
+      ? `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''} clickable" onclick="openQuickTime(${d.start})" style="cursor:pointer" title="Klikni pro zadání času">${timeDisplay(d.cas2)}</span>`
+      : `<span class="sl-time-val${d.cas2===null||d.cas2===undefined?' empty':''}">${timeDisplay(d.cas2)}</span>`;
 
     const actionsHtml = isAdmin ? `<div class="sl-card-actions">
       ${editMode ? `
         <button class="order-btn" onclick="moveTeam(${d.start},-1)" ${i===0?'disabled':''}>↑</button>
         <button class="order-btn" onclick="moveTeam(${d.start},1)" ${i===sorted.length-1?'disabled':''}>↓</button>
       ` : ''}
-      ${!isEmpty ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
+      ${!isEmpty && !editMode ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
       ${editMode ? `<button class="del-btn" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       ${d.zapisCas ? `<span class="sl-zapis">${d.zapisCas}</span>` : ''}
     </div>` : '';
@@ -3101,11 +3160,19 @@ function saveQuickTime(startNum) {
     row.zapisCas = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   }
   addHistory(row, prev, v1, v2);
+  // Automatické označení „odběhnuto": pokus je kompletní, když jsou zadané
+  // oba časy terčů, nebo je alespoň v jednom poli DSQ/NP
+  const complete = (typeof v1 === 'number' && typeof v2 === 'number')
+    || v1 === 'DSQ' || v1 === 'NP' || v2 === 'DSQ' || v2 === 'NP';
+  if (complete && !doneSet.has(startNum)) {
+    doneSet.add(startNum);
+    saveDone();
+  }
   closeQuickTime();
   // OPTIMALIZACE: patch jen 3 pole (cas1, cas2, zapisCas) jednoho týmu
   // místo celého pole všech týmů → ~90 % úspora dat při zadávání časů
   saveTeamPatch(startNum);
-  renderResults(); renderStartlist();
+  renderResults(); renderStartlist(); renderSummaryBar();
 }
 
 // ── HISTORIE ZMĚN ─────────────────────────────────────
@@ -3195,30 +3262,6 @@ function saveSelectField(el) {
   }
 }
 
-function saveTimeField(el) {
-  const startNum = parseInt(el.dataset.start);
-  const field = el.dataset.field;
-  const val = parseTimeVal(el.value);
-  const row = data.find(d => d.start === startNum);
-  if (row) {
-    const prev = { cas1: row.cas1, cas2: row.cas2, zapisCas: row.zapisCas };
-    row[field] = val;
-    const bothEmpty = row.cas1 === null && row.cas2 === null;
-    if (bothEmpty) {
-      row.zapisCas = null;
-    } else if (val !== null) {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2,'0');
-      const mm = String(now.getMinutes()).padStart(2,'0');
-      row.zapisCas = `${hh}:${mm}`;
-    }
-    addHistory(row, prev, row.cas1, row.cas2);
-    // OPTIMALIZACE: patch jen časových polí jednoho týmu
-    saveTeamPatch(startNum);
-    renderResults(); renderStartlist();
-  }
-}
-
 function resetTeamTimes(startNum) {
   const row = data.find(d => d.start === startNum);
   if (!row) return;
@@ -3227,18 +3270,42 @@ function resetTeamTimes(startNum) {
   row.cas1 = null;
   row.cas2 = null;
   row.zapisCas = null;
+  // Reset pokusu vrací družstvo i mezi neodběhnutá (protiváha
+  // automatického označení při kompletním zápisu časů)
+  if (doneSet.has(startNum)) {
+    doneSet.delete(startNum);
+    saveDone();
+  }
   addHistory(row, prev, null, null);
   saveTeamPatch(startNum);
   renderResults();
   renderStartlist();
+  renderSummaryBar();
 }
 
 function deleteTeam(startNum) {
-  if (!confirm('Opravdu odstranit toto družstvo?')) return;
-  data = data.filter(d => d.start !== startNum);
+  const row = data.find(d => d.start === startNum);
+  if (!row) return;
+
+  if (isEmptyTeam(row)) {
+    // Prázdná pozice → křížek ji odstraní z listiny úplně
+    if (!confirm(`Odstranit volnou pozici č. ${startNum} z listiny?`)) return;
+    data = data.filter(d => d.start !== startNum);
+  } else {
+    // Obsazená pozice → křížek smaže jen družstvo (včetně časů a stavu),
+    // startovní číslo zůstane v listině jako volná pozice, aby šlo
+    // v průběhu soutěže snadno doplnit jiné družstvo
+    if (!confirm(`Odstranit družstvo „${row.team}"?\nStartovní číslo ${startNum} zůstane v listině jako volná pozice.`)) return;
+    row.team = '';
+    row.kategorie = 'Nezařazeno';
+    row.cas1 = null;
+    row.cas2 = null;
+    row.zapisCas = null;
+  }
+
   doneSet.delete(startNum);
-  // Odstraň položky historie smazaného týmu — undo by jinak mohlo
-  // zapsat časy budoucímu týmu se stejným startovním číslem
+  // Odstraň položky historie daného st. č. — undo by jinak mohlo
+  // zapsat časy odstraněného družstva novému týmu na této pozici
   let historyChanged = false;
   for (let i = changeHistory.length - 1; i >= 0; i--) {
     if (changeHistory[i].start === startNum) { changeHistory.splice(i, 1); historyChanged = true; }
@@ -3250,7 +3317,7 @@ function deleteTeam(startNum) {
     finaleData = finaleData.filter(f => f.sourceStart !== startNum);
     saveFinale();
   }
-  // Smazání týmu vyžaduje přepis celého pole (nelze patchovat mazání)
+  // Změna vyžaduje přepis celého pole (mazání/uvolnění nelze patchovat spolehlivě)
   saveData(true);
   saveDone();
   renderResults(); renderStartlist();
@@ -3620,6 +3687,51 @@ async function exportXLSX() {
     wsData.push([cell('',sNormal)]);
     r1++;
   });
+
+  // ── FINÁLE ───────────────────────────────────────────
+  if (finaleData.length > 0) {
+    const finSorted = [...finaleData].sort(cmpBest);
+    const sFinHdr = { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'B8860B' } }, alignment:{ horizontal:'left' } };
+
+    wsData.push([cell('FINÁLE', sFinHdr), cell('',sFinHdr), cell('',sFinHdr), cell('',sFinHdr), cell('',sFinHdr), cell('',sFinHdr)]);
+    merges1.push({ s:{ r:r1, c:0 }, e:{ r:r1, c:5 } });
+    r1++;
+
+    wsData.push([
+      cell('Pořadí', sColHdr), cell('St. č.', sColHdr), cell('Družstvo', sColHdr),
+      cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Výsledný čas (s)', sColHdr)
+    ]);
+    r1++;
+
+    finSorted.forEach((f, i) => {
+      const bt = bestTime(f);
+      const btNum = typeof bt === 'number';
+      const rowStyle = i===0&&btNum ? sRank1 : i===1&&btNum ? sRank2 : i===2&&btNum ? sRank3 : sNormal;
+      const rankTxt  = i===0&&btNum?'🥇':i===1&&btNum?'🥈':i===2&&btNum?'🥉':`${i+1}.`;
+      const c1n = typeof f.cas1==='number', c2n = typeof f.cas2==='number';
+      const c1worst = c1n&&c2n ? f.cas1>=f.cas2 : c1n;
+      const c2worst = c1n&&c2n ? f.cas2>f.cas1  : c2n;
+      const bestCell = btNum
+        ? cell(parseFloat(bt.toFixed(2)), { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } })
+        : bt === 'DSQ' ? cell('DSQ', { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } })
+        : bt === 'NP'  ? cell('NP',  { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'B45309' } }, alignment:{ horizontal:'right' } })
+        : cell('—', sEmpty);
+      // Kategorie finalisty se dohledává přes původní záznam v listině
+      const srcRow = data.find(d => d.start === f.sourceStart);
+      const srcCat = srcRow && srcRow.kategorie && srcRow.kategorie !== 'Nezařazeno' ? srcRow.kategorie : null;
+      wsData.push([
+        cell(rankTxt, { ...rowStyle, alignment:{ horizontal:'center' } }),
+        cell(f.start, { ...rowStyle, alignment:{ horizontal:'center' } }),
+        cell(`${f.team}${srcCat ? ` (${srcCat})` : ''}`, rowStyle),
+        timeCell(f.cas1, c1worst),
+        timeCell(f.cas2, c2worst),
+        bestCell
+      ]);
+      r1++;
+    });
+    wsData.push([cell('',sNormal)]);
+    r1++;
+  }
 
   const ws1 = XLSX.utils.aoa_to_sheet(wsData.map(row => row.map(c => c.v)));
   // Přidat styly ručně
@@ -4075,8 +4187,336 @@ function logout() {
   signOut(auth);
 }
 
+// ── TV REŽIM (?tv v URL) ─────────────────────────────
+// Celoobrazovková smyčka pro promítání na televizi:
+// startovní listina → výsledky obsazených kategorií → finále → znovu.
+// Délky slajdů lze ladit v URL: ?tv&list=40&vysledky=15 (sekundy).
+const TV_QS   = new URLSearchParams(location.search);
+const TV_MODE = TV_QS.has('tv');
+let tvConfig = null;   // živá konfigurace z DB (uzel tvConfig) — má přednost před URL
+let tvIndex = 0;
+let tvTimer = null;
+let tvScrollAnim = null;
+const tvSlideStyle = document.createElement('style');
+document.head.appendChild(tvSlideStyle);
+
+// Efektivní délky slajdů: nastavení admina z DB > URL parametry > výchozí
+function tvDurations() {
+  const list = tvConfig?.list     ?? parseInt(TV_QS.get('list'))     ?? NaN;
+  const res  = tvConfig?.vysledky ?? parseInt(TV_QS.get('vysledky')) ?? NaN;
+  const proj = tvConfig?.projeti  ?? parseInt(TV_QS.get('projeti'))  ?? NaN;
+  return {
+    list: Math.max(5, parseInt(list) || 40) * 1000,
+    res:  Math.max(5, parseInt(res)  || 15) * 1000,
+    proj: Math.max(3, parseInt(proj) || 20) * 1000, // délka sjezdu u kombinace
+  };
+}
+
+// Živé nastavení: TV klienti i admin panel poslouchají uzel tvConfig
+onValue(ref(db, 'tvConfig'), snap => {
+  tvConfig = snap.exists() ? snap.val() : null;
+  renderTvPanel();
+  if (TV_MODE) {
+    // Vzhled televize řídí admin na dálku (světlý/tmavý)
+    if (tvConfig?.theme) applyTheme(tvConfig.theme === 'dark');
+    tvTick(); // změna nastavení se na televizi projeví okamžitě
+  }
+});
+
+// Sestav aktuální seznam slajdů — přizpůsobuje se průběhu soutěže:
+// kategorie bez jediného zapsaného času se přeskakují, finále se
+// zařadí až po zveřejnění
+function tvSlides() {
+  const slides = [{ type: 'startlist', label: 'Listina' }];
+  CATEGORIES.forEach(cat => {
+    if (cat === 'Nezařazeno') return;
+    const hasTimes = data.some(d => d.kategorie === cat && !isEmptyTeam(d)
+      && ((d.cas1 !== null && d.cas1 !== undefined) || (d.cas2 !== null && d.cas2 !== undefined)));
+    if (hasTimes) slides.push({ type: 'cat', cat });
+  });
+  if (finaleVisible && finaleData.length > 0) slides.push({ type: 'finale' });
+  return slides;
+}
+
+// Zobrazení slajdu řeší dynamické CSS — přežije libovolné překreslení
+// obsahu Firebase listenery (na rozdíl od přímého zásahu do DOM)
+function tvApply(slide) {
+  const q = s => s.replace(/"/g, '\\"');
+  if (slide.type === 'startlist') {
+    tvSlideStyle.textContent = `
+      body.tv-mode .content, body.tv-mode .finale-section { display:none !important; }`;
+  } else if (slide.type === 'cat') {
+    tvSlideStyle.textContent = `
+      body.tv-mode .startlist-section, body.tv-mode .finale-section { display:none !important; }
+      body.tv-mode .category-block { display:none !important; }
+      body.tv-mode .category-block[data-cat="${q(slide.cat)}"] { display:block !important; }`;
+  } else { // finale
+    tvSlideStyle.textContent = `
+      body.tv-mode .startlist-section, body.tv-mode .content { display:none !important; }`;
+  }
+  renderTvDots();
+  window.scrollTo(0, 0);
+  const dur = tvDurations();
+  const slideDur = slide.type === 'startlist' ? dur.list : dur.res;
+  startTvScroll({ topHold: 2000, travel: Math.max(2000, slideDur - 2500), loop: false });
+}
+
+// Připnutí z konfigurace: hodnota pin může být i kombinace více pohledů
+// oddělených čárkou (např. "startlist,cat:Muži"). Vrací pole platných
+// pohledů, nebo null → automatická rotace. Neplatné položky (skryté
+// finále, neznámá kategorie) se tiše vynechají.
+function tvPinnedViews() {
+  const pin = tvConfig?.pin;
+  if (!pin) return null;
+  const views = String(pin).split(',').map(s => s.trim()).filter(Boolean);
+  const valid = views.filter(v => {
+    if (v === 'startlist') return true;
+    if (v === 'finale')    return finaleVisible && finaleData.length > 0;
+    if (v.startsWith('cat:')) return CATEGORIES.includes(v.slice(4));
+    return false;
+  });
+  return valid.length ? valid : null;
+}
+
+// Zobrazení kombinace: vybrané sekce naráz pod sebou (v přirozeném pořadí
+// stránky: finále → listina → kategorie), ostatní skryté
+function tvApplyPinned(views) {
+  const q = s => s.replace(/"/g, '\\"');
+  const cats = views.filter(v => v.startsWith('cat:')).map(v => v.slice(4));
+  const rules = [];
+  if (!views.includes('startlist')) rules.push('body.tv-mode .startlist-section { display:none !important; }');
+  if (!views.includes('finale'))    rules.push('body.tv-mode .finale-section { display:none !important; }');
+  if (cats.length === 0) {
+    rules.push('body.tv-mode .content { display:none !important; }');
+  } else {
+    rules.push('body.tv-mode .category-block { display:none !important; }');
+    cats.forEach(c => rules.push(`body.tv-mode .category-block[data-cat="${q(c)}"] { display:block !important; }`));
+  }
+  tvSlideStyle.textContent = rules.join('\n');
+  renderTvDots();
+  window.scrollTo(0, 0);
+  // Cyklus kombinace: stránka stojí nahoře po dobu „Listina (s)",
+  // pak se za „Projetí (s)" sjede dolů a vrací se na začátek
+  const d = tvDurations();
+  startTvScroll({ topHold: d.list, travel: d.proj, loop: true });
+}
+
+let tvLastApplied = ''; // podpis naposledy zobrazeného stavu (brání restartu scrollu)
+
+function tvTick() {
+  clearTimeout(tvTimer);
+  renderTvNextBar(); // udrž pruh „Na startu" aktuální i při změně fáze
+  // Ve fázi pozvánky se nic nepřepíná — zobrazuje se, co vidí návštěvník
+  if (phase !== 'results') {
+    tvSlideStyle.textContent = '';
+    tvLastApplied = '';
+    renderTvDots();
+    tvTimer = setTimeout(tvTick, 5000);
+    return;
+  }
+  // Připnutý pohled (i kombinace) drží obrazovku, dokud admin připnutí nezruší
+  const pinnedViews = tvPinnedViews();
+  if (pinnedViews) {
+    // Podpis zahrnuje i časování — změna délek v panelu restartuje cyklus
+    const d = tvDurations();
+    const sig = 'pin:' + pinnedViews.join(',') + ':' + d.list + ':' + d.proj;
+    if (sig !== tvLastApplied) {  // překresli jen při skutečné změně
+      tvApplyPinned(pinnedViews);
+      tvLastApplied = sig;
+    }
+    tvTimer = setTimeout(tvTick, 3000); // kontrola změn konfigurace
+    return;
+  }
+  const slides = tvSlides();
+  if (tvIndex >= slides.length) tvIndex = 0;
+  const slide = slides[tvIndex];
+  tvApply(slide);
+  tvLastApplied = 'slide:' + tvIndex + ':' + slide.type + (slide.cat || '');
+  const dur = tvDurations();
+  tvTimer = setTimeout(() => { tvIndex++; tvTick(); },
+    slide.type === 'startlist' ? dur.list : dur.res);
+}
+
+// Indikátor: tečky u spodního okraje (aktivní slajd červeně)
+function renderTvDots() {
+  if (!TV_MODE) return;
+  let el = document.getElementById('tvDots');
+  if (!el) { el = document.createElement('div'); el.id = 'tvDots'; document.body.appendChild(el); }
+  if (phase !== 'results') { el.innerHTML = ''; return; }
+  if (tvPinnedViews()) { el.innerHTML = ''; return; } // při připnutí žádný indikátor
+  const slides = tvSlides();
+  el.innerHTML = slides.map((s, i) => `<span class="tv-dot ${i === tvIndex ? 'on' : ''}"></span>`).join('');
+}
+
+// Obsah delší než obrazovka se během slajdu pomalu projede dolů
+// (2 s pauza nahoře, plynulý sjezd, konec dole). S loop=true se po
+// dojetí dolů vrátí nahoru a jede znovu — pro připnuté kombinace.
+// Projetí stránky: stání nahoře (topHold) → plynulý sjezd (travel) →
+// krátké zdržení dole → u loop=true návrat nahoru a nové kolo.
+// Maximální posun se měří ŽIVĚ v každém snímku — výška stránky se mění.
+function startTvScroll({ topHold = 2000, travel = 10000, loop = false }) {
+  if (tvScrollAnim) { cancelAnimationFrame(tvScrollAnim); tvScrollAnim = null; }
+  requestAnimationFrame(() => {
+    const liveMax = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    if (liveMax() < 40) return; // obsah se vejde, není co projíždět
+    const bottomDelay = 500;
+    let t0 = performance.now();
+    const step = now => {
+      const t = now - t0;
+      const max = liveMax();
+      if (t >= topHold + travel + bottomDelay) {
+        if (loop) { t0 = now; window.scrollTo(0, 0); }
+        else { window.scrollTo(0, max); return; }
+      } else if (t >= topHold + travel) {
+        window.scrollTo(0, max); // krátká pauza dole — vždy na aktuálním konci
+      } else if (t >= topHold) {
+        window.scrollTo(0, max * ((t - topHold) / travel));
+      }
+      tvScrollAnim = requestAnimationFrame(step);
+    };
+    tvScrollAnim = requestAnimationFrame(step);
+  });
+}
+
+// ── ADMIN PANEL TV REŽIMU ────────────────────────────
+function renderTvPanel() {
+  const panel = document.getElementById('tvPanel');
+  if (!panel) return;
+  if (!isAdmin) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
+
+  const wasOpen = document.getElementById('tvBody')?.classList.contains('open');
+  const pin = tvConfig?.pin || '';
+  const pinViews = pin ? String(pin).split(',').map(s => s.trim()).filter(Boolean) : [];
+  const viewLabel = v => v === 'startlist' ? 'Listina' : v === 'finale' ? 'Finále' : v.startsWith('cat:') ? v.slice(4) : v;
+  const pinLabel = pinViews.length ? pinViews.map(viewLabel).join(' + ') : null;
+
+  const catChecks = CATEGORIES
+    .filter(c => c !== 'Nezařazeno')
+    .map(c => `<label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
+      <input type="checkbox" class="tv-view-cb" value="cat:${esc(c)}" ${pinViews.includes('cat:' + c) ? 'checked' : ''} /> ${esc(c)}
+    </label>`)
+    .join('');
+
+  panel.style.display = '';
+  panel.innerHTML = `
+    <div class="history-header" onclick="toggleTvAccordion()" style="cursor:pointer;user-select:none;">
+      <span class="history-title">📺 TV režim</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        ${pinLabel ? `<span style="font-size:12px;font-weight:500;color:#92620a">📌 ${esc(pinLabel)}</span>` : ''}
+        <span class="history-toggle" id="tvToggleIcon">${wasOpen ? '▲ skrýt' : '▼ upravit'}</span>
+      </div>
+    </div>
+    <div class="history-body ${wasOpen ? 'open' : ''}" id="tvBody">
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-size:12px;color:var(--sub);line-height:1.5;">
+          Na televizi otevři adresu <b>sdhcastohostice.cz/?tv</b>. U vlastního výběru stránka
+          stojí nahoře po dobu <b>Listina (s)</b>, pak se za <b>Projetí (s)</b> sjede dolů
+          a vrátí se na začátek. Automatická rotace střídá listy po slajdech
+          (Listina / Výsledky = délky slajdů). Změny se na televizi projeví okamžitě.
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+          <label style="font-size:12px;color:var(--sub);font-weight:500;">Listina (s):
+            <input id="tvDurList" type="number" min="5" max="600" class="admin-input" style="width:70px;margin-left:6px;" value="${parseInt(tvConfig?.list) || 40}" />
+          </label>
+          <label style="font-size:12px;color:var(--sub);font-weight:500;">Výsledky (s):
+            <input id="tvDurRes" type="number" min="5" max="600" class="admin-input" style="width:70px;margin-left:6px;" value="${parseInt(tvConfig?.vysledky) || 15}" />
+          </label>
+          <label style="font-size:12px;color:var(--sub);font-weight:500;">Projetí (s):
+            <input id="tvDurProj" type="number" min="3" max="600" class="admin-input" style="width:70px;margin-left:6px;" value="${parseInt(tvConfig?.projeti) || 20}" />
+          </label>
+          <label style="font-size:12px;color:var(--sub);font-weight:500;">Vzhled TV:
+            <select id="tvTheme" class="admin-input" style="margin-left:6px;">
+              <option value="light" ${(tvConfig?.theme || 'light') === 'light' ? 'selected' : ''}>☀️ Světlý</option>
+              <option value="dark" ${tvConfig?.theme === 'dark' ? 'selected' : ''}>🌙 Tmavý</option>
+            </select>
+          </label>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
+            <input type="radio" name="tvMode" value="auto" ${!pinViews.length ? 'checked' : ''} onchange="updateTvModeUI()" /> Automatická rotace
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
+            <input type="radio" name="tvMode" value="custom" ${pinViews.length ? 'checked' : ''} onchange="updateTvModeUI()" /> Vlastní výběr (kombinace listů)
+          </label>
+        </div>
+        <div id="tvViewsRow" style="display:flex;gap:14px;flex-wrap:wrap;padding-left:4px;${pinViews.length ? '' : 'opacity:.45;pointer-events:none;'}">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" class="tv-view-cb" value="startlist" ${pinViews.includes('startlist') ? 'checked' : ''} /> Startovní listina
+          </label>
+          ${catChecks}
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" class="tv-view-cb" value="finale" ${pinViews.includes('finale') ? 'checked' : ''} /> Finále
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="countdown-admin-btn" onclick="saveTvConfig()">✓ Uložit nastavení</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Zapnout/ztlumit řádek zaškrtávátek podle zvoleného režimu
+function updateTvModeUI() {
+  const custom = document.querySelector('input[name="tvMode"]:checked')?.value === 'custom';
+  const row = document.getElementById('tvViewsRow');
+  if (row) {
+    row.style.opacity = custom ? '' : '.45';
+    row.style.pointerEvents = custom ? '' : 'none';
+  }
+}
+
+function toggleTvAccordion() {
+  const body = document.getElementById('tvBody');
+  const icon = document.getElementById('tvToggleIcon');
+  if (!body) return;
+  const isOpen = body.classList.toggle('open');
+  if (icon) icon.textContent = isOpen ? '▲ skrýt' : '▼ upravit';
+}
+
+function saveTvConfig() {
+  const list     = Math.min(600, Math.max(5, parseInt(document.getElementById('tvDurList')?.value) || 40));
+  const vysledky = Math.min(600, Math.max(5, parseInt(document.getElementById('tvDurRes')?.value) || 15));
+  const projeti  = Math.min(600, Math.max(3, parseInt(document.getElementById('tvDurProj')?.value) || 20));
+  const theme    = document.getElementById('tvTheme')?.value === 'dark' ? 'dark' : 'light';
+  const custom   = document.querySelector('input[name="tvMode"]:checked')?.value === 'custom';
+  let pin = null;
+  if (custom) {
+    const views = [...document.querySelectorAll('.tv-view-cb:checked')].map(cb => cb.value);
+    if (!views.length) {
+      alert('Vyber alespoň jeden list, nebo přepni na automatickou rotaci.');
+      return;
+    }
+    pin = views.join(',');
+  }
+  set(ref(db, 'tvConfig'), { list, vysledky, projeti, theme, pin });
+}
+
+// ── WAKE LOCK ────────────────────────────────────────
+// V TV režimu požádá prohlížeč, aby displej nezhasínal a zařízení
+// nepřešlo do režimu spánku. Zámek zaniká při přepnutí do pozadí,
+// proto se po návratu automaticky obnovuje.
+let tvWakeLock = null;
+async function tvRequestWakeLock() {
+  if (!TV_MODE || !('wakeLock' in navigator)) return;
+  try {
+    tvWakeLock = await navigator.wakeLock.request('screen');
+    tvWakeLock.addEventListener('release', () => { tvWakeLock = null; });
+  } catch (e) {
+    console.warn('Wake Lock se nepodařilo získat:', e.message);
+  }
+}
+
 // ── INIT ─────────────────────────────────────────────
 renderAdminBar();
+if (TV_MODE) {
+  document.body.classList.add('tv-mode');
+  tvTick();
+  tvRequestWakeLock();
+  // Po návratu stránky do popředí (minimalizace, přepnutí okna) zámek obnov
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') tvRequestWakeLock();
+  });
+}
 
 // Pokud se data nenačtou do 8 s (výpadek sítě, blokovaný Firebase),
 // nahraď spinner srozumitelnou hláškou s tlačítkem pro nové načtení.
@@ -4101,7 +4541,6 @@ window.applyCountdown = applyCountdown;
 window.clearCountdown = clearCountdown;
 window.saveField     = saveField;
 window.saveSelectField = saveSelectField;
-window.saveTimeField = saveTimeField;
 window.deleteTeam    = deleteTeam;
 window.resetTeamTimes = resetTeamTimes;
 window.addTeam       = addTeam;
@@ -4144,6 +4583,9 @@ window.clearHistory  = clearHistory;
 window.toggleHistoryBody = toggleHistoryBody;
 window.toggleAnnPanel  = toggleAnnPanel;
 window.toggleAnnAccordion = toggleAnnAccordion;
+window.toggleTvAccordion = toggleTvAccordion;
+window.saveTvConfig = saveTvConfig;
+window.updateTvModeUI = updateTvModeUI;
 window.updateAnnPreview = updateAnnPreview;
 window.publishAnn      = publishAnn;
 window.clearAnn        = clearAnn;
@@ -4161,16 +4603,9 @@ function renderProgressCounter() {
   // Zobraz když je fáze results, nebo když je admin (admin potřebuje počítadlo vždy)
   const show = (isAdmin || phase === 'results') && total > 0;
 
-  // Desktop badge v hlavičce startovní listiny
-  const badge = document.getElementById('progressBadge');
-  if (badge) {
-    if (show) {
-      badge.style.display = '';
-      badge.innerHTML = `<span class="pb-done">✅ ${done}</span><span class="pb-remaining">⏳ ${remaining}</span><span class="pb-total">z ${total}</span>`;
-    } else {
-      badge.style.display = 'none';
-    }
-  }
+  // Desktop počítadlo v hlavičce listiny bylo odstraněno — stejnou
+  // informaci zobrazuje souhrnná lišta hned nad startovní listinou.
+  // Mobilní floating badge zůstává (souhrnná lišta na mobilu odscrolluje).
 
   // Mobilní floating badge — jen pro návštěvníky
   const floatEl = document.getElementById('progressFloat');
