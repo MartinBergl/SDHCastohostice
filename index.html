@@ -615,6 +615,18 @@
       .summary-cell-value { font-size: 22px; }
     }
     /* ── SPONZOŘI ── */
+    /* Odkaz na archiv výsledků */
+    .archive-link-wrap { display:flex; justify-content:center; padding:8px 48px 4px; }
+    .archive-link {
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:14px; font-weight:600; color:var(--sub); text-decoration:none;
+      background:var(--surface); border:1px solid var(--border); border-radius:10px;
+      padding:11px 20px; transition:border-color .15s, color .15s, transform .12s;
+    }
+    .archive-link:hover { border-color:var(--red); color:var(--red); transform:translateY(-1px); }
+    body.tv-mode .archive-link-wrap { display:none; }
+    @media (max-width: 700px) { .archive-link-wrap { padding:8px 16px 4px; } }
+
     .sponsors-section {
       background: var(--surface);
       border-top: 1px solid var(--border);
@@ -1493,6 +1505,10 @@
   </div>
 </div>
 <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettingsDrawer()"></div>
+
+<div class="archive-link-wrap">
+  <a class="archive-link" href="archiv.html">📁 Archiv výsledků minulých soutěží →</a>
+</div>
 
 <div class="sponsors-section">
   <div class="sponsors-title">Děkujeme sponzorům soutěže</div>

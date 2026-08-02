@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Archiv výsledků — SDH Částohostice</title>
+  <title>Archiv výsledků — SDH Častohostice</title>
   <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
       --red:      #d63b2a;
@@ -20,338 +20,412 @@
       --silver:   #7a8490;
       --bronze:   #a06830;
     }
+    [data-theme="dark"] {
+      --red:      #e05545;
+      --red-soft: #2a1a18;
+      --bg:       #111110;
+      --surface:  #1c1b1a;
+      --border:   #2e2d2b;
+      --text:     #f0ede8;
+      --sub:      #9a9690;
+      --muted:    #5a5652;
+      --gold:     #d4a017;
+      --silver:   #8a9099;
+      --bronze:   #b07840;
+    }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'DM Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
 
     /* HEADER */
     .header { background:var(--surface); border-bottom:1px solid var(--border); padding:24px 32px; }
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .header-logo-img { height: 110px; width: auto; flex-shrink: 0; }
-    .header-text { text-align: center; flex: 1; }
-    .header-title { font-size: clamp(24px, 3.5vw, 40px); font-weight: 800; color: #1a237e; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 8px; }
-    .header-subtitle { font-size: clamp(14px, 2vw, 20px); font-weight: 700; color: #1a1916; line-height: 1.3; margin-bottom: 4px; }
-    .header-date { font-size: clamp(14px, 2vw, 20px); font-weight: 700; color: #1a1916; line-height: 1.3; }
+    .header-inner { display:flex; align-items:center; justify-content:center; gap:24px; max-width:900px; margin:0 auto; }
+    .header-logo-img { height:110px; width:auto; flex-shrink:0; }
+    .header-text { text-align:center; flex:1; }
+    .header-title { font-size:clamp(24px,3.5vw,40px); font-weight:800; color:#1a237e; letter-spacing:-0.5px; line-height:1.1; margin-bottom:8px; }
+    [data-theme="dark"] .header-title { color:#7b9fd4; }
+    .header-subtitle { font-size:clamp(16px,2.5vw,24px); font-weight:800; color:var(--text); line-height:1.3; margin-bottom:4px; }
+    .header-date { font-size:clamp(12px,1.5vw,15px); font-weight:500; color:var(--sub); line-height:1.3; }
 
-    /* ARCHIV BADGE */
-    .archiv-banner {
-      background: #fffbeb;
-      border-bottom: 2px solid #fcd34d;
-      padding: 10px 48px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: #92620a;
+    /* NAVIGACE / VÝBĚR ROČNÍKU */
+    .archive-nav { padding:20px 48px 0; max-width:1200px; margin:0 auto; }
+    .back-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--sub); text-decoration:none; padding:6px 12px; border:1px solid var(--border); border-radius:8px; background:var(--surface); transition:border-color .15s, color .15s; }
+    .back-link:hover { border-color:var(--sub); color:var(--text); }
+    .archive-title { font-size:24px; font-weight:700; margin:20px 0 4px; }
+    .archive-sub { font-size:13px; color:var(--sub); margin-bottom:18px; }
+    .event-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-bottom:28px; }
+    .event-card {
+      text-align:left; cursor:pointer; font-family:inherit;
+      background:var(--surface); border:1px solid var(--border); border-radius:12px;
+      padding:14px 16px; transition:border-color .15s, transform .12s, box-shadow .15s;
     }
+    .event-card:hover { border-color:var(--red); transform:translateY(-2px); box-shadow:0 4px 14px rgba(0,0,0,.07); }
+    .event-card.active { border-color:var(--red); background:var(--red-soft); }
+    .event-card-name { font-size:15px; font-weight:700; color:var(--text); margin-bottom:3px; }
+    .event-card-date { font-size:12px; color:var(--sub); }
+    .event-card-meta { font-size:11px; color:var(--muted); margin-top:6px; }
 
     /* CONTENT */
-    .content { padding: 0 48px; }
+    .content { padding:0 48px 60px; max-width:1200px; margin:0 auto; }
+    .result-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:6px 0 18px; border-top:1px solid var(--border); margin-top:6px; padding-top:22px; }
+    .result-title { font-size:20px; font-weight:700; }
+    .result-date { font-size:13px; color:var(--sub); }
 
-    .category-block { margin-bottom: 40px; opacity:0; transform:translateY(16px); animation:fadeUp 0.4s ease forwards; }
-    .category-block:nth-child(1){animation-delay:.04s}
-    .category-block:nth-child(2){animation-delay:.12s}
-    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
-
-    .cat-label { display:flex; align-items:center; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
-    .cat-name { font-size:22px; font-weight:700; color:var(--text); }
+    .category-block { margin-bottom:40px; }
+    .cat-label { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
+    .cat-name { font-size:22px; font-weight:700; letter-spacing:-0.3px; color:var(--text); }
     .cat-pill { font-size:11px; font-weight:500; color:var(--sub); background:var(--bg); border:1px solid var(--border); padding:2px 8px; border-radius:99px; }
 
     table { width:100%; border-collapse:collapse; }
     thead th { font-size:11px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--text); padding:10px 14px; text-align:left; background:var(--surface); border-bottom:1px solid var(--border); }
-    thead th.r { text-align:right; }
     thead th.c { text-align:center; }
-
-    tbody tr { border-bottom:1px solid var(--border); background:var(--surface); }
+    tbody tr { border-bottom:1px solid var(--border); background:var(--surface); transition:background .12s; }
     tbody tr:last-child { border-bottom:none; }
     tbody tr:hover { background:var(--red-soft); }
     tbody tr.rank-1 { background:#fffbf0; }
     tbody tr.rank-2 { background:#f8f9fa; }
     tbody tr.rank-3 { background:#fdf7f2; }
-
+    [data-theme="dark"] tbody tr.rank-1 { background:#1e1a0a; }
+    [data-theme="dark"] tbody tr.rank-2 { background:#1a1c1e; }
+    [data-theme="dark"] tbody tr.rank-3 { background:#1f1713; }
     td { padding:13px 14px; font-size:14px; vertical-align:middle; }
 
     .rank { font-size:15px; font-weight:700; color:var(--sub); text-align:center; }
     .rank.g { color:var(--gold); font-size:20px; }
     .rank.s { color:var(--silver); font-size:18px; }
     .rank.b { color:var(--bronze); font-size:18px; }
-
     .snum { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; display:inline-flex; align-items:center; justify-content:center; width:32px; height:26px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--sub); }
     .tname { font-size:14px; font-weight:500; color:var(--text); }
-    .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:right; color:var(--sub); white-space:nowrap; }
+    .tcell { font-family:'DM Mono',monospace; font-size:14px; text-align:center; color:var(--sub); white-space:nowrap; }
     .tcell.best { color:var(--text); font-weight:500; }
     .tcell.empty { color:var(--muted); font-size:12px; }
-    .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; text-align:right; color:var(--red); white-space:nowrap; }
-    .best-col.empty { color:var(--muted); font-size:12px; font-weight:400; }
-    .dsq-tag { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; padding:2px 6px; border-radius:4px; }
-    .np-tag  { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#b45309; background:#fffbeb; border:1px solid #fcd34d; padding:2px 6px; border-radius:4px; }
-    .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; }
-    .cb-ml { background:#eff6ff; color:#3b82f6; }
-    .cb-st { background:#fdf1f0; color:#d63b2a; }
+    .best-col { font-family:'DM Mono',monospace; font-size:15px; font-weight:700; text-align:center; color:var(--red); white-space:nowrap; }
+    .best-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
+    .gap-col { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; text-align:center; color:var(--sub); white-space:nowrap; }
+    .gap-col.leader, .gap-col.empty { color:var(--muted); font-size:12px; font-weight:400; font-family:'DM Sans',sans-serif; }
+    .dsq-tag { font-size:13px; font-weight:700; letter-spacing:1px; color:var(--red); background:var(--red-soft); border:1px solid #f5c6c2; padding:3px 9px; border-radius:4px; }
+    .np-tag  { font-size:13px; font-weight:700; letter-spacing:1px; color:#b45309; background:#fffbeb; border:1px solid #fcd34d; padding:3px 9px; border-radius:4px; }
+    [data-theme="dark"] .np-tag { background:#1e1a0a; border-color:#5a4a10; }
 
-    /* STARTOVNÍ LISTINA */
-    .startlist-section { margin:0 48px 60px; padding-top:32px; border-top:1px solid var(--border); }
-    .startlist-header { padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
-    .startlist-title { font-size:22px; font-weight:700; color:var(--text); }
-    .done-tag { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#16a34a; background:#f0fdf4; border:1px solid #86efac; padding:2px 7px; border-radius:4px; }
+    .cbadge { font-size:13px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; border:1px solid transparent; }
+    .cb-ml   { background:#eff6ff; color:#3b82f6; border-color:#c7dbf9; }
+    .cb-st   { background:#fdf1f0; color:#d63b2a; border-color:#f4cac4; }
+    .cb-muzi { background:#f0fdf4; color:#16a34a; border-color:#86efac; }
+    .cb-zeny { background:#fdf4ff; color:#c026d3; border-color:#f0abfc; }
+    .cb-ps12 { background:#fff7ed; color:#ea580c; border-color:#fed7aa; }
+    .cb-nz   { background:var(--bg); color:var(--sub); border-color:var(--border); }
+    [data-theme="dark"] .cb-ml   { background:#1a2535; color:#60a5fa; border-color:#1e3a5f; }
+    [data-theme="dark"] .cb-st   { background:#2a1a18; color:#e05545; border-color:#5a2a22; }
+    [data-theme="dark"] .cb-muzi { background:#0f2318; color:#4ade80; border-color:#166534; }
+    [data-theme="dark"] .cb-zeny { background:#2a1030; color:#e879f9; border-color:#701a75; }
+    [data-theme="dark"] .cb-ps12 { background:#2a1a0a; color:#fb923c; border-color:#7c2d12; }
 
-    /* MOBILE */
-    .result-cards { display:none; }
-    .result-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
-    .result-card.rank-1 { background:#fffbf0; border-color:#f0d060; }
-    .result-card.rank-2 { background:#f8f9fa; }
-    .result-card.rank-3 { background:#fdf7f2; border-color:#e8c8a8; }
-    .rc-rank { font-size:22px; min-width:36px; text-align:center; flex-shrink:0; }
-    .rc-rank.num { font-size:15px; font-weight:700; color:var(--sub); }
-    .rc-body { flex:1; min-width:0; }
-    .rc-team { font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .rc-snum { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:2px; }
-    .rc-times { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
-    .rc-best { font-family:'DM Mono',monospace; font-size:16px; font-weight:700; color:var(--red); }
-    .rc-best.empty { color:var(--muted); font-size:13px; font-weight:400; }
-    .rc-sub-times { font-family:'DM Mono',monospace; font-size:11px; color:var(--sub); }
+    .state-msg { padding:40px 0; text-align:center; color:var(--sub); font-size:14px; }
 
-    /* LOADING / ERROR */
-    .state-box { text-align:center; padding:60px 24px; }
-    .state-box h2 { font-size:20px; font-weight:700; color:var(--text); margin-bottom:8px; }
-    .state-box p { font-size:14px; color:var(--sub); }
-    .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 16px; }
-    @keyframes spin { to { transform:rotate(360deg); } }
+    /* Mobilní karty */
+    .cards { display:none; flex-direction:column; gap:8px; }
+    .rcard { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
+    .rcard.rank-1 { background:#fffbf0; }
+    .rcard.rank-2 { background:#f8f9fa; }
+    .rcard.rank-3 { background:#fdf7f2; }
+    [data-theme="dark"] .rcard.rank-1 { background:#1e1a0a; }
+    [data-theme="dark"] .rcard.rank-2 { background:#1a1c1e; }
+    [data-theme="dark"] .rcard.rank-3 { background:#1f1713; }
+    .rcard-rank { font-size:18px; font-weight:700; color:var(--sub); min-width:34px; text-align:center; }
+    .rcard-main { flex:1; min-width:0; }
+    .rcard-team { font-size:15px; font-weight:600; overflow:hidden; text-overflow:ellipsis; }
+    .rcard-sub { font-size:11px; color:var(--sub); margin-top:2px; }
+    .rcard-times { text-align:right; }
+    .rcard-best { font-family:'DM Mono',monospace; font-size:16px; font-weight:700; color:var(--red); }
+    .rcard-detail { font-family:'DM Mono',monospace; font-size:11px; color:var(--sub); }
 
-    /* FOOTER */
-    footer { background:var(--surface); border-top:1px solid var(--border); padding:16px 48px; text-align:center; font-size:12px; color:var(--muted); }
+    #themeToggle {
+      position:fixed; top:14px; right:16px; z-index:50;
+      background:var(--surface); border:1px solid var(--border); border-radius:8px;
+      padding:7px 12px; font-family:inherit; font-size:12px; font-weight:500;
+      color:var(--sub); cursor:pointer;
+    }
+    #themeToggle:hover { border-color:var(--sub); background:var(--bg); }
 
-    @media (max-width:700px) {
+    @media (max-width: 760px) {
       .header { padding:16px; }
-      .header-inner { gap:12px; }
       .header-logo-img { height:64px; }
-      .content, .startlist-section { padding-left:16px; padding-right:16px; }
-      .startlist-section { margin-left:0; margin-right:0; }
-      .archiv-banner { padding:10px 16px; }
-      .results-table { display:none; }
-      .result-cards { display:block; }
-      footer { padding:16px; }
+      .archive-nav, .content { padding-left:16px; padding-right:16px; }
+      table { display:none; }
+      .cards { display:flex; }
+      .cat-name { font-size:19px; }
     }
   </style>
 </head>
 <body>
 
+<button id="themeToggle" onclick="toggleTheme()">🌙 Tmavý režim</button>
+
 <header class="header">
   <div class="header-inner">
-    <img src="images/logo_nadpis_1.jpg" alt="Znak SDH Částohostice" class="header-logo-img" />
+    <img src="images/logo_nadpis_1.png" alt="Znak SDH Častohostice" class="header-logo-img" />
     <div class="header-text">
-      <div class="header-title">SDH Částohostice</div>
-      <div class="header-subtitle" id="headerSubtitle">Archiv výsledků</div>
-      <div class="header-date" id="headerDate"></div>
+      <div class="header-title">SDH Častohostice</div>
+      <div class="header-subtitle">Archiv výsledků</div>
+      <div class="header-date">Výsledky minulých soutěží</div>
     </div>
-    <img src="images/logo_nadpis_2.jpg" alt="Znak okresu" class="header-logo-img" />
+    <img src="images/logo_nadpis_2.png" alt="Znak okresu" class="header-logo-img" />
   </div>
 </header>
 
-<div class="archiv-banner" id="archivBanner">
-  📁 Archivní výsledky — pouze pro čtení
+<div class="archive-nav">
+  <a class="back-link" href="index.html">← Zpět na aktuální soutěž</a>
+  <div class="archive-title">Archiv výsledků</div>
+  <div class="archive-sub">Vyber soutěž a zobraz její konečné výsledky.</div>
+  <div class="event-list" id="eventList"></div>
 </div>
 
-<div id="mainContent">
-  <div class="state-box">
-    <div class="spinner"></div>
-    <h2>Načítám výsledky…</h2>
-    <p>Chvíli strpení</p>
-  </div>
-</div>
-
-<footer>Copyright &copy; 2026 Martin Bergl</footer>
+<div class="content" id="content"></div>
 
 <script>
-// Načti název JSON souboru z URL parametru ?soubor=vysledky-2026.json
-const params   = new URLSearchParams(window.location.search);
-const soubor   = params.get('soubor');
-const mainEl   = document.getElementById('mainContent');
+// ─────────────────────────────────────────────────────
+//  SEZNAM SOUTĚŽÍ V ARCHIVU
+//  Novou soutěž přidáš takto:
+//   1) vyexportuj JSON z hlavní aplikace (⬇ Export → JSON)
+//   2) nahraj ho do složky archiv/ v repozitáři
+//   3) přidej sem jeden řádek (nejnovější nahoru)
+// ─────────────────────────────────────────────────────
+const EVENTS = [
+  {
+    id: 'nocni-2026',
+    name: '13. ročník Noční soutěže Častohostice',
+    date: '17. července 2026',
+    note: 'Muži, Ženy, PS12',
+    file: 'archiv/vysledky-2026-nocni.json',
+  },
+  {
+    id: 'detska-2026',
+    name: 'O pohár starostky obce Častohostice',
+    date: '9. května 2026',
+    note: 'Dětská soutěž — Mladší a Starší děti',
+    file: 'archiv/vysledky-2026-detska.json',
+  },
+];
 
-const CATEGORIES = ['Mladší děti', 'Starší děti'];
-const BADGE = { 'Mladší děti': 'cb-ml', 'Starší děti': 'cb-st' };
+const CATEGORIES = ["Mladší děti","Starší děti","Muži","Ženy","PS12","Nezařazeno"];
+const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Muži":"cb-muzi", "Ženy":"cb-zeny", "PS12":"cb-ps12", "Nezařazeno":"cb-nz" };
 
-function esc(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+  ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
+// Prázdná pozice ve startovní listině (prázdný název nebo samé pomlčky)
+const isEmptyTeam = d => !d.team || String(d.team).trim() === '' || /^-+$/.test(String(d.team).trim());
+
+// Výsledný čas = horší z obou terčů; DSQ/NP na kterémkoli terči ruší pokus
 function bestTime(d) {
+  if (d.cas1 === 'DSQ' || d.cas2 === 'DSQ') return 'DSQ';
+  if (d.cas1 === 'NP'  || d.cas2 === 'NP')  return 'NP';
   const nums = [d.cas1, d.cas2].filter(t => typeof t === 'number');
   if (nums.length === 2) return Math.max(...nums);
   if (nums.length === 1) return nums[0];
   return null;
 }
 
-function renderTimeCell(val, isBest) {
-  if (val === null || val === undefined) return `<td class="tcell empty">—</td>`;
-  if (val === 'DSQ') return `<td class="tcell" style="text-align:right"><span class="dsq-tag">DSQ</span></td>`;
-  if (val === 'NP')  return `<td class="tcell" style="text-align:right"><span class="np-tag">NP</span></td>`;
-  return `<td class="tcell${isBest?' best':''}">${val.toFixed(2)}&thinsp;s</td>`;
+// Řazení: platné časy vzestupně, pak DSQ/NP, pak bez zápisu
+function cmpBest(a, b) {
+  const ta = bestTime(a), tb = bestTime(b);
+  const na = typeof ta === 'number', nb = typeof tb === 'number';
+  if (na && nb) return ta - tb;
+  if (na) return -1;
+  if (nb) return 1;
+  const rank = v => (v === 'DSQ' || v === 'NP') ? 1 : 2;
+  return rank(ta) - rank(tb);
 }
 
-function fmtTime(val) {
-  if (val===null||val===undefined) return '<span style="color:var(--muted)">—</span>';
-  if (val==='DSQ') return '<span class="dsq-tag">DSQ</span>';
-  if (val==='NP')  return '<span class="np-tag">NP</span>';
-  return val.toFixed(2)+'s';
-}
+const fmtTime = v => {
+  if (v === 'DSQ') return '<span class="dsq-tag">DSQ</span>';
+  if (v === 'NP')  return '<span class="np-tag">NP</span>';
+  if (typeof v === 'number') return v.toFixed(2);
+  return '—';
+};
 
-function render(json) {
-  const data    = json.data || [];
-  const doneSet = new Set(Object.keys(json.done || {}).map(Number));
-  const meta    = json.meta || {};
+const fmtBest = bt => {
+  if (bt === null || bt === undefined) return null;
+  if (bt === 'DSQ') return '<span class="dsq-tag">DSQ</span>';
+  if (bt === 'NP')  return '<span class="np-tag">NP</span>';
+  return bt.toFixed(2) + '&thinsp;s';
+};
 
-  // Aktualizuj hlavičku
-  if (meta.event)  document.getElementById('headerSubtitle').textContent = meta.event;
-  if (meta.date)   document.getElementById('headerDate').textContent = meta.date;
-  if (meta.exportDate) {
-    const d = new Date(meta.exportDate);
-    document.getElementById('archivBanner').textContent =
-      `📁 Archivní výsledky — export ${d.toLocaleDateString('cs-CZ')} v ${d.toLocaleTimeString('cs-CZ', {hour:'2-digit',minute:'2-digit'})}`;
+// ── VYKRESLENÍ SEZNAMU SOUTĚŽÍ ───────────────────────
+let activeId = null;
+
+function renderEventList() {
+  const el = document.getElementById('eventList');
+  if (!EVENTS.length) {
+    el.innerHTML = '<div class="state-msg">Archiv je zatím prázdný.</div>';
+    return;
   }
+  el.innerHTML = EVENTS.map(ev => `
+    <button class="event-card ${ev.id === activeId ? 'active' : ''}" onclick="loadEvent('${ev.id}')">
+      <div class="event-card-name">${esc(ev.name)}</div>
+      <div class="event-card-date">${esc(ev.date)}</div>
+      ${ev.note ? `<div class="event-card-meta">${esc(ev.note)}</div>` : ''}
+    </button>`).join('');
+}
 
-  let html = '<div class="content">';
+// ── NAČTENÍ A VYKRESLENÍ VÝSLEDKŮ ────────────────────
+async function loadEvent(id) {
+  const ev = EVENTS.find(e => e.id === id);
+  if (!ev) return;
+  activeId = id;
+  renderEventList();
+  history.replaceState(null, '', '?akce=' + encodeURIComponent(id));
 
-  // Výsledkové tabulky
-  CATEGORIES.forEach(cat => {
-    let rows = data.filter(d => d.kategorie === cat && (d.cas1 !== null || d.cas2 !== null));
-    if (!rows.length) return;
+  const content = document.getElementById('content');
+  content.innerHTML = '<div class="state-msg">Načítám výsledky…</div>';
 
-    rows = [...rows].sort((a, b) => {
-      const ta = bestTime(a), tb = bestTime(b);
-      if (ta===null && tb===null) return 0;
-      if (ta===null) return 1;
-      if (tb===null) return -1;
-      return ta - tb;
-    });
-
-    const rowsHtml = rows.map((d, i) => {
-      const bt = bestTime(d);
-      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
-      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':(i+1)+'.';
-      const rankCls = i===0&&bt!==null?'g':i===1&&bt!==null?'s':i===2&&bt!==null?'b':'';
-      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
-      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
-      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      const bestHtml = bt!==null ? `<td class="best-col">${bt.toFixed(2)}&thinsp;s</td>` : `<td class="best-col empty">—</td>`;
-      return `<tr class="${rc}">
-        <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
-        <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
-        <td><div class="tname">${esc(d.team)}</div></td>
-        ${renderTimeCell(d.cas1, c1worst)}
-        ${renderTimeCell(d.cas2, c2worst)}
-        ${bestHtml}
-      </tr>`;
-    }).join('');
-
-    const cardsHtml = rows.map((d, i) => {
-      const bt = bestTime(d);
-      const rc = bt!==null ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
-      const rankTxt = i===0&&bt!==null?'🥇':i===1&&bt!==null?'🥈':i===2&&bt!==null?'🥉':`${i+1}.`;
-      const isNum = !['🥇','🥈','🥉'].includes(rankTxt);
-      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
-      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
-      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
-      return `<div class="result-card ${rc}">
-        <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
-        <div class="rc-body">
-          <div class="rc-team">${esc(d.team)}</div>
-          <div class="rc-snum">St. č. ${d.start}</div>
-        </div>
-        <div class="rc-times">
-          ${bt!==null ? `<div class="rc-best">${bt.toFixed(2)}&thinsp;s</div>` : `<div class="rc-best empty">—</div>`}
-          <div class="rc-sub-times">
-            <span class="${c1worst?'':'worst'}">${fmtTime(d.cas1)}</span>
-            <span style="color:var(--muted)"> / </span>
-            <span class="${c2worst?'':'worst'}">${fmtTime(d.cas2)}</span>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-
-    const n = rows.length;
-    html += `<div class="category-block">
-      <div class="cat-label">
-        <span class="cat-name">${esc(cat)}</span>
-        <span class="cat-pill">${n} ${n===1?'tým':n<5?'týmy':'týmů'}</span>
-      </div>
-      <table class="results-table">
-        <colgroup>
-          <col style="width:50px"><col style="width:60px"><col>
-          <col style="width:155px"><col style="width:155px"><col style="width:165px">
-        </colgroup>
-        <thead><tr>
-          <th class="c">Poř.</th><th class="c">St. č.</th><th>Tým</th>
-          <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="r">Výsledný čas</th>
-        </tr></thead>
-        <tbody>${rowsHtml}</tbody>
-      </table>
-      <div class="result-cards">${cardsHtml}</div>
+  try {
+    const res = await fetch(ev.file, { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    renderResults(ev, json);
+  } catch (e) {
+    content.innerHTML = `<div class="state-msg">
+      Výsledky se nepodařilo načíst.<br>
+      <span style="font-size:12px">${esc(e.message)} — zkontroluj, že soubor <b>${esc(ev.file)}</b> existuje.</span>
     </div>`;
+  }
+  content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderResults(ev, json) {
+  const content = document.getElementById('content');
+  // JSON z exportu: pole 'data' (může chybět), volitelně 'finale'
+  const raw = Array.isArray(json.data) ? json.data.filter(Boolean) : [];
+  const teams = raw.filter(d => !isEmptyTeam(d));
+
+  let html = `<div class="result-head">
+    <span class="result-title">${esc(ev.name)}</span>
+    <span class="result-date">${esc(ev.date)} · ${teams.length} družstev</span>
+  </div>`;
+
+  // Výsledky po kategoriích (jen obsazené, Nezařazeno až na konec)
+  const cats = CATEGORIES.filter(c => teams.some(d => d.kategorie === c));
+  if (!cats.length) {
+    html += '<div class="state-msg">Tato soutěž neobsahuje žádná družstva.</div>';
+  }
+  cats.forEach(cat => {
+    const rows = teams.filter(d => d.kategorie === cat).sort(cmpBest);
+    html += renderCategory(cat, rows);
   });
 
-  html += '</div>';
+  // Finále (pokud export obsahuje finalisty)
+  const fin = Array.isArray(json.finale) ? json.finale.filter(Boolean) : [];
+  if (fin.length) {
+    html += renderCategory('Finále', [...fin].sort(cmpBest), true);
+  }
 
-  // Startovní listina
-  const sorted = [...data].sort((a, b) => a.start - b.start);
-  const slRows = sorted.map(d => {
-    const isDone = doneSet.has(d.start);
-    const timeVal = v => v===null||v===undefined ? '—' : v==='DSQ' ? 'DSQ' : v==='NP' ? 'NP' : v.toFixed(2)+' s';
-    return `<tr>
-      <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
-      <td><div class="tname">${esc(d.team)}</div></td>
-      <td><span class="cbadge ${BADGE[d.kategorie]||''}">${esc(d.kategorie)}</span></td>
-      <td class="tcell">${timeVal(d.cas1)}</td>
-      <td class="tcell">${timeVal(d.cas2)}</td>
-      <td style="text-align:center">${isDone ? '<span class="done-tag">✓ Odběhnuto</span>' : ''}</td>
+  content.innerHTML = html;
+}
+
+function renderCategory(title, rows, isFinale = false) {
+  const leader = rows.length ? bestTime(rows[0]) : null;
+  const leaderNum = typeof leader === 'number' ? leader : null;
+
+  const body = rows.map((d, i) => {
+    const bt = bestTime(d);
+    const btNum = typeof bt === 'number';
+    const rc = btNum ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+    const rankTxt = (i===0&&btNum)?'🥇':(i===1&&btNum)?'🥈':(i===2&&btNum)?'🥉':(i+1)+'.';
+    const rankCls = (i===0&&btNum)?'g':(i===1&&btNum)?'s':(i===2&&btNum)?'b':'';
+    const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
+    const c1best = c1n&&c2n ? d.cas1 < d.cas2 : c1n;
+    const c2best = c1n&&c2n ? d.cas2 < d.cas1 : c2n;
+    const bestStr = fmtBest(bt);
+    const gap = (i===0||!btNum||leaderNum===null) ? null : bt - leaderNum;
+    const gapHtml = i===0&&btNum ? '<td class="gap-col leader">—</td>'
+      : gap !== null ? `<td class="gap-col">+${gap.toFixed(2)}</td>`
+      : '<td class="gap-col empty">—</td>';
+
+    return `<tr class="${rc}">
+      <td style="width:52px"><span class="rank ${rankCls}">${rankTxt}</span></td>
+      <td style="width:56px;text-align:center"><span class="snum">${esc(d.start)}</span></td>
+      <td><span class="tname">${esc(d.team)}</span></td>
+      <td class="tcell ${c1best?'best':''}">${fmtTime(d.cas1)}</td>
+      <td class="tcell ${c2best?'best':''}">${fmtTime(d.cas2)}</td>
+      ${bestStr !== null ? `<td class="best-col">${bestStr}</td>` : '<td class="best-col empty">—</td>'}
+      ${gapHtml}
     </tr>`;
   }).join('');
 
-  html += `<div class="startlist-section">
-    <div class="startlist-header"><span class="startlist-title">Startovní listina</span></div>
+  const cards = rows.map((d, i) => {
+    const bt = bestTime(d);
+    const btNum = typeof bt === 'number';
+    const rc = btNum ? (i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'') : '';
+    const rankTxt = (i===0&&btNum)?'🥇':(i===1&&btNum)?'🥈':(i===2&&btNum)?'🥉':(i+1)+'.';
+    const bestStr = fmtBest(bt);
+    return `<div class="rcard ${rc}">
+      <div class="rcard-rank">${rankTxt}</div>
+      <div class="rcard-main">
+        <div class="rcard-team">${esc(d.team)}</div>
+        <div class="rcard-sub">St. č. ${esc(d.start)}</div>
+      </div>
+      <div class="rcard-times">
+        <div class="rcard-best">${bestStr ?? '—'}</div>
+        ${btNum ? `<div class="rcard-detail">${fmtTime(d.cas1)} / ${fmtTime(d.cas2)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const badgeCls = isFinale ? 'cb-nz' : (BADGE[title] || 'cb-nz');
+  return `<div class="category-block">
+    <div class="cat-label">
+      <span class="cat-name">${isFinale ? '🏆 Finále' : esc(title)}</span>
+      <span class="cat-pill">${rows.length} ${rows.length===1?'družstvo':rows.length<5?'družstva':'družstev'}</span>
+    </div>
     <table>
-      <colgroup>
-        <col style="width:55px"><col><col style="width:110px">
-        <col style="width:145px"><col style="width:145px"><col style="width:120px">
-      </colgroup>
       <thead><tr>
-        <th class="c">St. č.</th><th>Tým</th><th class="c">Kategorie</th>
-        <th class="r">Levý terč</th><th class="r">Pravý terč</th><th class="c">Stav</th>
+        <th style="width:52px">Poř.</th>
+        <th class="c" style="width:56px">St. č.</th>
+        <th>Družstvo</th>
+        <th class="c">Levý terč</th>
+        <th class="c">Pravý terč</th>
+        <th class="c">Výsledný čas</th>
+        <th class="c">Ztráta</th>
       </tr></thead>
-      <tbody>${slRows}</tbody>
+      <tbody>${body}</tbody>
     </table>
+    <div class="cards">${cards}</div>
   </div>`;
-
-  mainEl.innerHTML = html;
 }
 
-// Načti JSON
-if (!soubor) {
-  mainEl.innerHTML = `<div class="state-box">
-    <h2>Chybí název souboru</h2>
-    <p>Použij URL parametr <code>?soubor=vysledky-2026.json</code></p>
-  </div>`;
-} else {
-  fetch(soubor)
-    .then(r => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return r.json();
-    })
-    .then(json => render(json))
-    .catch(err => {
-      mainEl.innerHTML = `<div class="state-box">
-        <h2>Soubor se nepodařilo načíst</h2>
-        <p>Zkontroluj že soubor <strong>${esc(soubor)}</strong> existuje ve stejné složce jako tato stránka.</p>
-        <p style="margin-top:8px;font-size:12px;color:var(--muted)">${esc(err.message)}</p>
-      </div>`;
-    });
+// ── TÉMA ─────────────────────────────────────────────
+function applyTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = dark ? '☀️ Světlý režim' : '🌙 Tmavý režim';
 }
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') !== 'dark';
+  applyTheme(dark);
+  try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
+}
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (e) {}
+  const dark = saved ? saved === 'dark'
+    : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  applyTheme(!!dark);
+})();
+
+// ── START ────────────────────────────────────────────
+renderEventList();
+// Otevři soutěž z odkazu (?akce=id), jinak nejnovější v seznamu
+const wanted = new URLSearchParams(location.search).get('akce');
+const initial = EVENTS.find(e => e.id === wanted) || EVENTS[0];
+if (initial) loadEvent(initial.id);
 </script>
+
 </body>
 </html>
