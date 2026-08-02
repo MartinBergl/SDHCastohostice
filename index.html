@@ -3958,7 +3958,10 @@ function exportJSON() {
     },
     data,
     done: Object.fromEntries([...doneSet].map(id => [String(id), true])),
-    phase
+    phase,
+    finale: finaleData,          // finalisté a jejich časy (chyběly v archivu)
+    finaleVisible,               // zda bylo finále zveřejněno
+    history: changeHistory       // log změn — pro dohledání oprav zpětně
   };
 
   const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
