@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "exportDate": "2023-07-24T00:00:00.000Z",
+    "event": "Noční závody Častohostice",
+    "date": "21. července 2023"
+  },
+  "data": [
+    {
+      "start": 8,
+      "team": "Police B",
+      "kategorie": "Muži",
+      "cas1": 15.25,
+      "cas2": 14.96
+    },
+    {
+      "start": 21,
+      "team": "Čechtín",
+      "kategorie": "Muži",
+      "cas1": 15.43,
+      "cas2": 14.75
+    },
+    {
+      "start": 17,
+      "team": "Menhartice",
+      "kategorie": "Muži",
+      "cas1": 15.68,
+      "cas2": 16.04
+    },
+    {
+      "start": 3,
+      "team": "Vítonice",
+      "kategorie": "Muži",
+      "cas1": 16.43,
+      "cas2": 15.71
+    },
+    {
+      "start": 11,
+      "team": "Police",
+      "kategorie": "Muži",
+      "cas1": 16.21,
+      "cas2": 16.81
+    },
+    {
+      "start": 2,
+      "team": "Grešlové Mýto",
+      "kategorie": "Muži",
+      "cas1": 17.07,
+      "cas2": 16.67
+    },
+    {
+      "start": 25,
+      "team": "Litohoř",
+      "kategorie": "Muži",
+      "cas1": 16.12,
+      "cas2": 17.2
+    },
+    {
+      "start": 12,
+      "team": "Újezd",
+      "kategorie": "Muži",
+      "cas1": 17.79,
+      "cas2": 17.27
+    },
+    {
+      "start": 24,
+      "team": "Bohutice",
+      "kategorie": "Muži",
+      "cas1": 16.65,
+      "cas2": 18.29
+    },
+    {
+      "start": 19,
+      "team": "Římov",
+      "kategorie": "Muži",
+      "cas1": 18.21,
+      "cas2": 18.31
+    },
+    {
+      "start": 22,
+      "team": "Domamil",
+      "kategorie": "Muži",
+      "cas1": 18.65,
+      "cas2": 18.31
+    },
+    {
+      "start": 6,
+      "team": "Jaroměřice nad Rokytnou",
+      "kategorie": "Muži",
+      "cas1": 18.55,
+      "cas2": 18.92
+    },
+    {
+      "start": 13,
+      "team": "Častohostice",
+      "kategorie": "Muži",
+      "cas1": 18.28,
+      "cas2": 19.14
+    },
+    {
+      "start": 23,
+      "team": "Jemnice",
+      "kategorie": "Muži",
+      "cas1": 21.04,
+      "cas2": 22.01
+    },
+    {
+      "start": 4,
+      "team": "Únanov",
+      "kategorie": "Muži",
+      "cas1": 15.16,
+      "cas2": 22.87
+    },
+    {
+      "start": 1,
+      "team": "Telč",
+      "kategorie": "Muži",
+      "cas1": 23.59,
+      "cas2": 22.25
+    },
+    {
+      "start": 20,
+      "team": "Třebelovice",
+      "kategorie": "Muži",
+      "cas1": 30.25,
+      "cas2": 29.59
+    },
+    {
+      "start": 18,
+      "team": "Bojanovice",
+      "kategorie": "Muži",
+      "cas1": 30.69,
+      "cas2": 16.31
+    },
+    {
+      "start": 7,
+      "team": "Lhotice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 9,
+      "team": "Budeč B",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 10,
+      "team": "Blatnice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 5,
+      "team": "Krahulov",
+      "kategorie": "Ženy",
+      "cas1": 17.18,
+      "cas2": 16.78
+    },
+    {
+      "start": 7,
+      "team": "Myslibořice",
+      "kategorie": "Ženy",
+      "cas1": 17.46,
+      "cas2": 17.14
+    },
+    {
+      "start": 3,
+      "team": "Jakubov u MB",
+      "kategorie": "Ženy",
+      "cas1": 18.32,
+      "cas2": 17.93
+    },
+    {
+      "start": 1,
+      "team": "Častohostice A",
+      "kategorie": "Ženy",
+      "cas1": 18.85,
+      "cas2": 19.43
+    },
+    {
+      "start": 2,
+      "team": "Častohostice B",
+      "kategorie": "Ženy",
+      "cas1": 20.43,
+      "cas2": 22.19
+    },
+    {
+      "start": 6,
+      "team": "Domamil",
+      "kategorie": "Ženy",
+      "cas1": 22.23,
+      "cas2": 21.74
+    },
+    {
+      "start": 4,
+      "team": "Šebkovice",
+      "kategorie": "Ženy",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 5,
+      "team": "Vítonice PS12",
+      "kategorie": "PS12",
+      "cas1": 17.08,
+      "cas2": 16.97
+    },
+    {
+      "start": 4,
+      "team": "Police PS12",
+      "kategorie": "PS12",
+      "cas1": 17.08,
+      "cas2": 17.61
+    },
+    {
+      "start": 2,
+      "team": "Police B PS12",
+      "kategorie": "PS12",
+      "cas1": 17.77,
+      "cas2": 17.45
+    },
+    {
+      "start": 3,
+      "team": "Grešlové Mýto PS12",
+      "kategorie": "PS12",
+      "cas1": 17.79,
+      "cas2": 17.07
+    },
+    {
+      "start": 8,
+      "team": "Třebelovice PS12",
+      "kategorie": "PS12",
+      "cas1": 18.52,
+      "cas2": 17.93
+    },
+    {
+      "start": 11,
+      "team": "Bojanovice PS12",
+      "kategorie": "PS12",
+      "cas1": 19.02,
+      "cas2": 18.45
+    },
+    {
+      "start": 9,
+      "team": "Litohoř PS12",
+      "kategorie": "PS12",
+      "cas1": 19.41,
+      "cas2": 19.08
+    },
+    {
+      "start": 1,
+      "team": "Telč PS12",
+      "kategorie": "PS12",
+      "cas1": 19.57,
+      "cas2": 18.56
+    },
+    {
+      "start": 10,
+      "team": "Bohutice PS12",
+      "kategorie": "PS12",
+      "cas1": 18.3,
+      "cas2": 20.96
+    },
+    {
+      "start": 6,
+      "team": "Římov PS12",
+      "kategorie": "PS12",
+      "cas1": 21.67,
+      "cas2": 21.33
+    },
+    {
+      "start": 7,
+      "team": "Slavíkovice PS12",
+      "kategorie": "PS12",
+      "cas1": 23.05,
+      "cas2": 24.68
+    }
+  ],
+  "done": {
+    "8": true,
+    "21": true,
+    "17": true,
+    "3": true,
+    "11": true,
+    "2": true,
+    "25": true,
+    "12": true,
+    "24": true,
+    "19": true,
+    "22": true,
+    "6": true,
+    "13": true,
+    "23": true,
+    "4": true,
+    "1": true,
+    "20": true,
+    "18": true,
+    "7": true,
+    "9": true,
+    "10": true,
+    "5": true
+  },
+  "phase": "results",
+  "finale": [
+    {
+      "start": 5,
+      "team": "Police \"B\"",
+      "cas1": 17.15,
+      "cas2": 16.02
+    },
+    {
+      "start": 6,
+      "team": "Krahulov Ž",
+      "cas1": 17.64,
+      "cas2": 17.25
+    },
+    {
+      "start": 4,
+      "team": "Litohoř",
+      "cas1": 40.52,
+      "cas2": 40.83,
+      "sourceStart": 25
+    },
+    {
+      "start": 1,
+      "team": "Menhartice",
+      "cas1": "NP",
+      "cas2": "NP",
+      "sourceStart": 17
+    },
+    {
+      "start": 2,
+      "team": "Police",
+      "cas1": "NP",
+      "cas2": "NP",
+      "sourceStart": 11
+    },
+    {
+      "start": 3,
+      "team": "Vítonice",
+      "cas1": "NP",
+      "cas2": "NP",
+      "sourceStart": 3
+    }
+  ],
+  "finaleVisible": true
+}

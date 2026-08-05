@@ -1,0 +1,288 @@
+{
+  "meta": {
+    "exportDate": "2020-07-24T00:00:00.000Z",
+    "event": "O pohár starosty SDH Častohostice",
+    "date": "24. července 2020"
+  },
+  "data": [
+    {
+      "start": 1,
+      "team": "Dešná B",
+      "kategorie": "Muži",
+      "cas1": 14.33,
+      "cas2": 15.09
+    },
+    {
+      "start": 2,
+      "team": "Police",
+      "kategorie": "Muži",
+      "cas1": 15.64,
+      "cas2": 15.7
+    },
+    {
+      "start": 3,
+      "team": "Černín",
+      "kategorie": "Muži",
+      "cas1": 16.0,
+      "cas2": 15.84
+    },
+    {
+      "start": 4,
+      "team": "Rynárec A",
+      "kategorie": "Muži",
+      "cas1": 15.89,
+      "cas2": 16.0
+    },
+    {
+      "start": 5,
+      "team": "Příložany",
+      "kategorie": "Muži",
+      "cas1": 16.83,
+      "cas2": 16.45
+    },
+    {
+      "start": 6,
+      "team": "Jemnice",
+      "kategorie": "Muži",
+      "cas1": 17.18,
+      "cas2": 17.16
+    },
+    {
+      "start": 7,
+      "team": "Strachoňovice",
+      "kategorie": "Muži",
+      "cas1": 17.43,
+      "cas2": 16.88
+    },
+    {
+      "start": 8,
+      "team": "Čechtín B",
+      "kategorie": "Muži",
+      "cas1": 15.94,
+      "cas2": 17.51
+    },
+    {
+      "start": 9,
+      "team": "Rynárec B",
+      "kategorie": "Muži",
+      "cas1": 17.6,
+      "cas2": 17.03
+    },
+    {
+      "start": 10,
+      "team": "Telč",
+      "kategorie": "Muži",
+      "cas1": 17.61,
+      "cas2": 16.0
+    },
+    {
+      "start": 11,
+      "team": "KRahulov",
+      "kategorie": "Muži",
+      "cas1": 16.04,
+      "cas2": 17.61
+    },
+    {
+      "start": 12,
+      "team": "Stařeč",
+      "kategorie": "Muži",
+      "cas1": 18.22,
+      "cas2": 17.9
+    },
+    {
+      "start": 13,
+      "team": "Kaliště",
+      "kategorie": "Muži",
+      "cas1": 18.27,
+      "cas2": 18.28
+    },
+    {
+      "start": 14,
+      "team": "Častohostice A",
+      "kategorie": "Muži",
+      "cas1": 19.12,
+      "cas2": 18.5
+    },
+    {
+      "start": 15,
+      "team": "Častohostice B",
+      "kategorie": "Muži",
+      "cas1": 20.49,
+      "cas2": 19.04
+    },
+    {
+      "start": 16,
+      "team": "Grešlové Mýto",
+      "kategorie": "Muži",
+      "cas1": 18.64,
+      "cas2": 20.71
+    },
+    {
+      "start": 17,
+      "team": "Kostníky",
+      "kategorie": "Muži",
+      "cas1": 25.23,
+      "cas2": 24.13
+    },
+    {
+      "start": 18,
+      "team": "Rouchovany",
+      "kategorie": "Muži",
+      "cas1": 24.71,
+      "cas2": 25.89
+    },
+    {
+      "start": 19,
+      "team": "Mašovice",
+      "kategorie": "Muži",
+      "cas1": 23.58,
+      "cas2": 27.15
+    },
+    {
+      "start": 20,
+      "team": "Litohoř",
+      "kategorie": "Muži",
+      "cas1": 30.45,
+      "cas2": 30.26
+    },
+    {
+      "start": 21,
+      "team": "Výčapy B",
+      "kategorie": "Muži",
+      "cas1": 33.51,
+      "cas2": 33.8
+    },
+    {
+      "start": 22,
+      "team": "Budeč",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 22,
+      "team": "Římov",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 22,
+      "team": "Blatnice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 22,
+      "team": "Horní Dubňany, Dukovany",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 22,
+      "team": "Slavonice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 8,
+      "team": "Jakubov u Moravských Budějovic",
+      "kategorie": "Ženy",
+      "cas1": 17.21,
+      "cas2": 17.08
+    },
+    {
+      "start": 7,
+      "team": "Kouty",
+      "kategorie": "Ženy",
+      "cas1": 17.44,
+      "cas2": 17.94
+    },
+    {
+      "start": 6,
+      "team": "Krahulov",
+      "kategorie": "Ženy",
+      "cas1": 18.19,
+      "cas2": 17.68
+    },
+    {
+      "start": 9,
+      "team": "Velké Meziříčí  ,, Fň \"",
+      "kategorie": "Ženy",
+      "cas1": 17.18,
+      "cas2": 18.55
+    },
+    {
+      "start": 4,
+      "team": "Kostníky",
+      "kategorie": "Ženy",
+      "cas1": 17.98,
+      "cas2": 18.56
+    },
+    {
+      "start": 3,
+      "team": "Strachoňovice",
+      "kategorie": "Ženy",
+      "cas1": 19.03,
+      "cas2": 18.93
+    },
+    {
+      "start": 1,
+      "team": "Častohostice ,,A \"",
+      "kategorie": "Ženy",
+      "cas1": 18.44,
+      "cas2": 19.11
+    },
+    {
+      "start": 5,
+      "team": "Jemnice A",
+      "kategorie": "Ženy",
+      "cas1": 20.84,
+      "cas2": 19.32
+    },
+    {
+      "start": 10,
+      "team": "Častohostice ,, B \"",
+      "kategorie": "Ženy",
+      "cas1": 26.47,
+      "cas2": 27.87
+    },
+    {
+      "start": 2,
+      "team": "Domamil",
+      "kategorie": "Ženy",
+      "cas1": "NP",
+      "cas2": "NP"
+    }
+  ],
+  "done": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true,
+    "15": true,
+    "16": true,
+    "17": true,
+    "18": true,
+    "19": true,
+    "20": true,
+    "21": true,
+    "22": true
+  },
+  "phase": "results",
+  "finale": [],
+  "finaleVisible": false
+}

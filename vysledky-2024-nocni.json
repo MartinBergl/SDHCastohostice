@@ -1,0 +1,301 @@
+{
+  "meta": {
+    "exportDate": "2024-07-24T00:00:00.000Z",
+    "event": "Noční závody Častohostice",
+    "date": "19. července 2024"
+  },
+  "data": [
+    {
+      "start": 18,
+      "team": "Police",
+      "kategorie": "Muži",
+      "cas1": 14.64,
+      "cas2": 14.62
+    },
+    {
+      "start": 11,
+      "team": "Police B",
+      "kategorie": "Muži",
+      "cas1": 14.71,
+      "cas2": 14.9
+    },
+    {
+      "start": 14,
+      "team": "Dešná B",
+      "kategorie": "Muži",
+      "cas1": 14.95,
+      "cas2": 14.27
+    },
+    {
+      "start": 8,
+      "team": "Telč B",
+      "kategorie": "Muži",
+      "cas1": 14.7,
+      "cas2": 14.98
+    },
+    {
+      "start": 23,
+      "team": "Sedlatice",
+      "kategorie": "Muži",
+      "cas1": 15.19,
+      "cas2": 15.28
+    },
+    {
+      "start": 9,
+      "team": "Blatnice",
+      "kategorie": "Muži",
+      "cas1": 15.3,
+      "cas2": 15.11
+    },
+    {
+      "start": 16,
+      "team": "Pocoucov",
+      "kategorie": "Muži",
+      "cas1": 15.82,
+      "cas2": 15.09
+    },
+    {
+      "start": 17,
+      "team": "Újezd",
+      "kategorie": "Muži",
+      "cas1": 15.85,
+      "cas2": 15.73
+    },
+    {
+      "start": 20,
+      "team": "Strachoňovice",
+      "kategorie": "Muži",
+      "cas1": 15.63,
+      "cas2": 15.99
+    },
+    {
+      "start": 5,
+      "team": "Vítonice",
+      "kategorie": "Muži",
+      "cas1": 15.59,
+      "cas2": 16.08
+    },
+    {
+      "start": 13,
+      "team": "Sedlatice st.",
+      "kategorie": "Muži",
+      "cas1": 16.14,
+      "cas2": 14.17
+    },
+    {
+      "start": 25,
+      "team": "Slavíkovice",
+      "kategorie": "Muži",
+      "cas1": 17.03,
+      "cas2": 16.54
+    },
+    {
+      "start": 15,
+      "team": "Lhotice",
+      "kategorie": "Muži",
+      "cas1": 17.78,
+      "cas2": 17.68
+    },
+    {
+      "start": 22,
+      "team": "Římov",
+      "kategorie": "Muži",
+      "cas1": 17.55,
+      "cas2": 18.1
+    },
+    {
+      "start": 12,
+      "team": "Častohostice",
+      "kategorie": "Muži",
+      "cas1": 17.18,
+      "cas2": 18.32
+    },
+    {
+      "start": 21,
+      "team": "Litohoř",
+      "kategorie": "Muži",
+      "cas1": 18.51,
+      "cas2": 18.81
+    },
+    {
+      "start": 28,
+      "team": "Vranovská Ves",
+      "kategorie": "Muži",
+      "cas1": 23.75,
+      "cas2": 22.61
+    },
+    {
+      "start": 10,
+      "team": "Třebelovice",
+      "kategorie": "Muži",
+      "cas1": 24.17,
+      "cas2": 23.86
+    },
+    {
+      "start": 27,
+      "team": "Jemnice",
+      "kategorie": "Muži",
+      "cas1": 32.89,
+      "cas2": 33.01
+    },
+    {
+      "start": 26,
+      "team": "Hrotovice",
+      "kategorie": "Muži",
+      "cas1": 42.59,
+      "cas2": 43.79
+    },
+    {
+      "start": 6,
+      "team": "Grešlovo Mýto",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 7,
+      "team": "Bojanovice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 19,
+      "team": "Mikulovice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 24,
+      "team": "Bohutice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 3,
+      "team": "Krahulov",
+      "kategorie": "Ženy",
+      "cas1": 17.31,
+      "cas2": 16.78
+    },
+    {
+      "start": 5,
+      "team": "Strachoňovice",
+      "kategorie": "Ženy",
+      "cas1": 17.37,
+      "cas2": 18.01
+    },
+    {
+      "start": 2,
+      "team": "Myslibořice",
+      "kategorie": "Ženy",
+      "cas1": 16.41,
+      "cas2": 18.23
+    },
+    {
+      "start": 4,
+      "team": "Častohostice B",
+      "kategorie": "Ženy",
+      "cas1": 20.7,
+      "cas2": 20.7
+    },
+    {
+      "start": 1,
+      "team": "Častohostice A",
+      "kategorie": "Ženy",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 1,
+      "team": "Vranovská Ves",
+      "kategorie": "Smíšený dorost",
+      "cas1": 29.69,
+      "cas2": 30.1
+    },
+    {
+      "start": 2,
+      "team": "Jaroměřice nad Rokytnou",
+      "kategorie": "Smíšený dorost",
+      "cas1": 45.3,
+      "cas2": 45.06
+    }
+  ],
+  "done": {
+    "18": true,
+    "11": true,
+    "14": true,
+    "8": true,
+    "23": true,
+    "9": true,
+    "16": true,
+    "17": true,
+    "20": true,
+    "5": true,
+    "13": true,
+    "25": true,
+    "15": true,
+    "22": true,
+    "12": true,
+    "21": true,
+    "28": true,
+    "10": true,
+    "27": true,
+    "26": true,
+    "6": true,
+    "7": true,
+    "19": true,
+    "24": true,
+    "3": true,
+    "2": true,
+    "4": true,
+    "1": true
+  },
+  "phase": "results",
+  "finale": [
+    {
+      "start": 1,
+      "team": "Police",
+      "cas1": 15.11,
+      "cas2": 14.72,
+      "sourceStart": 18
+    },
+    {
+      "start": 3,
+      "team": "Sedlatice",
+      "cas1": 15.31,
+      "cas2": 14.31,
+      "sourceStart": 23
+    },
+    {
+      "start": 2,
+      "team": "Telč B",
+      "cas1": 15.45,
+      "cas2": 15.11,
+      "sourceStart": 8
+    },
+    {
+      "start": 4,
+      "team": "Újezd",
+      "cas1": 16.61,
+      "cas2": 16.16,
+      "sourceStart": 17
+    },
+    {
+      "start": 5,
+      "team": "Častohostice A Ž",
+      "cas1": 20.77,
+      "cas2": 21.66
+    },
+    {
+      "start": 6,
+      "team": "Police B",
+      "cas1": "NP",
+      "cas2": "NP",
+      "sourceStart": 11
+    }
+  ],
+  "finaleVisible": true
+}

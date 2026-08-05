@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "exportDate": "2022-07-24T00:00:00.000Z",
+    "event": "Noční závody Častohostice",
+    "date": "22. července 2022"
+  },
+  "data": [
+    {
+      "start": 15,
+      "team": "Police A",
+      "kategorie": "Muži",
+      "cas1": 15.12,
+      "cas2": 14.83
+    },
+    {
+      "start": 7,
+      "team": "Příložany",
+      "kategorie": "Muži",
+      "cas1": 14.86,
+      "cas2": 15.67
+    },
+    {
+      "start": 2,
+      "team": "Grešlové Mýto",
+      "kategorie": "Muži",
+      "cas1": 16.15,
+      "cas2": 15.65
+    },
+    {
+      "start": 5,
+      "team": "Kostníky",
+      "kategorie": "Muži",
+      "cas1": 16.98,
+      "cas2": 14.77
+    },
+    {
+      "start": 14,
+      "team": "Jemnice",
+      "kategorie": "Muži",
+      "cas1": 17.74,
+      "cas2": 20.04
+    },
+    {
+      "start": 4,
+      "team": "Blatnice",
+      "kategorie": "Muži",
+      "cas1": 22.14,
+      "cas2": 21.99
+    },
+    {
+      "start": 6,
+      "team": "Častohostice",
+      "kategorie": "Muži",
+      "cas1": 17.75,
+      "cas2": 24.26
+    },
+    {
+      "start": 3,
+      "team": "Výčapy B",
+      "kategorie": "Muži",
+      "cas1": 36.89,
+      "cas2": 36.15
+    },
+    {
+      "start": 1,
+      "team": "Telč A",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 8,
+      "team": "Citonice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 9,
+      "team": "Pálovice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 10,
+      "team": "Vítonice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 11,
+      "team": "Výčapy",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 12,
+      "team": "Římov",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 13,
+      "team": "Police B",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 5,
+      "team": "Myslibořice",
+      "kategorie": "Ženy",
+      "cas1": 17.87,
+      "cas2": 17.69
+    },
+    {
+      "start": 4,
+      "team": "Šebkovice",
+      "kategorie": "Ženy",
+      "cas1": 20.86,
+      "cas2": 21.08
+    },
+    {
+      "start": 3,
+      "team": "Kostníky",
+      "kategorie": "Ženy",
+      "cas1": 22.25,
+      "cas2": 22.94
+    },
+    {
+      "start": 1,
+      "team": "Častohostice B",
+      "kategorie": "Ženy",
+      "cas1": 32.32,
+      "cas2": 30.86
+    },
+    {
+      "start": 2,
+      "team": "Častohostice A",
+      "kategorie": "Ženy",
+      "cas1": "NP",
+      "cas2": "NP"
+    }
+  ],
+  "done": {
+    "15": true,
+    "7": true,
+    "2": true,
+    "5": true,
+    "14": true,
+    "4": true,
+    "6": true,
+    "3": true,
+    "1": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+  },
+  "phase": "results",
+  "finale": [
+    {
+      "start": 1,
+      "team": "Příložany",
+      "cas1": 14.16,
+      "cas2": 15.08,
+      "sourceStart": 7
+    },
+    {
+      "start": 2,
+      "team": "Jemnice",
+      "cas1": 17.86,
+      "cas2": 16.11,
+      "sourceStart": 14
+    },
+    {
+      "start": 3,
+      "team": "Myslibořice Ž",
+      "cas1": 17.92,
+      "cas2": 17.63
+    },
+    {
+      "start": 4,
+      "team": "Kostníky",
+      "cas1": 16.08,
+      "cas2": 18.93,
+      "sourceStart": 5
+    },
+    {
+      "start": 5,
+      "team": "Šebkovice Ž",
+      "cas1": 21.1,
+      "cas2": 19.64
+    },
+    {
+      "start": 6,
+      "team": "Police A",
+      "cas1": "NP",
+      "cas2": "NP",
+      "sourceStart": 15
+    },
+    {
+      "start": 7,
+      "team": "Grešlové Mýto",
+      "cas1": "NP",
+      "cas2": "NP",
+      "sourceStart": 2
+    }
+  ],
+  "finaleVisible": true
+}

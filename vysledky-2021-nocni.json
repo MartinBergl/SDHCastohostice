@@ -1,0 +1,237 @@
+{
+  "meta": {
+    "exportDate": "2021-07-24T00:00:00.000Z",
+    "event": "O pohár starosty SDH Častohostice",
+    "date": "23. července 2021"
+  },
+  "data": [
+    {
+      "start": 16,
+      "team": "Výčapy B",
+      "kategorie": "Muži",
+      "cas1": 15.58,
+      "cas2": 15.53
+    },
+    {
+      "start": 8,
+      "team": "Čechtín B",
+      "kategorie": "Muži",
+      "cas1": 15.64,
+      "cas2": 15.04
+    },
+    {
+      "start": 20,
+      "team": "Heraltice",
+      "kategorie": "Muži",
+      "cas1": 15.68,
+      "cas2": 14.8
+    },
+    {
+      "start": 7,
+      "team": "Strachoňovice",
+      "kategorie": "Muži",
+      "cas1": 15.43,
+      "cas2": 15.7
+    },
+    {
+      "start": 3,
+      "team": "Krahulov",
+      "kategorie": "Muži",
+      "cas1": 16.75,
+      "cas2": 16.59
+    },
+    {
+      "start": 2,
+      "team": "Telč A",
+      "kategorie": "Muži",
+      "cas1": 17.06,
+      "cas2": 16.76
+    },
+    {
+      "start": 9,
+      "team": "Kostníky",
+      "kategorie": "Muži",
+      "cas1": 15.26,
+      "cas2": 17.1
+    },
+    {
+      "start": 5,
+      "team": "Blatnice",
+      "kategorie": "Muži",
+      "cas1": 15.19,
+      "cas2": 17.15
+    },
+    {
+      "start": 10,
+      "team": "Častohostice",
+      "kategorie": "Muži",
+      "cas1": 17.39,
+      "cas2": 17.43
+    },
+    {
+      "start": 17,
+      "team": "Tasovice",
+      "kategorie": "Muži",
+      "cas1": 20.81,
+      "cas2": 20.75
+    },
+    {
+      "start": 6,
+      "team": "Telč B",
+      "kategorie": "Muži",
+      "cas1": 22.16,
+      "cas2": 22.67
+    },
+    {
+      "start": 1,
+      "team": "Dobřínsko B",
+      "kategorie": "Muži",
+      "cas1": 26.71,
+      "cas2": 26.45
+    },
+    {
+      "start": 15,
+      "team": "Police",
+      "kategorie": "Muži",
+      "cas1": 32.68,
+      "cas2": 19.14
+    },
+    {
+      "start": 4,
+      "team": "Jemnice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 11,
+      "team": "Slavonice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 12,
+      "team": "Příložany",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 13,
+      "team": "Dešná",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 14,
+      "team": "Litohoř",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 18,
+      "team": "Bojanovice",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 19,
+      "team": "Římov",
+      "kategorie": "Muži",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 6,
+      "team": "Výčapy B",
+      "kategorie": "Ženy",
+      "cas1": 16.98,
+      "cas2": 17.78
+    },
+    {
+      "start": 2,
+      "team": "Strachoňovice",
+      "kategorie": "Ženy",
+      "cas1": 19.11,
+      "cas2": 18.68
+    },
+    {
+      "start": 9,
+      "team": "Jemnice",
+      "kategorie": "Ženy",
+      "cas1": 19.17,
+      "cas2": 18.91
+    },
+    {
+      "start": 4,
+      "team": "Kostníky",
+      "kategorie": "Ženy",
+      "cas1": 17.3,
+      "cas2": 19.24
+    },
+    {
+      "start": 7,
+      "team": "Jakubov u Mor. Budějovic",
+      "kategorie": "Ženy",
+      "cas1": 19.26,
+      "cas2": 18.21
+    },
+    {
+      "start": 5,
+      "team": "Výčapy A",
+      "kategorie": "Ženy",
+      "cas1": 20.57,
+      "cas2": 18.22
+    },
+    {
+      "start": 1,
+      "team": "Častohostice A",
+      "kategorie": "Ženy",
+      "cas1": 19.33,
+      "cas2": 22.36
+    },
+    {
+      "start": 3,
+      "team": "Častohostice B",
+      "kategorie": "Ženy",
+      "cas1": 27.56,
+      "cas2": 26.18
+    },
+    {
+      "start": 8,
+      "team": "Petrůvky",
+      "kategorie": "Ženy",
+      "cas1": 28.37,
+      "cas2": 20.11
+    }
+  ],
+  "done": {
+    "16": true,
+    "8": true,
+    "20": true,
+    "7": true,
+    "3": true,
+    "2": true,
+    "9": true,
+    "5": true,
+    "10": true,
+    "17": true,
+    "6": true,
+    "1": true,
+    "15": true,
+    "4": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true,
+    "18": true,
+    "19": true
+  },
+  "phase": "results",
+  "finale": [],
+  "finaleVisible": false
+}
