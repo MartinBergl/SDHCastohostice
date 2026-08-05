@@ -6,6 +6,7 @@
   <title>Archiv výsledků — SDH Častohostice</title>
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
     :root {
       --red:      #d63b2a;
@@ -59,7 +60,14 @@
     .back-link:hover { border-color:var(--sub); color:var(--text); }
     .archive-title { font-size:24px; font-weight:700; margin:20px 0 4px; }
     .archive-sub { font-size:13px; color:var(--sub); margin-bottom:18px; }
-    .event-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-bottom:28px; }
+    .event-list { margin-bottom:28px; }
+    .year-group { margin-bottom:22px; }
+    .year-label {
+      display:inline-block; font-size:13px; font-weight:800; letter-spacing:.08em;
+      color:var(--red); background:var(--red-soft); border:1px solid var(--border);
+      border-radius:999px; padding:3px 14px; margin-bottom:10px;
+    }
+    .year-events { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
     .event-card {
       text-align:left; cursor:pointer; font-family:inherit;
       background:var(--surface); border:1px solid var(--border); border-radius:12px;
@@ -73,9 +81,16 @@
 
     /* CONTENT */
     .content { padding:0 48px 60px; max-width:1200px; margin:0 auto; }
-    .result-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:6px 0 18px; border-top:1px solid var(--border); margin-top:6px; padding-top:22px; }
+    .result-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:6px 0 18px; border-top:1px solid var(--border); margin-top:6px; padding-top:22px; }
     .result-title { font-size:20px; font-weight:700; }
     .result-date { font-size:13px; color:var(--sub); }
+    .export-btn {
+      display:inline-flex; align-items:center; gap:7px; font-family:inherit;
+      font-size:13px; font-weight:600; color:var(--sub); cursor:pointer;
+      background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 16px;
+      transition:border-color .15s, color .15s;
+    }
+    .export-btn:hover { border-color:var(--red); color:var(--red); }
 
     .category-block { margin-bottom:40px; }
     .cat-label { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 0 14px; border-bottom:2px solid var(--border); margin-bottom:2px; }
@@ -119,12 +134,14 @@
     .cb-muzi { background:#f0fdf4; color:#16a34a; border-color:#86efac; }
     .cb-zeny { background:#fdf4ff; color:#c026d3; border-color:#f0abfc; }
     .cb-ps12 { background:#fff7ed; color:#ea580c; border-color:#fed7aa; }
+    .cb-dorost { background:#f5f3ff; color:#7c3aed; border-color:#ddd6fe; }
     .cb-nz   { background:var(--bg); color:var(--sub); border-color:var(--border); }
     [data-theme="dark"] .cb-ml   { background:#1a2535; color:#60a5fa; border-color:#1e3a5f; }
     [data-theme="dark"] .cb-st   { background:#2a1a18; color:#e05545; border-color:#5a2a22; }
     [data-theme="dark"] .cb-muzi { background:#0f2318; color:#4ade80; border-color:#166534; }
     [data-theme="dark"] .cb-zeny { background:#2a1030; color:#e879f9; border-color:#701a75; }
     [data-theme="dark"] .cb-ps12 { background:#2a1a0a; color:#fb923c; border-color:#7c2d12; }
+    [data-theme="dark"] .cb-dorost { background:#1a1530; color:#a78bfa; border-color:#4c1d95; }
 
     .state-msg { padding:40px 0; text-align:center; color:var(--sub); font-size:14px; }
 
@@ -200,30 +217,65 @@
 // ─────────────────────────────────────────────────────
 const EVENTS = [
   {
-    id: 'nocni-2026',
-    name: '13. ročník Noční soutěže Častohostice',
+    id: 'nocni-2026', year: 2026,
+    name: 'Noční soutěž Častohostice',
     date: '17. července 2026',
     note: 'Muži, Ženy, PS12',
     file: 'archiv/vysledky-2026-nocni.json',
   },
   {
-    id: 'detska-2026',
+    id: 'detska-2026', year: 2026,
     name: 'O pohár starostky obce Častohostice',
     date: '9. května 2026',
     note: 'Dětská soutěž — Mladší a Starší děti',
     file: 'archiv/vysledky-2026-detska.json',
   },
   {
-    id: 'detska-2025',
+    id: 'detska-2025', year: 2025,
     name: 'O pohár starostky obce Častohostice',
     date: '10. května 2025',
     note: 'Dětská soutěž — Mladší a Starší děti',
     file: 'archiv/vysledky-2025-detska.json',
   },
+  {
+    id: 'nocni-2024', year: 2024,
+    name: 'Noční soutěž Častohostice',
+    date: '19. července 2024',
+    note: 'Muži, Ženy, Smíšený dorost + finále',
+    file: 'archiv/vysledky-2024-nocni.json',
+  },
+  {
+    id: 'nocni-2023', year: 2023,
+    name: 'Noční soutěž Častohostice',
+    date: '21. července 2023',
+    note: 'Muži, Ženy, PS12 + finále',
+    file: 'archiv/vysledky-2023-nocni.json',
+  },
+  {
+    id: 'nocni-2022', year: 2022,
+    name: 'Noční soutěž Častohostice',
+    date: '22. července 2022',
+    note: 'Muži, Ženy + rozstřel',
+    file: 'archiv/vysledky-2022-nocni.json',
+  },
+  {
+    id: 'nocni-2021', year: 2021,
+    name: 'Noční soutěž Častohostice',
+    date: '23. července 2021',
+    note: 'Muži, Ženy',
+    file: 'archiv/vysledky-2021-nocni.json',
+  },
+  {
+    id: 'nocni-2020', year: 2020,
+    name: 'Noční soutěž Častohostice',
+    date: '24. července 2020',
+    note: 'Muži, Ženy',
+    file: 'archiv/vysledky-2020-nocni.json',
+  },
 ];
 
-const CATEGORIES = ["Mladší děti","Starší děti","Muži","Ženy","PS12","Nezařazeno"];
-const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Muži":"cb-muzi", "Ženy":"cb-zeny", "PS12":"cb-ps12", "Nezařazeno":"cb-nz" };
+const CATEGORIES = ["Mladší děti","Starší děti","Muži","Ženy","PS12","Smíšený dorost","Nezařazeno"];
+const BADGE = { "Mladší děti":"cb-ml", "Starší děti":"cb-st", "Muži":"cb-muzi", "Ženy":"cb-zeny", "PS12":"cb-ps12", "Smíšený dorost":"cb-dorost", "Nezařazeno":"cb-nz" };
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -268,6 +320,8 @@ const fmtBest = bt => {
 
 // ── VYKRESLENÍ SEZNAMU SOUTĚŽÍ ───────────────────────
 let activeId = null;
+let currentEvent = null;   // právě zobrazená soutěž (pro export)
+let currentJson = null;    // její načtená data
 
 function renderEventList() {
   const el = document.getElementById('eventList');
@@ -275,12 +329,20 @@ function renderEventList() {
     el.innerHTML = '<div class="state-msg">Archiv je zatím prázdný.</div>';
     return;
   }
-  el.innerHTML = EVENTS.map(ev => `
-    <button class="event-card ${ev.id === activeId ? 'active' : ''}" onclick="loadEvent('${ev.id}')">
-      <div class="event-card-name">${esc(ev.name)}</div>
-      <div class="event-card-date">${esc(ev.date)}</div>
-      ${ev.note ? `<div class="event-card-meta">${esc(ev.note)}</div>` : ''}
-    </button>`).join('');
+  // Seskupení podle roku konání (nejnovější nahoře)
+  const years = [...new Set(EVENTS.map(e => e.year))].sort((a, b) => b - a);
+  el.innerHTML = years.map(y => `
+    <div class="year-group">
+      <div class="year-label">${y}</div>
+      <div class="year-events">
+        ${EVENTS.filter(e => e.year === y).map(ev => `
+          <button class="event-card ${ev.id === activeId ? 'active' : ''}" onclick="loadEvent('${ev.id}')">
+            <div class="event-card-name">${esc(ev.name)}</div>
+            <div class="event-card-date">${esc(ev.date)}</div>
+            ${ev.note ? `<div class="event-card-meta">${esc(ev.note)}</div>` : ''}
+          </button>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
 // ── NAČTENÍ A VYKRESLENÍ VÝSLEDKŮ ────────────────────
@@ -313,10 +375,15 @@ function renderResults(ev, json) {
   // JSON z exportu: pole 'data' (může chybět), volitelně 'finale'
   const raw = Array.isArray(json.data) ? json.data.filter(Boolean) : [];
   const teams = raw.filter(d => !isEmptyTeam(d));
+  currentEvent = ev;
+  currentJson = json;
 
   let html = `<div class="result-head">
-    <span class="result-title">${esc(ev.name)}</span>
-    <span class="result-date">${esc(ev.date)} · ${teams.length} družstev</span>
+    <div>
+      <div class="result-title">${esc(ev.name)}</div>
+      <div class="result-date">${esc(ev.date)} · ${teams.length} družstev</div>
+    </div>
+    <button class="export-btn" onclick="exportXLSX()" title="Stáhnout výsledky jako tabulku Excel">⬇ Stáhnout výsledky (Excel)</button>
   </div>`;
 
   // Výsledky po kategoriích (jen obsazené, Nezařazeno až na konec)
@@ -407,6 +474,128 @@ function renderCategory(title, rows, isFinale = false) {
     </table>
     <div class="cards">${cards}</div>
   </div>`;
+}
+
+// ── EXPORT DO EXCELU ─────────────────────────────────
+// Stejný formát jako export z hlavní aplikace; dostupný všem návštěvníkům.
+function exportXLSX() {
+  const XLSX = window.XLSX;
+  if (!XLSX) { alert('Chyba: Knihovna pro export se nenačetla. Zkuste obnovit stránku.'); return; }
+  if (!currentJson || !currentEvent) { alert('Nejprve vyber soutěž.'); return; }
+
+  const wb = XLSX.utils.book_new();
+
+  // Styly (shodné s hlavní aplikací)
+  const sTitle  = { font:{ bold:true, sz:14, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'1D6FBA' } }, alignment:{ horizontal:'center' } };
+  const sSub    = { font:{ sz:11, name:'Arial', color:{ rgb:'555555' } }, alignment:{ horizontal:'center' } };
+  const sCatHdr = { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'2D7DD2' } }, alignment:{ horizontal:'left' } };
+  const sFinHdr = { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'B8860B' } }, alignment:{ horizontal:'left' } };
+  const sColHdr = { font:{ bold:true, sz:10, name:'Arial', color:{ rgb:'FFFFFF' } }, fill:{ fgColor:{ rgb:'4A90C4' } }, alignment:{ horizontal:'center' }, border:{ bottom:{ style:'thin', color:{ rgb:'FFFFFF' } } } };
+  const sRank1  = { font:{ bold:true, sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'FFF8DC' } } };
+  const sRank2  = { font:{ sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'F0F4F8' } } };
+  const sRank3  = { font:{ sz:11, name:'Arial' }, fill:{ fgColor:{ rgb:'FDF3EC' } } };
+  const sNormal = { font:{ sz:11, name:'Arial' } };
+  const sTime   = { font:{ sz:11, name:'Arial' }, alignment:{ horizontal:'right' } };
+  const sTimeB  = { font:{ bold:true, sz:11, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } };
+  const sEmpty  = { font:{ sz:11, name:'Arial', color:{ rgb:'AAAAAA' } }, alignment:{ horizontal:'right' } };
+  const sBest   = { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } };
+  const sBestNP = { font:{ bold:true, sz:12, name:'Arial', color:{ rgb:'B45309' } }, alignment:{ horizontal:'right' } };
+
+  const cell = (v, s) => ({ v, s, t: typeof v === 'number' ? 'n' : 's' });
+  const timeCell = (val, isBest) => {
+    if (val === null || val === undefined) return cell('—', sEmpty);
+    if (val === 'DSQ') return cell('DSQ', { font:{ sz:11, name:'Arial', color:{ rgb:'C0392B' } }, alignment:{ horizontal:'right' } });
+    if (val === 'NP')  return cell('NP',  { font:{ sz:11, name:'Arial', color:{ rgb:'B45309' } }, alignment:{ horizontal:'right' } });
+    return cell(parseFloat(val.toFixed(2)), isBest ? sTimeB : sTime);
+  };
+
+  const rows = [], merges = [];
+  let r = 0;
+  const COLS = 6;
+  const fullRow = (text, style) => {
+    rows.push(Array.from({ length: COLS }, (_, i) => cell(i === 0 ? text : '', style)));
+    merges.push({ s:{ r, c:0 }, e:{ r, c:COLS-1 } });
+    r++;
+  };
+
+  // Hlavička
+  fullRow('SDH ČASTOHOSTICE — VÝSLEDKY', sTitle);
+  fullRow(`${currentEvent.name} · ${currentEvent.date}`, sSub);
+  rows.push([cell('', sNormal)]); r++;
+
+  // Sekce (kategorie + finále)
+  const teams = (Array.isArray(currentJson.data) ? currentJson.data.filter(Boolean) : [])
+    .filter(d => !isEmptyTeam(d));
+
+  const sections = CATEGORIES
+    .filter(c => teams.some(d => d.kategorie === c))
+    .map(c => ({ title: c, rows: teams.filter(d => d.kategorie === c).sort(cmpBest), fin: false }));
+
+  const fin = Array.isArray(currentJson.finale) ? currentJson.finale.filter(Boolean) : [];
+  if (fin.length) sections.push({ title: 'FINÁLE', rows: [...fin].sort(cmpBest), fin: true });
+
+  sections.forEach(sec => {
+    fullRow(`${sec.title.toUpperCase()} (${sec.rows.length})`, sec.fin ? sFinHdr : sCatHdr);
+    rows.push([
+      cell('Pořadí', sColHdr), cell('St. č.', sColHdr), cell('Družstvo', sColHdr),
+      cell('Levý terč (s)', sColHdr), cell('Pravý terč (s)', sColHdr), cell('Výsledný čas (s)', sColHdr)
+    ]);
+    r++;
+
+    sec.rows.forEach((d, i) => {
+      const bt = bestTime(d);
+      const btNum = typeof bt === 'number';
+      const rowStyle = (i===0&&btNum) ? sRank1 : (i===1&&btNum) ? sRank2 : (i===2&&btNum) ? sRank3 : sNormal;
+      const rankTxt  = (i===0&&btNum)?'🥇':(i===1&&btNum)?'🥈':(i===2&&btNum)?'🥉':`${i+1}.`;
+      const c1n = typeof d.cas1==='number', c2n = typeof d.cas2==='number';
+      const c1worst = c1n&&c2n ? d.cas1>=d.cas2 : c1n;
+      const c2worst = c1n&&c2n ? d.cas2>d.cas1  : c2n;
+      const bestCell = btNum ? cell(parseFloat(bt.toFixed(2)), sBest)
+        : bt === 'DSQ' ? cell('DSQ', sBest)
+        : bt === 'NP'  ? cell('NP', sBestNP)
+        : cell('—', sEmpty);
+      // U finalistů dohledej kategorii přes původní startovní číslo
+      let name = d.team;
+      if (sec.fin) {
+        const src = teams.find(t => t.start === d.sourceStart);
+        if (src && src.kategorie && src.kategorie !== 'Nezařazeno') name += ` (${src.kategorie})`;
+      }
+      rows.push([
+        cell(rankTxt, { ...rowStyle, alignment:{ horizontal:'center' } }),
+        cell(d.start, { ...rowStyle, alignment:{ horizontal:'center' } }),
+        cell(name, rowStyle),
+        timeCell(d.cas1, c1worst),
+        timeCell(d.cas2, c2worst),
+        bestCell
+      ]);
+      r++;
+    });
+    rows.push([cell('', sNormal)]); r++;
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(rows.map(row => row.map(c => c.v)));
+  rows.forEach((row, ri) => row.forEach((c, ci) => {
+    const addr = XLSX.utils.encode_cell({ r: ri, c: ci });
+    if (ws[addr]) ws[addr].s = c.s;
+  }));
+  ws['!merges'] = merges;
+  ws['!cols'] = [{ wch:8 }, { wch:7 }, { wch:30 }, { wch:14 }, { wch:14 }, { wch:16 }];
+  XLSX.utils.book_append_sheet(wb, ws, 'Výsledky');
+
+  try {
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `vysledky-castohostice_${currentEvent.id}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  } catch (e) {
+    console.error('Export error:', e);
+    alert('Export se nezdařil: ' + e.message);
+  }
 }
 
 // ── TÉMA ─────────────────────────────────────────────
