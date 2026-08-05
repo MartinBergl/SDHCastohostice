@@ -145,13 +145,13 @@
     .rcard-best { font-family:'DM Mono',monospace; font-size:16px; font-weight:700; color:var(--red); }
     .rcard-detail { font-family:'DM Mono',monospace; font-size:11px; color:var(--sub); }
 
+    .theme-footer { display:flex; justify-content:center; padding:8px 16px 40px; }
     #themeToggle {
-      position:fixed; top:14px; right:16px; z-index:50;
       background:var(--surface); border:1px solid var(--border); border-radius:8px;
-      padding:7px 12px; font-family:inherit; font-size:12px; font-weight:500;
-      color:var(--sub); cursor:pointer;
+      padding:9px 16px; font-family:inherit; font-size:13px; font-weight:500;
+      color:var(--sub); cursor:pointer; transition:border-color .15s, color .15s;
     }
-    #themeToggle:hover { border-color:var(--sub); background:var(--bg); }
+    #themeToggle:hover { border-color:var(--sub); color:var(--text); }
 
     @media (max-width: 760px) {
       .header { padding:16px; }
@@ -164,8 +164,6 @@
   </style>
 </head>
 <body>
-
-<button id="themeToggle" onclick="toggleTheme()">🌙 Tmavý režim</button>
 
 <header class="header">
   <div class="header-inner">
@@ -187,6 +185,10 @@
 </div>
 
 <div class="content" id="content"></div>
+
+<div class="theme-footer">
+  <button id="themeToggle" onclick="toggleTheme()">🌙 Tmavý režim</button>
+</div>
 
 <script>
 // ─────────────────────────────────────────────────────
@@ -414,9 +416,8 @@ function toggleTheme() {
 (function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem('theme'); } catch (e) {}
-  const dark = saved ? saved === 'dark'
-    : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-  applyTheme(!!dark);
+  // Výchozí je světlý režim — tmavý jen pokud si ho návštěvník sám zvolil
+  applyTheme(saved === 'dark');
 })();
 
 // ── START ────────────────────────────────────────────
