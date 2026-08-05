@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "exportDate": "2020-05-14T00:00:00.000Z",
+    "event": "O pohár starostky obce Častohostice",
+    "date": "29. srpna 2020"
+  },
+  "data": [
+    {
+      "start": 5,
+      "team": "Výčapy B",
+      "kategorie": "Mladší děti",
+      "cas1": 16.82,
+      "cas2": 16.6
+    },
+    {
+      "start": 10,
+      "team": "Výčapy A",
+      "kategorie": "Mladší děti",
+      "cas1": 17.67,
+      "cas2": 17.39
+    },
+    {
+      "start": 7,
+      "team": "Markvartice A",
+      "kategorie": "Mladší děti",
+      "cas1": 20.0,
+      "cas2": 19.6
+    },
+    {
+      "start": 9,
+      "team": "Předín A",
+      "kategorie": "Mladší děti",
+      "cas1": 20.37,
+      "cas2": 18.02
+    },
+    {
+      "start": 2,
+      "team": "Budíkovice A",
+      "kategorie": "Mladší děti",
+      "cas1": 19.11,
+      "cas2": 20.4
+    },
+    {
+      "start": 1,
+      "team": "Častohostice",
+      "kategorie": "Mladší děti",
+      "cas1": 18.69,
+      "cas2": 21.73
+    },
+    {
+      "start": 4,
+      "team": "Slavice",
+      "kategorie": "Mladší děti",
+      "cas1": 21.74,
+      "cas2": 22.15
+    },
+    {
+      "start": 3,
+      "team": "Markvartice B",
+      "kategorie": "Mladší děti",
+      "cas1": 23.18,
+      "cas2": 23.47
+    },
+    {
+      "start": 8,
+      "team": "Štěměchy",
+      "kategorie": "Mladší děti",
+      "cas1": 22.79,
+      "cas2": 23.56
+    },
+    {
+      "start": 11,
+      "team": "Předín B",
+      "kategorie": "Mladší děti",
+      "cas1": 30.54,
+      "cas2": 29.37
+    },
+    {
+      "start": 6,
+      "team": "Kojetice",
+      "kategorie": "Mladší děti",
+      "cas1": 31.47,
+      "cas2": 28.62
+    },
+    {
+      "start": 2,
+      "team": "Kojetice",
+      "kategorie": "Starší děti",
+      "cas1": 14.18,
+      "cas2": 14.71
+    },
+    {
+      "start": 15,
+      "team": "Výčapy A",
+      "kategorie": "Starší děti",
+      "cas1": 14.94,
+      "cas2": 14.03
+    },
+    {
+      "start": 9,
+      "team": "Štěměchy A",
+      "kategorie": "Starší děti",
+      "cas1": 15.04,
+      "cas2": 15.2
+    },
+    {
+      "start": 6,
+      "team": "Budíkovice",
+      "kategorie": "Starší děti",
+      "cas1": 14.71,
+      "cas2": 15.3
+    },
+    {
+      "start": 1,
+      "team": "Častohostice",
+      "kategorie": "Starší děti",
+      "cas1": 17.19,
+      "cas2": 17.68
+    },
+    {
+      "start": 10,
+      "team": "Rokytnice n/ Rok. B",
+      "kategorie": "Starší děti",
+      "cas1": 18.1,
+      "cas2": 17.19
+    },
+    {
+      "start": 14,
+      "team": "Jaroměřice n/Rok.",
+      "kategorie": "Starší děti",
+      "cas1": 17.07,
+      "cas2": 18.68
+    },
+    {
+      "start": 12,
+      "team": "Výčapy B",
+      "kategorie": "Starší děti",
+      "cas1": 18.88,
+      "cas2": 18.32
+    },
+    {
+      "start": 7,
+      "team": "Rokytnice n/ Rok. A",
+      "kategorie": "Starší děti",
+      "cas1": 25.12,
+      "cas2": 26.57
+    },
+    {
+      "start": 8,
+      "team": "Markvartice A",
+      "kategorie": "Starší děti",
+      "cas1": 38.57,
+      "cas2": 40.96
+    },
+    {
+      "start": 11,
+      "team": "Přední",
+      "kategorie": "Starší děti",
+      "cas1": 49.95,
+      "cas2": 53.67
+    },
+    {
+      "start": 3,
+      "team": "Slavice",
+      "kategorie": "Starší děti",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 4,
+      "team": "Markvartice B",
+      "kategorie": "Starší děti",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 5,
+      "team": "Heraltice",
+      "kategorie": "Starší děti",
+      "cas1": "NP",
+      "cas2": "NP"
+    },
+    {
+      "start": 13,
+      "team": "Štěměchy B",
+      "kategorie": "Starší děti",
+      "cas1": "NP",
+      "cas2": "NP"
+    }
+  ],
+  "done": {
+    "5": true,
+    "10": true,
+    "7": true,
+    "9": true,
+    "2": true,
+    "1": true,
+    "4": true,
+    "3": true,
+    "8": true,
+    "11": true,
+    "6": true,
+    "15": true,
+    "14": true,
+    "12": true,
+    "13": true
+  },
+  "phase": "results",
+  "finale": [],
+  "finaleVisible": false
+}
