@@ -3155,7 +3155,7 @@ function swapByPosition(srcStart, tgtStart) {
   // zůstávají beze změny. Stejná sémantika jako moveTeam se sousedem.
   const src = data.find(d => d.start === srcStart);
   const tgt = data.find(d => d.start === tgtStart);
-  if (!src || !tgt) return;
+  if (!src || !tgt || src === tgt || srcStart === tgtStart) return;
 
   src.start = tgtStart;
   tgt.start = srcStart;
@@ -3163,8 +3163,8 @@ function swapByPosition(srcStart, tgtStart) {
   // Přemapuj doneSet a finaleData podle družstva, ne podle pozice
   remapStartReferences({ [srcStart]: tgtStart, [tgtStart]: srcStart });
 
-  // Debounce zabrání vícenásobnému zápisu při rychlém přetahování.
-  saveData(); renderResults(); renderStartlist();
+  // Okamžitý zápis — viz komentář v moveTeam (debounce zde hrozí duplicitami)
+  saveData(true); renderResults(); renderStartlist();
 }
 
 // ── QUICK TIME ENTRY ──────────────────────────────────
@@ -3401,9 +3401,48 @@ function deleteTeam(startNum) {
   renderResults(); renderStartlist();
 }
 
+// Oprava duplicitních startovních čísel: první výskyt si číslo ponechá,
+// každý další dostane nejbližší volné. Časy ani odběhnutí se neztratí —
+// vazby v doneSet a finaleData se přemapují spolu s číslem.
+function fixDuplicateStarts() {
+  if (!isAdmin) return;
+  // 1) Naplánuj opravy bez zásahu do dat
+  const seen = new Set();
+  const used = new Set(data.map(d => Number(d.start)).filter(n => Number.isFinite(n)));
+  const plan = [];   // [{ row, stare, nove }]
+  const remap = {};
+
+  data.forEach(row => {
+    const s = Number(row.start);
+    if (Number.isFinite(s) && !seen.has(s)) { seen.add(s); return; }
+    let novy = 1;
+    while (used.has(novy) || seen.has(novy)) novy++;
+    if (Number.isFinite(s)) remap[s] = novy;
+    plan.push({ row, stare: row.start, nove: novy });
+    seen.add(novy); used.add(novy);
+  });
+
+  if (!plan.length) { alert('Žádné duplicitní startovní číslo nebylo nalezeno.'); return; }
+
+  // 2) Ukaž, co se stane, a nech potvrdit
+  const popis = plan.map(p => `  ${p.row.team || '(volná pozice)'}: ${p.stare} → ${p.nove}`).join('\n');
+  if (!confirm(`Opravit ${plan.length} duplicitních startovních čísel?\n\n${popis}`)) return;
+
+  // 3) Teprve teď proveď
+  plan.forEach(p => { p.row.start = p.nove; });
+  remapStartReferences(remap);
+  saveData(true);
+  renderResults(); renderStartlist();
+}
+
 function addTeam() {
-  const maxStart = data.length ? Math.max(...data.map(d=>d.start)) : 0;
-  data.push({ start: maxStart+1, team: 'Nové družstvo', kategorie: 'Mladší děti', cas1: null, cas2: null });
+  // Vyber první skutečně volné číslo — nespoléhej jen na max+1.
+  // (Pokud by se v datech objevila nečíselná nebo chybějící hodnota,
+  // max+1 může vrátit NaN nebo číslo, které už existuje.)
+  const used = new Set(data.map(d => Number(d.start)).filter(n => Number.isFinite(n)));
+  let newStart = 1;
+  while (used.has(newStart)) newStart++;
+  data.push({ start: newStart, team: 'Nové družstvo', kategorie: 'Mladší děti', cas1: null, cas2: null });
   // Přidání týmu mění délku pole — nutný plný zápis
   saveData(true);
   renderResults(); renderStartlist();
@@ -3422,19 +3461,22 @@ function moveTeam(startNum, dir) {
   const sorted = [...data].sort((a,b) => a.start - b.start);
   const idx = sorted.findIndex(d => d.start === startNum);
   const swapIdx = idx + dir;
-  if (swapIdx < 0 || swapIdx >= sorted.length) return;
+  if (idx < 0 || swapIdx < 0 || swapIdx >= sorted.length) return;
 
   // Swap start numbers between the two rows
   const startA = sorted[idx].start;
   const startB = sorted[swapIdx].start;
+  if (startA === startB) return; // pojistka proti duplicitě
   sorted[idx].start = startB;
   sorted[swapIdx].start = startA;
 
   // Přemapuj doneSet a finaleData podle družstva, ne podle pozice
   remapStartReferences({ [startA]: startB, [startB]: startA });
 
-  // OPTIMALIZACE: debounce — při rychlém klikání ↑↓ se provede jen 1 zápis
-  saveData(); renderResults(); renderStartlist();
+  // Zápis okamžitě: změna startovních čísel je strukturální. Při debounce
+  // může mezitím dorazit snapshot z Firebase, přepsat pole novými objekty
+  // a odložený zápis pak uloží nekonzistentní stav (duplicitní čísla).
+  saveData(true); renderResults(); renderStartlist();
 }
 
 // ── DONE TOGGLE ───────────────────────────────────────
@@ -3595,16 +3637,20 @@ function renderAdminBar() {
     const queueCount = offlineQueueLoad().length;
 
     const dupeWarning = dupeStarts.length
-      ? `<span id="dupeWarning" style="font-size:12px;font-weight:600;color:var(--red);background:var(--red-soft);border:1px solid #f5c6c2;border-radius:6px;padding:4px 10px;">⚠️ Duplicitní St.č.: ${dupeStarts.join(', ')} — oprav v editaci</span>`
+      ? `<span id="dupeWarning" style="font-size:12px;font-weight:600;color:var(--red);background:var(--red-soft);border:1px solid #f5c6c2;border-radius:6px;padding:4px 10px;">⚠️ Duplicitní St.č.: ${dupeStarts.join(', ')} <button class="admin-btn" style="font-size:11px;padding:2px 8px;margin-left:6px;" onclick="fixDuplicateStarts()">Opravit</button></span>`
       : '';
 
     const lockBadge = lockHeldByOther()
       ? `<span style="font-size:12px;font-weight:600;color:#b45309;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:4px 10px;">✏️ Listinu právě edituje: ${esc(editLock.email || 'jiná relace')}</span>`
       : '';
 
+    // Varování (zámek editace, duplicity) ve vlastním vystředěném řádku
+    const warnings = (dupeWarning || lockBadge)
+      ? `<div style="display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;width:100%;margin-bottom:6px;">${lockBadge}${dupeWarning}</div>`
+      : '';
+
     bar.innerHTML = `
-      ${dupeWarning}
-      ${lockBadge}
+      ${warnings}
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;justify-content:center;">
 
         <!-- Stavový čip: e-mail + připojení -->
@@ -4645,6 +4691,7 @@ window.saveSelectField = saveSelectField;
 window.deleteTeam    = deleteTeam;
 window.resetTeamTimes = resetTeamTimes;
 window.addTeam       = addTeam;
+window.fixDuplicateStarts = fixDuplicateStarts;
 window.moveTeam      = moveTeam;
 window.toggleEditMode = toggleEditMode;
 window.toggleExportMenu = toggleExportMenu;
