@@ -2934,7 +2934,7 @@ function renderStartlist() {
           <button class="order-btn" title="Posunout dolů" onclick="moveTeam(${d.start}, 1)" ${i===sorted.length-1?'disabled':''}>↓</button>
         ` : ''}
         ${!isEmpty && !editMode ? `<button class="toggle-btn" onclick="toggleDone(${d.start})">${isDone?'Vrátit':'Odběhnuto'}</button>` : ''}
-        ${editMode ? `<button class="del-btn" title="Odstranit družstvo (pozice zůstane volná)" onclick="deleteTeam(${d.start})">✕</button>` : ''}
+        ${editMode ? `<button class="del-btn" title="${isEmpty ? (i === sorted.length-1 ? 'Odstranit poslední pozici z listiny' : 'Volnou pozici uprostřed listiny nelze odstranit') : 'Odstranit družstvo (pozice zůstane volná)'}" onclick="deleteTeam(${d.start})">✕</button>` : ''}
       </td>` : '';
 
     const tsVal = d.zapisCas
@@ -3359,8 +3359,15 @@ function deleteTeam(startNum) {
   if (!row) return;
 
   if (isEmptyTeam(row)) {
-    // Prázdná pozice → křížek ji odstraní z listiny úplně
-    if (!confirm(`Odstranit volnou pozici č. ${startNum} z listiny?`)) return;
+    // Prázdnou pozici lze z listiny odstranit jen na jejím konci —
+    // uprostřed by se ztratilo místo pro dodatečně příchozí družstvo
+    // a startovní čísla za ní by přestala odpovídat
+    const maxStart = Math.max(...data.map(d => d.start));
+    if (startNum !== maxStart) {
+      alert(`Volnou pozici č. ${startNum} nelze odstranit — není poslední v listině.\n\nPozice uprostřed zůstávají volné pro případné dodatečné družstvo. Odstranit lze jen poslední pozici (č. ${maxStart}).`);
+      return;
+    }
+    if (!confirm(`Odstranit poslední pozici č. ${startNum} z listiny?`)) return;
     data = data.filter(d => d.start !== startNum);
   } else {
     // Obsazená pozice → křížek smaže jen družstvo (včetně časů a stavu),
