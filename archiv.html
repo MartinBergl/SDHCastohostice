@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Archiv výsledků — SDH Častohostice</title>
-  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="icon" type="image/png" href="images/favicon-32.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -68,6 +68,30 @@
       border-radius:999px; padding:3px 14px; margin-bottom:10px;
     }
     .year-events { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+
+    /* Vyhledávání družstva napříč ročníky */
+    .search-wrap { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:0 0 18px; }
+    .search-input {
+      flex:1; min-width:220px; max-width:420px;
+      font-family:inherit; font-size:14px; color:var(--text);
+      background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 14px;
+    }
+    .search-input:focus { outline:none; border-color:var(--red); }
+    .search-hint { font-size:12px; color:var(--sub); }
+    .search-results { margin-bottom:24px; }
+    .search-year { margin-bottom:14px; }
+    .search-year-head { font-size:13px; font-weight:700; color:var(--sub); margin-bottom:6px; }
+    .search-row {
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      background:var(--surface); border:1px solid var(--border); border-radius:9px;
+      padding:9px 14px; margin-bottom:6px; cursor:pointer;
+      transition:border-color .15s;
+    }
+    .search-row:hover { border-color:var(--red); }
+    .search-team { font-size:14px; font-weight:600; flex:1; min-width:140px; }
+    .search-meta { font-size:12px; color:var(--sub); }
+    .search-place { font-size:13px; font-weight:700; min-width:34px; }
+    .search-time { font-family:'DM Mono',monospace; font-size:14px; font-weight:600; color:var(--red); }
     .event-card {
       text-align:left; cursor:pointer; font-family:inherit;
       background:var(--surface); border:1px solid var(--border); border-radius:12px;
@@ -179,6 +203,11 @@
       .cat-name { font-size:19px; }
     }
   </style>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#d63b2a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="SDH Výsledky" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 </head>
 <body>
 
@@ -197,7 +226,12 @@
 <div class="archive-nav">
   <a class="back-link" href="index.html">← Zpět na aktuální soutěž</a>
   <div class="archive-title">Archiv výsledků</div>
-  <div class="archive-sub">Vyber soutěž a zobraz její konečné výsledky.</div>
+  <div class="archive-sub">Vyber soutěž a zobraz její konečné výsledky, nebo vyhledej družstvo napříč ročníky.</div>
+  <div class="search-wrap">
+    <input id="searchInput" class="search-input" type="search" placeholder="🔍 Hledat družstvo (např. Vítonice)…" oninput="runSearch()" />
+    <span class="search-hint" id="searchHint"></span>
+  </div>
+  <div class="search-results" id="searchResults"></div>
   <div class="event-list" id="eventList"></div>
 </div>
 
@@ -338,6 +372,102 @@ const fmtBest = bt => {
   if (bt === 'NP')  return '<span class="np-tag">NP</span>';
   return bt.toFixed(2) + '&thinsp;s';
 };
+
+// ── VYHLEDÁVÁNÍ DRUŽSTVA NAPŘÍČ ROČNÍKY ──────────────
+// Data všech soutěží se načtou jednorázově při prvním hledání a drží
+// se v paměti; hledá se bez ohledu na diakritiku a velikost písmen.
+const _cache = new Map();
+let _searchTimer = null;
+
+const normalize = s => String(s ?? '')
+  .toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '');   // odstraní diakritiku
+
+async function loadAll() {
+  await Promise.all(EVENTS.map(async ev => {
+    if (_cache.has(ev.id)) return;
+    try {
+      const res = await fetch(ev.file, { cache: 'force-cache' });
+      _cache.set(ev.id, res.ok ? await res.json() : null);
+    } catch { _cache.set(ev.id, null); }
+  }));
+}
+
+function runSearch() {
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(doSearch, 250);   // debounce při psaní
+}
+
+async function doSearch() {
+  const q = normalize(document.getElementById('searchInput')?.value.trim());
+  const box = document.getElementById('searchResults');
+  const hint = document.getElementById('searchHint');
+  if (!box) return;
+
+  if (q.length < 2) {
+    box.innerHTML = '';
+    if (hint) hint.textContent = '';
+    return;
+  }
+
+  if (hint) hint.textContent = 'Hledám…';
+  await loadAll();
+
+  // Pro každou soutěž najdi shody a spočítej pořadí v jejich kategorii
+  const nalezy = [];
+  EVENTS.forEach(ev => {
+    const json = _cache.get(ev.id);
+    if (!json) return;
+    const teams = (Array.isArray(json.data) ? json.data.filter(Boolean) : [])
+      .filter(d => !isEmptyTeam(d));
+
+    teams.filter(d => normalize(d.team).includes(q)).forEach(d => {
+      const vKat = teams.filter(x => x.kategorie === d.kategorie).sort(cmpBest);
+      nalezy.push({
+        ev, team: d.team, kategorie: d.kategorie,
+        poradi: vKat.findIndex(x => x === d) + 1,
+        celkem: vKat.length,
+        cas: bestTime(d),
+      });
+    });
+
+    // Finále hledáme také
+    (Array.isArray(json.finale) ? json.finale.filter(Boolean) : [])
+      .filter(f => normalize(f.team).includes(q)).forEach(f => {
+        const fin = [...json.finale.filter(Boolean)].sort(cmpBest);
+        nalezy.push({
+          ev, team: f.team, kategorie: 'Finále',
+          poradi: fin.findIndex(x => x === f) + 1, celkem: fin.length,
+          cas: bestTime(f),
+        });
+      });
+  });
+
+  if (hint) hint.textContent = nalezy.length
+    ? `${nalezy.length} ${nalezy.length === 1 ? 'výsledek' : nalezy.length < 5 ? 'výsledky' : 'výsledků'}`
+    : 'Nic nenalezeno';
+
+  if (!nalezy.length) {
+    box.innerHTML = `<div class="state-msg">Družstvo nenalezeno. Zkus jinou část názvu.</div>`;
+    return;
+  }
+
+  // Seskup podle roku (nejnovější nahoře)
+  const roky = [...new Set(nalezy.map(n => n.ev.year))].sort((a, b) => b - a);
+  const medaile = p => p === 1 ? '🥇' : p === 2 ? '🥈' : p === 3 ? '🥉' : `${p}.`;
+
+  box.innerHTML = roky.map(rok => `
+    <div class="search-year">
+      <div class="search-year-head">${rok}</div>
+      ${nalezy.filter(n => n.ev.year === rok).map(n => `
+        <div class="search-row" onclick="loadEvent('${n.ev.id}')" title="Zobrazit celé výsledky">
+          <span class="search-place">${typeof n.cas === 'number' ? medaile(n.poradi) : '—'}</span>
+          <span class="search-team">${esc(n.team)}</span>
+          <span class="search-meta">${esc(n.kategorie)} · ${esc(n.ev.date)}</span>
+          <span class="search-time">${typeof n.cas === 'number' ? n.cas.toFixed(2) + ' s' : (n.cas ?? '—')}</span>
+        </div>`).join('')}
+    </div>`).join('');
+}
 
 // ── VYKRESLENÍ SEZNAMU SOUTĚŽÍ ───────────────────────
 let activeId = null;
@@ -645,5 +775,16 @@ const initial = EVENTS.find(e => e.id === wanted) || EVENTS[0];
 if (initial) loadEvent(initial.id);
 </script>
 
+
+<script>
+  // Registrace service workeru — offline režim a instalace na plochu.
+  // Funguje jen přes https (GitHub Pages) nebo localhost, jinak se tiše přeskočí.
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .catch(err => console.warn('Service worker se nepodařilo zaregistrovat:', err));
+    });
+  }
+</script>
 </body>
 </html>

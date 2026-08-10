@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SDH-Častohostice</title>
-  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="icon" type="image/png" href="images/favicon-32.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -367,6 +367,29 @@
     .done .toggle-btn:hover { background:#dcfce7; }
 
     .del-btn { font-size:16px; background:none; border:none; cursor:pointer; color:var(--muted); padding:2px 6px; border-radius:4px; line-height:1; transition:all .15s; }
+
+    /* Zvýraznění právě zapsaného času — krátké probliknutí řádku */
+    @keyframes flashNew {
+      0%   { background-color: rgba(250,204,21,.55); }
+      60%  { background-color: rgba(250,204,21,.30); }
+      100% { background-color: transparent; }
+    }
+    tr.flash-new > td, .sl-card.flash-new, .rcard.flash-new {
+      animation: flashNew 2.4s ease-out;
+    }
+    [data-theme="dark"] tr.flash-new > td,
+    [data-theme="dark"] .sl-card.flash-new,
+    [data-theme="dark"] .rcard.flash-new {
+      animation-name: flashNewDark;
+    }
+    @keyframes flashNewDark {
+      0%   { background-color: rgba(250,204,21,.30); }
+      60%  { background-color: rgba(250,204,21,.16); }
+      100% { background-color: transparent; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      tr.flash-new > td, .sl-card.flash-new, .rcard.flash-new { animation: none; }
+    }
     .del-btn:hover { color:var(--red); background:var(--red-soft); }
 
     .order-btn { font-size:14px; font-weight:600; background:none; border:1px solid var(--border); border-radius:4px; color:var(--sub); cursor:pointer; padding:1px 7px; line-height:1.4; transition:all .15s; }
@@ -1371,6 +1394,11 @@
       .startlist-table thead th { position:static; box-shadow:none; }
     }
   </style>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#d63b2a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="SDH Výsledky" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 </head>
 <body>
 
@@ -1588,6 +1616,35 @@ let isAdmin = false;
 let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet = new Set();
 let dupeStarts = []; // duplicitní startovní čísla (varování v admin liště)
+
+// ── ZVÝRAZNĚNÍ NOVÝCH ČASŮ ───────────────────────────
+// Po příchodu dat porovnáme časy s předchozím stavem; startovní čísla,
+// kterým čas přibyl nebo se změnil, krátce probliknou v tabulkách.
+let _prevTimes = null;          // { start: "cas1|cas2" } z minulého snapshotu
+let flashStarts = new Set();    // st. č. k probliknutí v tomto renderu
+const _flashTimers = new Map();
+
+function detectNewTimes() {
+  const snapshot = {};
+  data.forEach(d => { snapshot[d.start] = `${d.cas1 ?? ''}|${d.cas2 ?? ''}`; });
+
+  if (_prevTimes) {   // první načtení stránky nikdy neproblikáváme
+    Object.keys(snapshot).forEach(start => {
+      const bylo = _prevTimes[start];
+      const je = snapshot[start];
+      // Zvýrazni jen doplnění/změnu času, ne smazání ani nové prázdné řádky
+      if (bylo !== undefined && bylo !== je && je !== '|') {
+        flashStarts.add(Number(start));
+        clearTimeout(_flashTimers.get(start));
+        _flashTimers.set(start, setTimeout(() => {
+          flashStarts.delete(Number(start));
+          _flashTimers.delete(start);
+        }, 2600));   // o něco déle než animace, ať doběhne
+      }
+    });
+  }
+  _prevTimes = snapshot;
+}
 
 // ── ZÁMEK EDITACE ────────────────────────────────────
 // Každá otevřená stránka (tab/zařízení) má vlastní náhodné ID relace.
@@ -2019,7 +2076,10 @@ async function loadFromFirebase() {
 
   visitorDataUnsub = onValue(ref(db, 'data'), snap => {
     if (snap.exists()) {
-      data = snap.val();
+      // filter(Boolean) odstraní případné díry v poli — RTDB vrací pole
+      // s null prvky, pokud v databázi chybí některý index
+      data = (snap.val() || []).filter(Boolean);
+      detectNewTimes();
     } else if (_visitorFirstLoad) {
       data = JSON.parse(JSON.stringify(DEFAULT_DATA));
     }
@@ -2125,7 +2185,9 @@ onAuthStateChanged(auth, user => {
     let _dataFirstLoad = true;
     adminDataUnsub = onValue(ref(db, 'data'), snap => {
       if (snap.exists()) {
-        data = snap.val();
+        // filter(Boolean) odstraní případné díry v poli (viz listener návštěvníka)
+        data = (snap.val() || []).filter(Boolean);
+        detectNewTimes();
         // Detekce duplicitních startovních čísel — uloží se do stavové
         // proměnné a vykreslí uvnitř renderAdminBar (dřívější DOM prepend
         // zmizel při každém překreslení admin lišty)
@@ -2670,7 +2732,7 @@ function renderResults() {
           ? `<td class="gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
           : `<td class="gap-col empty">—</td>`;
 
-      return `<tr class="${rc}">
+      return `<tr class="${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}">
         <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
         <td><div class="tname">${esc(d.team)}</div></td>
@@ -2694,7 +2756,7 @@ function renderResults() {
       const bestStr = fmtBest(bt);
       const cardGap = (i===0||!btNum||leaderTime===null) ? null : bt - leaderTime;
       const gapStr = i===0 ? null : cardGap!==null ? `+${cardGap.toFixed(2)}&thinsp;s` : null;
-      return `<div class="result-card ${rc}">
+      return `<div class="result-card ${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
         <div class="rc-body">
           <div class="rc-team">${esc(d.team)}</div>
@@ -2898,7 +2960,7 @@ function renderStartlist() {
     const isDone  = doneSet.has(d.start);
     const isEmpty = isEmptyTeam(d);
     const isNext  = !isDone && !isEmpty && d.start === nextStart;
-    const rowClass = isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '';
+    const rowClass = (isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '') + (flashStarts.has(d.start) ? ' flash-new' : '');
 
     const statusTag = isDone
       ? `<span class="done-tag">✓ Odběhnuto</span>`
@@ -2961,7 +3023,7 @@ function renderStartlist() {
     const isDone  = doneSet.has(d.start);
     const isEmpty = isEmptyTeam(d);
     const isNext  = !isDone && !isEmpty && d.start === nextStart;
-    const rowClass = isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '';
+    const rowClass = (isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '') + (flashStarts.has(d.start) ? ' flash-new' : '');
 
     const statusTag = isDone
       ? `<span class="done-tag">✓ Odběhnuto</span>`
@@ -4813,6 +4875,17 @@ if (importDrop) {
     if (file) handleImportFile(file);
   });
 }
+</script>
+
+<script>
+  // Registrace service workeru — offline režim a instalace na plochu.
+  // Funguje jen přes https (GitHub Pages) nebo localhost, jinak se tiše přeskočí.
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .catch(err => console.warn('Service worker se nepodařilo zaregistrovat:', err));
+    });
+  }
 </script>
 </body>
 </html>
