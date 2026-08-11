@@ -370,25 +370,31 @@
 
     /* Zvýraznění právě zapsaného času — krátké probliknutí řádku */
     @keyframes flashNew {
-      0%   { background-color: rgba(250,204,21,.55); }
-      60%  { background-color: rgba(250,204,21,.30); }
+      0%   { background-color: rgba(250,204,21,.60); }
+      60%  { background-color: rgba(250,204,21,.32); }
       100% { background-color: transparent; }
     }
-    tr.flash-new > td, .sl-card.flash-new, .rcard.flash-new {
+    .startlist-table tbody tr.flash-new > td,
+    .content tbody tr.flash-new > td,
+    .sl-card.flash-new,
+    .result-card.flash-new {
       animation: flashNew 2.4s ease-out;
     }
-    [data-theme="dark"] tr.flash-new > td,
+    [data-theme="dark"] .startlist-table tbody tr.flash-new > td,
+    [data-theme="dark"] .content tbody tr.flash-new > td,
     [data-theme="dark"] .sl-card.flash-new,
-    [data-theme="dark"] .rcard.flash-new {
+    [data-theme="dark"] .result-card.flash-new {
       animation-name: flashNewDark;
     }
     @keyframes flashNewDark {
-      0%   { background-color: rgba(250,204,21,.30); }
-      60%  { background-color: rgba(250,204,21,.16); }
+      0%   { background-color: rgba(250,204,21,.34); }
+      60%  { background-color: rgba(250,204,21,.18); }
       100% { background-color: transparent; }
     }
     @media (prefers-reduced-motion: reduce) {
-      tr.flash-new > td, .sl-card.flash-new, .rcard.flash-new { animation: none; }
+      .startlist-table tbody tr.flash-new > td,
+      .content tbody tr.flash-new > td,
+      .sl-card.flash-new, .result-card.flash-new { animation: none; }
     }
     .del-btn:hover { color:var(--red); background:var(--red-soft); }
 
@@ -1624,6 +1630,18 @@ let _prevTimes = null;          // { start: "cas1|cas2" } z minulého snapshotu
 let flashStarts = new Set();    // st. č. k probliknutí v tomto renderu
 const _flashTimers = new Map();
 
+// Označí startovní číslo k probliknutí a po doběhnutí animace ho uklidí
+function markFlash(start) {
+  const s = Number(start);
+  if (!Number.isFinite(s)) return;
+  flashStarts.add(s);
+  clearTimeout(_flashTimers.get(s));
+  _flashTimers.set(s, setTimeout(() => {
+    flashStarts.delete(s);
+    _flashTimers.delete(s);
+  }, 2600));   // o něco déle než animace, ať doběhne
+}
+
 function detectNewTimes() {
   const snapshot = {};
   data.forEach(d => { snapshot[d.start] = `${d.cas1 ?? ''}|${d.cas2 ?? ''}`; });
@@ -1633,14 +1651,7 @@ function detectNewTimes() {
       const bylo = _prevTimes[start];
       const je = snapshot[start];
       // Zvýrazni jen doplnění/změnu času, ne smazání ani nové prázdné řádky
-      if (bylo !== undefined && bylo !== je && je !== '|') {
-        flashStarts.add(Number(start));
-        clearTimeout(_flashTimers.get(start));
-        _flashTimers.set(start, setTimeout(() => {
-          flashStarts.delete(Number(start));
-          _flashTimers.delete(start);
-        }, 2600));   // o něco déle než animace, ať doběhne
-      }
+      if (bylo !== undefined && bylo !== je && je !== '|') markFlash(start);
     });
   }
   _prevTimes = snapshot;
@@ -2732,7 +2743,7 @@ function renderResults() {
           ? `<td class="gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
           : `<td class="gap-col empty">—</td>`;
 
-      return `<tr class="${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}">
+      return `<tr class="${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}" data-start="${d.start}">
         <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
         <td><div class="tname">${esc(d.team)}</div></td>
@@ -2756,7 +2767,7 @@ function renderResults() {
       const bestStr = fmtBest(bt);
       const cardGap = (i===0||!btNum||leaderTime===null) ? null : bt - leaderTime;
       const gapStr = i===0 ? null : cardGap!==null ? `+${cardGap.toFixed(2)}&thinsp;s` : null;
-      return `<div class="result-card ${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}">
+      return `<div class="result-card ${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}" data-start="${d.start}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
         <div class="rc-body">
           <div class="rc-team">${esc(d.team)}</div>
@@ -3305,6 +3316,7 @@ function saveQuickTime(startNum) {
   // OPTIMALIZACE: patch jen 3 pole (cas1, cas2, zapisCas) jednoho týmu
   // místo celého pole všech týmů → ~90 % úspora dat při zadávání časů
   saveTeamPatch(startNum);
+  markFlash(startNum);   // probliknutí hned, nečekej na odpověď z databáze
   renderResults(); renderStartlist(); renderSummaryBar();
 }
 
