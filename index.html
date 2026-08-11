@@ -1624,6 +1624,12 @@ let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet = new Set();
 let dupeStarts = []; // duplicitní startovní čísla (varování v admin liště)
 
+// TV režim (?tv v URL) — definováno takto brzy, protože na něm závisí
+// i vyhodnocení přihlášení: Firebase sdílí přihlášení mezi okny stejného
+// prohlížeče, takže by se televize jinak tvářila jako admin
+const TV_QS   = new URLSearchParams(location.search);
+const TV_MODE = TV_QS.has('tv');
+
 // ── DETEKCE NOVÝCH ČASŮ ──────────────────────────────
 // Po příchodu dat porovnáme časy s předchozím stavem; družstva, kterým
 // čas přibyl nebo se změnil, ohlásíme návštěvníkovi vyskakovacím oknem.
@@ -2200,7 +2206,10 @@ let adminCdUnsub       = null;
 let adminAnnUnsub      = null;
 
 onAuthStateChanged(auth, user => {
-  isAdmin = !!user;
+  // V TV režimu se nikdy nechováme jako admin, i když je v jiném okně
+  // stejného prohlížeče admin přihlášený (Firebase přihlášení je sdílené).
+  // Televize tak vždy ukazuje čistý návštěvnický pohled.
+  isAdmin = !!user && !TV_MODE;
   document.body.classList.toggle('is-admin', isAdmin); // připnutá admin lišta
   if (!isAdmin) {
     document.body.classList.remove('edit-mode');
@@ -4438,8 +4447,6 @@ function logout() {
 // Celoobrazovková smyčka pro promítání na televizi:
 // startovní listina → výsledky obsazených kategorií → finále → znovu.
 // Délky slajdů lze ladit v URL: ?tv&list=40&vysledky=15 (sekundy).
-const TV_QS   = new URLSearchParams(location.search);
-const TV_MODE = TV_QS.has('tv');
 let tvConfig = null;   // živá konfigurace z DB (uzel tvConfig) — má přednost před URL
 let tvIndex = 0;
 let tvTimer = null;
