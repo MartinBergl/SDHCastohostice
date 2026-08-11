@@ -368,6 +368,34 @@
 
     .del-btn { font-size:16px; background:none; border:none; cursor:pointer; color:var(--muted); padding:2px 6px; border-radius:4px; line-height:1; transition:all .15s; }
 
+    /* Vyskakovací oznámení o novém výsledku (jen pro návštěvníky) */
+    #newTimeToast {
+      position: fixed; top: 12px; left: 50%; transform: translateX(-50%) translateY(-140%);
+      z-index: 130; display: flex; align-items: center; gap: 12px;
+      background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--red);
+      border-radius: 12px; padding: 11px 18px 11px 14px;
+      box-shadow: 0 6px 26px rgba(0,0,0,.16);
+      max-width: min(92vw, 460px); pointer-events: none;
+      transition: transform .32s cubic-bezier(.2,.9,.3,1.2), opacity .25s;
+      opacity: 0;
+    }
+    #newTimeToast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .ntt-icon { font-size: 22px; flex: none; }
+    .ntt-body { min-width: 0; }
+    .ntt-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--sub); }
+    .ntt-team { font-size: 15px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ntt-meta { font-size: 12px; color: var(--sub); }
+    .ntt-time { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; color: var(--red); flex: none; }
+    .ntt-time.tag { font-size: 14px; letter-spacing: 1px; }
+    @media (max-width: 700px) {
+      #newTimeToast { top: 8px; padding: 9px 14px 9px 11px; gap: 9px; }
+      .ntt-team { font-size: 14px; }
+      .ntt-time { font-size: 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #newTimeToast { transition: opacity .2s; transform: translateX(-50%) translateY(0); }
+    }
+
     /* Zvýraznění právě zapsaného času — krátké probliknutí řádku */
     @keyframes flashNew {
       0%   { background-color: rgba(250,204,21,.60); }
@@ -1630,8 +1658,11 @@ let _prevTimes = null;          // { start: "cas1|cas2" } z minulého snapshotu
 let flashStarts = new Set();    // st. č. k probliknutí v tomto renderu
 const _flashTimers = new Map();
 
-// Označí startovní číslo k probliknutí a po doběhnutí animace ho uklidí
+// Označí startovní číslo k probliknutí a po doběhnutí animace ho uklidí.
+// V admin režimu se neprobliká — zapisovatel svůj zápis vidí a blikání
+// by ho při rychlém zadávání jen rušilo.
 function markFlash(start) {
+  if (isAdmin) return;
   const s = Number(start);
   if (!Number.isFinite(s)) return;
   flashStarts.add(s);
@@ -1640,6 +1671,59 @@ function markFlash(start) {
     flashStarts.delete(s);
     _flashTimers.delete(s);
   }, 2600));   // o něco déle než animace, ať doběhne
+}
+
+// ── VYSKAKOVACÍ OZNÁMENÍ O NOVÉM VÝSLEDKU ────────────
+// Návštěvník uvidí nový čas, i když je zrovna jinde na stránce.
+// Fronta zajistí, že se oznámení nepřekrývají (např. po hromadné změně).
+const _toastQueue = [];
+let _toastBusy = false;
+
+function queueNewTimeToast(row) {
+  if (isAdmin || phase !== 'results') return;
+  _toastQueue.push(row);
+  if (_toastQueue.length > 3) _toastQueue.splice(0, _toastQueue.length - 3);
+  if (!_toastBusy) showNextToast();
+}
+
+function showNextToast() {
+  const row = _toastQueue.shift();
+  if (!row) { _toastBusy = false; return; }
+  _toastBusy = true;
+
+  let el = document.getElementById('newTimeToast');
+  if (!el) { el = document.createElement('div'); el.id = 'newTimeToast'; document.body.appendChild(el); }
+
+  const bt = bestTime(row);
+  const btNum = typeof bt === 'number';
+  // Pořadí v kategorii — ať je hned vidět, jestli je to nové vedení
+  let poradi = null;
+  if (btNum && row.kategorie && row.kategorie !== 'Nezařazeno') {
+    const vKat = data
+      .filter(d => d.kategorie === row.kategorie && !isEmptyTeam(d) && typeof bestTime(d) === 'number')
+      .sort(cmpBest);
+    const i = vKat.findIndex(d => d.start === row.start);
+    if (i >= 0) poradi = i + 1;
+  }
+
+  const casHtml = btNum
+    ? `${bt.toFixed(2)}<span style="font-size:13px"> s</span>`
+    : `<span class="ntt-time tag" style="color:${bt === 'NP' ? '#b45309' : 'var(--red)'}">${bt ?? '—'}</span>`;
+
+  el.innerHTML = `
+    <span class="ntt-icon">${poradi === 1 ? '🥇' : '⏱️'}</span>
+    <div class="ntt-body">
+      <div class="ntt-label">${poradi === 1 ? 'Nové vedení' : 'Nový výsledek'}</div>
+      <div class="ntt-team">${esc(row.team)}</div>
+      <div class="ntt-meta">${esc(row.kategorie || '')}${poradi ? ` · ${poradi}. místo` : ''}</div>
+    </div>
+    ${btNum ? `<span class="ntt-time">${casHtml}</span>` : casHtml}`;
+
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(showNextToast, 400);   // po zasunutí pusť další z fronty
+  }, 5000);
 }
 
 function detectNewTimes() {
@@ -1651,7 +1735,11 @@ function detectNewTimes() {
       const bylo = _prevTimes[start];
       const je = snapshot[start];
       // Zvýrazni jen doplnění/změnu času, ne smazání ani nové prázdné řádky
-      if (bylo !== undefined && bylo !== je && je !== '|') markFlash(start);
+      if (bylo !== undefined && bylo !== je && je !== '|') {
+        markFlash(start);
+        const row = data.find(d => String(d.start) === String(start));
+        if (row && !isEmptyTeam(row)) queueNewTimeToast(row);
+      }
     });
   }
   _prevTimes = snapshot;
