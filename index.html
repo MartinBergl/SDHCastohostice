@@ -371,59 +371,32 @@
     /* Vyskakovací oznámení o novém výsledku (jen pro návštěvníky) */
     #newTimeToast {
       position: fixed; top: 12px; left: 50%; transform: translateX(-50%) translateY(-140%);
-      z-index: 130; display: flex; align-items: center; gap: 12px;
-      background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--red);
-      border-radius: 12px; padding: 11px 18px 11px 14px;
+      z-index: 130; display: flex; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--red);
+      border-radius: 12px; padding: 13px 22px 13px 16px;
       box-shadow: 0 6px 26px rgba(0,0,0,.16);
-      max-width: min(92vw, 460px); pointer-events: none;
+      width: min(96vw, 680px); pointer-events: none;
       transition: transform .32s cubic-bezier(.2,.9,.3,1.2), opacity .25s;
       opacity: 0;
     }
     #newTimeToast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .ntt-icon { font-size: 22px; flex: none; }
-    .ntt-body { min-width: 0; }
+    .ntt-icon { font-size: 26px; flex: none; }
+    .ntt-body { min-width: 0; flex: 1; }
     .ntt-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--sub); }
-    .ntt-team { font-size: 15px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ntt-team { font-size: 17px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ntt-meta { font-size: 12px; color: var(--sub); }
-    .ntt-time { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; color: var(--red); flex: none; }
-    .ntt-time.tag { font-size: 14px; letter-spacing: 1px; }
+    .ntt-time { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 700; color: var(--red); flex: none; }
+    .ntt-time.tag { font-size: 16px; letter-spacing: 1px; }
     @media (max-width: 700px) {
-      #newTimeToast { top: 8px; padding: 9px 14px 9px 11px; gap: 9px; }
-      .ntt-team { font-size: 14px; }
-      .ntt-time { font-size: 18px; }
+      #newTimeToast { top: 8px; width: calc(100vw - 16px); padding: 11px 16px 11px 13px; gap: 11px; }
+      .ntt-team { font-size: 15px; white-space: normal; }
+      .ntt-time { font-size: 21px; }
+      .ntt-icon { font-size: 23px; }
     }
     @media (prefers-reduced-motion: reduce) {
       #newTimeToast { transition: opacity .2s; transform: translateX(-50%) translateY(0); }
     }
 
-    /* Zvýraznění právě zapsaného času — krátké probliknutí řádku */
-    @keyframes flashNew {
-      0%   { background-color: rgba(250,204,21,.60); }
-      60%  { background-color: rgba(250,204,21,.32); }
-      100% { background-color: transparent; }
-    }
-    .startlist-table tbody tr.flash-new > td,
-    .content tbody tr.flash-new > td,
-    .sl-card.flash-new,
-    .result-card.flash-new {
-      animation: flashNew 2.4s ease-out;
-    }
-    [data-theme="dark"] .startlist-table tbody tr.flash-new > td,
-    [data-theme="dark"] .content tbody tr.flash-new > td,
-    [data-theme="dark"] .sl-card.flash-new,
-    [data-theme="dark"] .result-card.flash-new {
-      animation-name: flashNewDark;
-    }
-    @keyframes flashNewDark {
-      0%   { background-color: rgba(250,204,21,.34); }
-      60%  { background-color: rgba(250,204,21,.18); }
-      100% { background-color: transparent; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .startlist-table tbody tr.flash-new > td,
-      .content tbody tr.flash-new > td,
-      .sl-card.flash-new, .result-card.flash-new { animation: none; }
-    }
     .del-btn:hover { color:var(--red); background:var(--red-soft); }
 
     .order-btn { font-size:14px; font-weight:600; background:none; border:1px solid var(--border); border-radius:4px; color:var(--sub); cursor:pointer; padding:1px 7px; line-height:1.4; transition:all .15s; }
@@ -1651,27 +1624,10 @@ let data    = JSON.parse(JSON.stringify(DEFAULT_DATA));
 let doneSet = new Set();
 let dupeStarts = []; // duplicitní startovní čísla (varování v admin liště)
 
-// ── ZVÝRAZNĚNÍ NOVÝCH ČASŮ ───────────────────────────
-// Po příchodu dat porovnáme časy s předchozím stavem; startovní čísla,
-// kterým čas přibyl nebo se změnil, krátce probliknou v tabulkách.
+// ── DETEKCE NOVÝCH ČASŮ ──────────────────────────────
+// Po příchodu dat porovnáme časy s předchozím stavem; družstva, kterým
+// čas přibyl nebo se změnil, ohlásíme návštěvníkovi vyskakovacím oknem.
 let _prevTimes = null;          // { start: "cas1|cas2" } z minulého snapshotu
-let flashStarts = new Set();    // st. č. k probliknutí v tomto renderu
-const _flashTimers = new Map();
-
-// Označí startovní číslo k probliknutí a po doběhnutí animace ho uklidí.
-// V admin režimu se neprobliká — zapisovatel svůj zápis vidí a blikání
-// by ho při rychlém zadávání jen rušilo.
-function markFlash(start) {
-  if (isAdmin) return;
-  const s = Number(start);
-  if (!Number.isFinite(s)) return;
-  flashStarts.add(s);
-  clearTimeout(_flashTimers.get(s));
-  _flashTimers.set(s, setTimeout(() => {
-    flashStarts.delete(s);
-    _flashTimers.delete(s);
-  }, 2600));   // o něco déle než animace, ať doběhne
-}
 
 // ── VYSKAKOVACÍ OZNÁMENÍ O NOVÉM VÝSLEDKU ────────────
 // Návštěvník uvidí nový čas, i když je zrovna jinde na stránce.
@@ -1723,7 +1679,7 @@ function showNextToast() {
   setTimeout(() => {
     el.classList.remove('show');
     setTimeout(showNextToast, 400);   // po zasunutí pusť další z fronty
-  }, 5000);
+  }, 10000);
 }
 
 function detectNewTimes() {
@@ -1736,7 +1692,6 @@ function detectNewTimes() {
       const je = snapshot[start];
       // Zvýrazni jen doplnění/změnu času, ne smazání ani nové prázdné řádky
       if (bylo !== undefined && bylo !== je && je !== '|') {
-        markFlash(start);
         const row = data.find(d => String(d.start) === String(start));
         if (row && !isEmptyTeam(row)) queueNewTimeToast(row);
       }
@@ -2831,7 +2786,7 @@ function renderResults() {
           ? `<td class="gap-col">+${gap.toFixed(2)}&thinsp;s</td>`
           : `<td class="gap-col empty">—</td>`;
 
-      return `<tr class="${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}" data-start="${d.start}">
+      return `<tr class="${rc}" data-start="${d.start}">
         <td style="width:40px"><span class="rank ${rankCls}">${rankTxt}</span></td>
         <td style="width:50px;text-align:center"><span class="snum">${d.start}</span></td>
         <td><div class="tname">${esc(d.team)}</div></td>
@@ -2855,7 +2810,7 @@ function renderResults() {
       const bestStr = fmtBest(bt);
       const cardGap = (i===0||!btNum||leaderTime===null) ? null : bt - leaderTime;
       const gapStr = i===0 ? null : cardGap!==null ? `+${cardGap.toFixed(2)}&thinsp;s` : null;
-      return `<div class="result-card ${rc}${flashStarts.has(d.start) ? ' flash-new' : ''}" data-start="${d.start}">
+      return `<div class="result-card ${rc}" data-start="${d.start}">
         <div class="rc-rank${isNum?' num':''}">${rankTxt}</div>
         <div class="rc-body">
           <div class="rc-team">${esc(d.team)}</div>
@@ -3059,7 +3014,7 @@ function renderStartlist() {
     const isDone  = doneSet.has(d.start);
     const isEmpty = isEmptyTeam(d);
     const isNext  = !isDone && !isEmpty && d.start === nextStart;
-    const rowClass = (isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '') + (flashStarts.has(d.start) ? ' flash-new' : '');
+    const rowClass = (isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '');
 
     const statusTag = isDone
       ? `<span class="done-tag">✓ Odběhnuto</span>`
@@ -3122,7 +3077,7 @@ function renderStartlist() {
     const isDone  = doneSet.has(d.start);
     const isEmpty = isEmptyTeam(d);
     const isNext  = !isDone && !isEmpty && d.start === nextStart;
-    const rowClass = (isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '') + (flashStarts.has(d.start) ? ' flash-new' : '');
+    const rowClass = (isEmpty ? 'empty-row' : isDone ? 'done' : isNext ? 'next' : '');
 
     const statusTag = isDone
       ? `<span class="done-tag">✓ Odběhnuto</span>`
@@ -3404,7 +3359,6 @@ function saveQuickTime(startNum) {
   // OPTIMALIZACE: patch jen 3 pole (cas1, cas2, zapisCas) jednoho týmu
   // místo celého pole všech týmů → ~90 % úspora dat při zadávání časů
   saveTeamPatch(startNum);
-  markFlash(startNum);   // probliknutí hned, nečekej na odpověď z databáze
   renderResults(); renderStartlist(); renderSummaryBar();
 }
 
